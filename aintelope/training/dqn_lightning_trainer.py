@@ -22,8 +22,8 @@ class DQNLightning(LightningModule):
     def __init__(
         self,
         batch_size: int = 16,
-        lr: float = 1e-2,
-        env: str = "CartPole-v0",
+        lr: float = 1e-3,
+        env: str = "CartPole-v1",
         gamma: float = 0.99,
         sync_rate: int = 10,
         replay_size: int = 1000,
@@ -31,12 +31,12 @@ class DQNLightning(LightningModule):
         eps_last_frame: int = 1000,
         eps_start: float = 1.0,
         eps_end: float = 0.01,
-        episode_length: int = 200,
+        episode_length: int = 500,
         warm_start_steps: int = 1000,
     ) -> None:
         """
         Args:
-            batch_size: size of the batches")
+            batch_size: size of the batches
             lr: learning rate
             env: gym environment tag
             gamma: discount factor
@@ -68,7 +68,7 @@ class DQNLightning(LightningModule):
 
     def populate(self, steps: int = 1000) -> None:
         """Carries out several random steps through the environment to
-        nitially fill up the replay buffer with experiences.
+        initially fill up the replay buffer with experiences.
 
         Args:
             steps: number of random steps to populate the buffer with
@@ -114,8 +114,8 @@ class DQNLightning(LightningModule):
 
     def training_step(self, batch: typ.Tuple[Tensor, Tensor],
                       nb_batch) -> OrderedDict:
-        """Carries out a single step through the environment to update the replay buffer. Then calculates loss
-        based on the minibatch recieved.
+        """Carries out a single step through the environment to update the
+        replay buffer. Then calculates loss based on the minibatch recieved.
 
         Args:
             batch: current mini batch of replay data
@@ -127,8 +127,8 @@ class DQNLightning(LightningModule):
         device = self.get_device(batch)
         epsilon = max(
             self.hparams.eps_end,
-            self.hparams.eps_start - self.global_step +
-            1 / self.hparams.eps_last_frame,
+            self.hparams.eps_start -
+            self.global_step * 1 / self.hparams.eps_last_frame,
         )
 
         # step through environment with agent
@@ -161,6 +161,14 @@ class DQNLightning(LightningModule):
             "total_reward": torch.tensor(self.total_reward).to(device),
         }
 
+        self.log('episode_reward', self.episode_reward)
+        self.log('total_reward', log['total_reward'])
+        self.log('reward', log['reward'])
+        self.log('train_loss', log['train_loss'])
+        self.log('steps', status['steps'])
+        self.log('epsilon', epsilon)
+        self.log('done', done)
+
         return OrderedDict({"loss": loss, "log": log, "progress_bar": status})
 
     def configure_optimizers(self) -> typ.List[Optimizer]:
@@ -169,7 +177,9 @@ class DQNLightning(LightningModule):
         return [optimizer]
 
     def __dataloader(self) -> DataLoader:
-        """Initialize the Replay Buffer dataset used for retrieving experiences."""
+        """Initialize the Replay Buffer dataset used for retrieving
+        experiences.
+        """
         dataset = RLDataset(self.buffer, self.hparams.episode_length)
         dataloader = DataLoader(
             dataset=dataset,
@@ -189,10 +199,6 @@ class DQNLightning(LightningModule):
 if __name__ == '__main__':
     model = DQNLightning()
 
-    trainer = Trainer(
-        gpus=AVAIL_GPUS,
-        max_epochs=200,
-        val_check_interval=100,
-    )
+    trainer = Trainer(gpus=AVAIL_GPUS, max_epochs=1000, val_check_interval=100)
 
     trainer.fit(model)
