@@ -20,6 +20,8 @@ ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]])
 
 class RawEnv(AECEnv):
 
+    metadata = {'name': 'savanna_v1'}
+
     def __init__(self):
         self.possible_agents = [
             'player_' + str(r) for r in range(AMOUNT_AGENTS)
@@ -50,7 +52,7 @@ class RawEnv(AECEnv):
         return np.array(self.observations[agent])
 
     def render(self, mode='human'):
-        """Render the environmen.
+        """Render the environment.
         """
         raise NotImplementedError
 
@@ -72,13 +74,21 @@ class RawEnv(AECEnv):
         And must set up the environment so that render(), step(), and observe()
         can be called without issues.
         """
+
         self.agents = self.possible_agents[:]
         self.rewards = {agent: 0 for agent in self.agents}
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
-        self.state = {agent: None for agent in self.agents}
-        self.observations = {agent: None for agent in self.agents}
+        self.grass = np.random.randint(0, MAP_DIM, 2 * AMOUNT_GRASS)
+        self.state = {
+            agent: np.random.randint(0, MAP_DIM, 2 * AMOUNT_AGENTS)
+            for agent in self.agents
+        }
+        self.observations = {
+            agent: np.concatenate([self.state[agent], self.grass])
+            for agent in self.agents
+        }
         self.num_moves = 0
 
         # cycle through the agents
