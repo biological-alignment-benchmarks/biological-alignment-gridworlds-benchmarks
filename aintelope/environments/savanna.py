@@ -10,9 +10,11 @@ import random
 from pprint import pprint
 
 NUM_ITERS = 500  # duration of the game
+# TODO: MAP_SIZE or MAP_EXTENT?
 MAP_MIN = 0
 MAP_DIM = 100
 CYCLIC_BOUNDARIES = True
+# TODO: NUM_AGENTS
 AMOUNT_AGENTS = 1  # for now only one agent
 AMOUNT_GRASS = 2
 Float = np.float32
