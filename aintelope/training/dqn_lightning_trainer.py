@@ -101,20 +101,24 @@ class DQNLightning(LightningModule):
         """
         states, actions, rewards, dones, next_states = batch
 
-        state_action_values = self.net(states).gather(
-            1, actions.unsqueeze(-1)).squeeze(-1)
+        state_action_values = (
+            self.net(states).gather(1, actions.unsqueeze(-1)).squeeze(-1)
+        )
 
         with torch.no_grad():
             next_state_values = self.target_net(next_states).max(1)[0]
             next_state_values[dones] = 0.0
             next_state_values = next_state_values.detach()
 
-        expected_state_action_values = next_state_values * self.hparams.gamma + rewards
+        expected_state_action_values = (
+            next_state_values * self.hparams.gamma + rewards
+        )
 
         return nn.MSELoss()(state_action_values, expected_state_action_values)
 
-    def training_step(self, batch: typ.Tuple[Tensor, Tensor],
-                      nb_batch) -> OrderedDict:
+    def training_step(
+        self, batch: typ.Tuple[Tensor, Tensor], nb_batch
+    ) -> OrderedDict:
         """Carries out a single step through the environment to update the
         replay buffer. Then calculates loss based on the minibatch recieved.
 
@@ -128,8 +132,8 @@ class DQNLightning(LightningModule):
         device = self.get_device(batch)
         epsilon = max(
             self.hparams.eps_end,
-            self.hparams.eps_start -
-            self.global_step * 1 / self.hparams.eps_last_frame,
+            self.hparams.eps_start
+            - self.global_step * 1 / self.hparams.eps_last_frame,
         )
 
         # step through environment with agent
@@ -162,13 +166,13 @@ class DQNLightning(LightningModule):
             "total_reward": torch.tensor(self.total_reward).to(device),
         }
 
-        self.log('episode_reward', self.episode_reward)
-        self.log('total_reward', log['total_reward'])
-        self.log('reward', log['reward'])
-        self.log('train_loss', log['train_loss'])
-        self.log('steps', status['steps'])
-        self.log('epsilon', epsilon)
-        self.log('done', done)
+        self.log("episode_reward", self.episode_reward)
+        self.log("total_reward", log["total_reward"])
+        self.log("reward", log["reward"])
+        self.log("train_loss", log["train_loss"])
+        self.log("steps", status["steps"])
+        self.log("epsilon", epsilon)
+        self.log("done", done)
 
         return OrderedDict({"loss": loss, "log": log, "progress_bar": status})
 
@@ -203,5 +207,5 @@ def run_experiment():
     trainer.fit(model)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_experiment()

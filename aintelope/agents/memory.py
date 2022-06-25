@@ -35,7 +35,8 @@ class ReplayBuffer:
     def sample(self, batch_size: int) -> typ.Tuple:
         indices = np.random.choice(len(self.buffer), batch_size, replace=False)
         states, actions, rewards, dones, next_states = zip(
-            *(self.buffer[idx] for idx in indices))
+            *(self.buffer[idx] for idx in indices)
+        )
 
         return (
             np.array(states),
@@ -61,6 +62,7 @@ class RLDataset(IterableDataset):
 
     def __iter__(self) -> typ.Iterable:
         states, actions, rewards, dones, new_states = self.buffer.sample(
-            self.sample_size)
+            self.sample_size
+        )
         for i in range(len(dones)):
             yield states[i], actions[i], rewards[i], dones[i], new_states[i]

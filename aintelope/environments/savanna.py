@@ -1,14 +1,14 @@
-import typing as typ
 import functools
+import random
+import typing as typ
+from collections import UserDict, defaultdict
+from pprint import pprint
 
 import numpy as np
-from gym.spaces import Discrete, Box
-from pettingzoo import AECEnv
-from pettingzoo.utils import wrappers, agent_selector
 import pygame
-import random
-from pprint import pprint
-from collections import defaultdict, UserDict
+from gym.spaces import Box, Discrete
+from pettingzoo import AECEnv
+from pettingzoo.utils import agent_selector, wrappers
 
 NUM_ITERS = 500  # duration of the game
 # TODO: MAP_SIZE or MAP_EXTENT?
@@ -19,16 +19,21 @@ CYCLIC_BOUNDARIES = True
 AMOUNT_AGENTS = 1  # for now only one agent
 AMOUNT_GRASS = 2
 Float = np.float32
-OBSERVATION_SPACE = Box(0,
-                        MAP_DIM,
-                        shape=(2 * (AMOUNT_AGENTS + AMOUNT_GRASS), ))
+OBSERVATION_SPACE = Box(
+    0, MAP_DIM, shape=(2 * (AMOUNT_AGENTS + AMOUNT_GRASS),)
+)
 ACTION_SPACE = Discrete(4)  # agent can walk in 4 directions
 ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=Float)
 
+
 class RenderSettings:
     def __init__(self, metadata):
-        prefix = 'render_'
-        settings = {(k.lstrip(prefix), v) for k, v in metadata.items() if k.startswith(prefix)}
+        prefix = "render_"
+        settings = {
+            (k.lstrip(prefix), v)
+            for k, v in metadata.items()
+            if k.startswith(prefix)
+        }
         self.__dict__.update(settings)
 
 
@@ -93,31 +98,31 @@ class HumanRenderState:
         # The following line will automatically add a delay to keep the framerate stable.
         self.clock.tick(self.fps)
 
+
 class RawEnv(AECEnv):
 
-    metadata = {'name': 'savanna_v1', 'render_fps': 15,
-                'render_agent_radius': 5,
-                'render_agent_color': (200, 50, 0),
-                'render_grass_radius': 5,
-                'render_grass_color': (20, 200, 0),
-                'render_modes': ('human',),
-                'render_window_size': 512,
-                }
+    metadata = {
+        "name": "savanna_v1",
+        "render_fps": 15,
+        "render_agent_radius": 5,
+        "render_agent_color": (200, 50, 0),
+        "render_grass_radius": 5,
+        "render_grass_color": (20, 200, 0),
+        "render_modes": ("human",),
+        "render_window_size": 512,
+    }
 
     def __init__(self):
-        self.possible_agents = [
-            f'player_{r}' for r in range(AMOUNT_AGENTS)
-        ]
+        self.possible_agents = [f"player_{r}" for r in range(AMOUNT_AGENTS)]
         self.agent_name_mapping = dict(
-            zip(self.possible_agents, list(range(AMOUNT_AGENTS))))
+            zip(self.possible_agents, list(range(AMOUNT_AGENTS)))
+        )
 
         self._action_spaces = {
-            agent: ACTION_SPACE
-            for agent in self.possible_agents
+            agent: ACTION_SPACE for agent in self.possible_agents
         }
         self._observation_spaces = {
-            agent: OBSERVATION_SPACE
-            for agent in self.possible_agents
+            agent: OBSERVATION_SPACE for agent in self.possible_agents
         }
 
         render_settings = RenderSettings(self.metadata)
@@ -133,23 +138,24 @@ class RawEnv(AECEnv):
         return ACTION_SPACE
 
     def observe(self, agent: str):
-        """Return observation of given agent.
-        """
+        """Return observation of given agent."""
         return np.array(self.observations[agent])
 
-    def render(self, mode='human'):
-        """Render the environment.
-        """
+    def render(self, mode="human"):
+        """Render the environment."""
 
         self.render_state.render(self.state, self.grass)
 
         if mode == "human":
             if not self.human_render_state:
-                self.human_render_state = HumanRenderState(self.render_state.settings)
+                self.human_render_state = HumanRenderState(
+                    self.render_state.settings
+                )
             self.human_render_state.render(self.render_state)
         else:  # rgb_array
             return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.render_state.canvas)), axes=(1, 0, 2)
+                np.array(pygame.surfarray.pixels3d(self.render_state.canvas)),
+                axes=(1, 0, 2),
             )
 
     def close(self):
@@ -176,7 +182,11 @@ class RawEnv(AECEnv):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
-        self.grass = np.random.randint(0, MAP_DIM, 2 * AMOUNT_GRASS).astype(Float).reshape(2, -1)
+        self.grass = (
+            np.random.randint(0, MAP_DIM, 2 * AMOUNT_GRASS)
+            .astype(Float)
+            .reshape(2, -1)
+        )
         self.state = {
             agent: np.random.randint(0, MAP_DIM, 2).astype(Float)
             for agent in self.agents
@@ -225,23 +235,25 @@ class RawEnv(AECEnv):
         agent_pos = np.clip(agent_pos, MAP_MIN, MAP_DIM)
         self.state[self.agent_selection] = agent_pos
 
-
         # collect reward if it is the last agent to act
         if self._agent_selector.is_last():
             # rewards for all agents are placed in the .rewards dictionary
             for iagent, agent in enumerate(self.agents):
                 agent_pos = self.state[agent]
+
                 def distance(a, b):
                     d = np.linalg.norm(a - b)
                     return d
-                reward = min(distance(agent_pos, grass_pos) for grass_pos in self.grass)
+
+                reward = min(
+                    distance(agent_pos, grass_pos) for grass_pos in self.grass
+                )
                 self.rewards[agent] = reward
 
             self.num_moves += 1
             # The dones dictionary must be updated for all players.
             self.dones = {
-                agent: self.num_moves >= NUM_ITERS
-                for agent in self.agents
+                agent: self.num_moves >= NUM_ITERS for agent in self.agents
             }
 
             # observe the current state
@@ -262,8 +274,7 @@ class RawEnv(AECEnv):
 
 
 def env():
-    """Add PettingZoo wrappers to environment class.
-    """
+    """Add PettingZoo wrappers to environment class."""
     env = RawEnv()
     env = wrappers.AssertOutOfBoundsWrapper(env)
     env = wrappers.OrderEnforcingWrapper(env)
@@ -276,6 +287,8 @@ class RandomWalkAgent:
 
 
 EPS = 0.0001
+
+
 class IterativeWeightOptimizationAgent:
     def __init__(self):
         self.is_initialized = False
@@ -285,15 +298,15 @@ class IterativeWeightOptimizationAgent:
         learning_rate = 0.01
         learning_randomness = 0.00
 
-        LAST_ACTION_KEY = 'last_action'
-        LAST_REWARD_KEY = 'last_reward'
-        ACTIONS_WEIGHTS = 'actions_weights'
+        LAST_ACTION_KEY = "last_action"
+        LAST_REWARD_KEY = "last_reward"
+        ACTIONS_WEIGHTS = "actions_weights"
 
         if not self.is_initialized:
             info[ACTIONS_WEIGHTS] = np.repeat([1.0], action_space.n)
             self.is_initialized = True
 
-        print('step:', reward, observation)
+        print("step:", reward, observation)
         last_action = info.get(LAST_ACTION_KEY)
         last_reward = info.get(LAST_REWARD_KEY, 0)
         action_weights = info[ACTIONS_WEIGHTS]
@@ -301,11 +314,16 @@ class IterativeWeightOptimizationAgent:
         if last_action is not None and last_reward > EPS:
             last_action_reward_delta = reward - last_reward
             last_action_weight = action_weights[last_action]
-            print('dreward',last_action_reward_delta, last_action, ACTION_MAP[last_action])
+            print(
+                "dreward",
+                last_action_reward_delta,
+                last_action,
+                ACTION_MAP[last_action],
+            )
             last_action_weight += last_action_reward_delta * learning_rate
             last_action_weight = max(MIN_WEIGHT, last_action_weight)
             action_weights[last_action] = last_action_weight
-            print('action_weights', action_weights)
+            print("action_weights", action_weights)
 
             weight_sum = np.sum(action_weights)
             action_weights /= weight_sum
@@ -322,7 +340,7 @@ class IterativeWeightOptimizationAgent:
 
         def choose(cdf):
             assert cdf
-            x = random.uniform(0, 1-EPS)
+            x = random.uniform(0, 1 - EPS)
             k = None
             for k, v in cdf.items():
                 if x >= v:
@@ -330,7 +348,15 @@ class IterativeWeightOptimizationAgent:
             return k
 
         action_weights_cdf = cdf(enumerate(action_weights))
-        print('cdf', ', '.join([f'{ACTION_MAP[iaction]}: {w}' for iaction, w in action_weights_cdf.items()]))
+        print(
+            "cdf",
+            ", ".join(
+                [
+                    f"{ACTION_MAP[iaction]}: {w}"
+                    for iaction, w in action_weights_cdf.items()
+                ]
+            ),
+        )
 
         pprint(action_weights_cdf)
         action = choose(action_weights_cdf)
@@ -338,7 +364,7 @@ class IterativeWeightOptimizationAgent:
             action = action_space.sample()
         info[LAST_ACTION_KEY] = action
         info[LAST_REWARD_KEY] = reward
-        print('chose action', action, ACTION_MAP[action])
+        print("chose action", action, ACTION_MAP[action])
         return action
 
 
@@ -348,18 +374,17 @@ def main(env: RawEnv):
     for agent in env.agent_iter():
         observation, reward, done, info = env.last()
 
-
-        action_space:Discrete = env.action_space(agent)
+        action_space: Discrete = env.action_space(agent)
         if not done:
             action = policy(action_space, observation, reward, info)
             assert action in action_space
         else:
             action = None
         env.step(action)
-        env.render('human')
-    wait = input('Close?')
+        env.render("human")
+    wait = input("Close?")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     e = env()
     main(e)

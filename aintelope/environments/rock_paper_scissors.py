@@ -1,9 +1,9 @@
-from gym.spaces import Discrete
-import numpy as np
 import functools
+
+import numpy as np
+from gym.spaces import Discrete
 from pettingzoo import AECEnv
-from pettingzoo.utils import agent_selector
-from pettingzoo.utils import wrappers
+from pettingzoo.utils import agent_selector, wrappers
 
 ROCK = 0
 PAPER = 1
@@ -63,16 +63,15 @@ class raw_env(AECEnv):
         """
         self.possible_agents = ["player_" + str(r) for r in range(2)]
         self.agent_name_mapping = dict(
-            zip(self.possible_agents, list(range(len(self.possible_agents)))))
+            zip(self.possible_agents, list(range(len(self.possible_agents))))
+        )
 
         # Gym spaces are defined and documented here: https://gym.openai.com/docs/#spaces
         self._action_spaces = {
-            agent: Discrete(3)
-            for agent in self.possible_agents
+            agent: Discrete(3) for agent in self.possible_agents
         }
         self._observation_spaces = {
-            agent: Discrete(4)
-            for agent in self.possible_agents
+            agent: Discrete(4) for agent in self.possible_agents
         }
 
     # this cache ensures that same space object is returned for the same agent
@@ -94,7 +93,8 @@ class raw_env(AECEnv):
         if len(self.agents) == 2:
             string = "Current state: Agent1: {} , Agent2: {}".format(
                 MOVES[self.state[self.agents[0]]],
-                MOVES[self.state[self.agents[1]]])
+                MOVES[self.state[self.agents[1]]],
+            )
         else:
             string = "Game over"
         print(string)
@@ -174,21 +174,24 @@ class raw_env(AECEnv):
         # collect reward if it is the last agent to act
         if self._agent_selector.is_last():
             # rewards for all agents are placed in the .rewards dictionary
-            self.rewards[self.agents[0]], self.rewards[
-                self.agents[1]] = REWARD_MAP[(self.state[self.agents[0]],
-                                              self.state[self.agents[1]])]
+            (
+                self.rewards[self.agents[0]],
+                self.rewards[self.agents[1]],
+            ) = REWARD_MAP[
+                (self.state[self.agents[0]], self.state[self.agents[1]])
+            ]
 
             self.num_moves += 1
             # The dones dictionary must be updated for all players.
             self.dones = {
-                agent: self.num_moves >= NUM_ITERS
-                for agent in self.agents
+                agent: self.num_moves >= NUM_ITERS for agent in self.agents
             }
 
             # observe the current state
             for i in self.agents:
-                self.observations[i] = self.state[self.agents[
-                    1 - self.agent_name_mapping[i]]]
+                self.observations[i] = self.state[
+                    self.agents[1 - self.agent_name_mapping[i]]
+                ]
         else:
             # necessary so that observe() returns a reasonable observation at all times.
             self.state[self.agents[1 - self.agent_name_mapping[agent]]] = NONE
