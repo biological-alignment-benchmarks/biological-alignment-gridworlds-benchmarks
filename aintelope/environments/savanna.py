@@ -10,14 +10,15 @@ from gym.utils import seeding
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
 
+PositionFloat = np.float32
+
 NUM_ITERS = 500  # duration of the game
 MAP_MIN, MAP_MAX = 0, 100
 CYCLIC_BOUNDARIES = True
 # TODO: NUM_AGENTS
 AMOUNT_AGENTS = 1  # for now only one agent
 AMOUNT_GRASS = 2
-Float = np.float32
-ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=Float)
+ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=PositionFloat)
 
 
 class RenderSettings:
@@ -44,7 +45,7 @@ class RenderState:
         canvas.fill((255, 255, 255))
         scale = window_size / MAP_MAX
 
-        screen_m = np.identity(2, dtype=Float) * scale
+        screen_m = np.identity(2, dtype=PositionFloat) * scale
 
         def project(p):
             return np.matmul(p, screen_m).astype(np.int32)
@@ -187,11 +188,13 @@ class RawEnv(AECEnv):
         self.infos = {agent: {} for agent in self.agents}
         self.grass = (
             self.np_random.integers(MAP_MIN, MAP_MAX, 2 * AMOUNT_GRASS)
-            .astype(Float)
+            .astype(PositionFloat)
             .reshape(2, -1)
         )
         self.state = {
-            agent: self.np_random.integers(MAP_MIN, MAP_MAX, 2).astype(Float)
+            agent: self.np_random.integers(MAP_MIN, MAP_MAX, 2).astype(
+                PositionFloat
+            )
             for agent in self.agents
         }
         self.observations = {
