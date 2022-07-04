@@ -96,13 +96,14 @@ class HumanRenderState:
         self.clock.tick(self.fps)
 
 
-def reward_agent(agent_pos, grass):
-    def distance(a, b):
-        d = np.linalg.norm(a - b)
-        return d
+def vec_distance(a, b):
+    d = np.linalg.norm(a - b)
+    return d
 
+
+def reward_agent(agent_pos, grass):
     reward = 1 / (
-        1 + min(distance(agent_pos, grass_pos) for grass_pos in grass)
+        1 + min(vec_distance(agent_pos, grass_pos) for grass_pos in grass)
     )
     return reward
 
