@@ -74,4 +74,18 @@ If the ADRs become unmanageable in a single file we may restructure later.
 
 See also [Github ADR](https://adr.github.io/)
 
+## 2022-06-13
+
+In the context of the interface between game state and machine learning model, we decided that the
+state made available for the (main) model is of fixed length. And the structure of the state is 
+such that multiple entities from the world are repsented by the the same feature sub structure.
+
+Alternatives considered:
+* variable length - dependent of entities in the visual field of the agent
+* grid of entities sampled from the game state in the visual field of the agent
+* the visual field (pixels)
+
+We decided against variable length because of lack of knowledge.
+Against pixels because we treat this as a solved sub-problem.
+Against the grid to keep the model simple and because of the complexities introduced by sampling.
 
