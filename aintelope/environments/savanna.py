@@ -108,6 +108,7 @@ def reward_agent(agent_pos, grass):
 
 
 def move_agent(agent_pos, action):
+    assert agent_pos.dtype == PositionFloat, agent_pos.dtype
     move = ACTION_MAP[action]
     # force copy
     agent_pos = agent_pos + move
