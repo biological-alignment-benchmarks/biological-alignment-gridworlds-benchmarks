@@ -20,6 +20,7 @@ AMOUNT_AGENTS = 1  # for now only one agent
 AMOUNT_GRASS = 2
 ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=PositionFloat)
 
+EPS = 0.0001
 Action = int
 
 
@@ -292,7 +293,6 @@ class RandomWalkAgent:
         return action_space.sample()
 
 
-EPS = 0.0001
 
 
 class IterativeWeightOptimizationAgent:
