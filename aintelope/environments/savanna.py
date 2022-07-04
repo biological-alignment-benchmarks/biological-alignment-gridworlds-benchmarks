@@ -394,3 +394,7 @@ def main(env: RawEnv):
 if __name__ == "__main__":
     e = env()
     main(e)
+
+# Local Variables:
+# compile-command: "poetry run python savanna.py"
+# End:
