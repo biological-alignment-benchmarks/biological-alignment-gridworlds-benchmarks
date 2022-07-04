@@ -138,7 +138,7 @@ class RawEnv(AECEnv):
         "render_agent_color": (200, 50, 0),
         "render_grass_radius": 5,
         "render_grass_color": (20, 200, 0),
-        "render_modes": ("human",),
+        "render_modes": ("human", "offline"),
         "render_window_size": 512,
     }
 
