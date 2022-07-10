@@ -15,6 +15,7 @@ mypy = "^0.961"
 PettingZoo = "^1.18.1"
 pygame = "^2.1.2"
 black = "^22.3.0"
+pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 

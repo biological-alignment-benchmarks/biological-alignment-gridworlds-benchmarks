@@ -1,14 +1,18 @@
-tests-local: ## run tests locally with active python environment
-	pytest
+# Variables
+PROJECT = aintelope
+TESTS = tests
+
+tests-local: $(PROJECT) $(TESTS) ## run tests locally with active python environment
+	pytest --cov=$(PROJECT) $(TESTS)
 
 tests-local-p: ## run tests locally without active python environment
-	poetry run pytest
+	poetry run pytest --cov=$(PROJECT) $(TESTS)
 
-typecheck-local: ## local typechecking with active python environment
-	mypy aintelope
+typecheck-local: $(PROJECT) ## local typechecking with active python environment
+	mypy $(PROJECT)
 
-typecheck-local-p: ## local typechecking without active python environment
-	poetry run mypy aintelope
+typecheck-local-p: $(PROJECT) ## local typechecking without active python environment
+	poetry run mypy $(PROJECT)
 
 isort: ## sort python imports with active python environment
 	isort .
