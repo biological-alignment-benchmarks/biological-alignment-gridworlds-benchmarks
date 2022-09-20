@@ -1,0 +1,4 @@
+# @package _global_
+training:
+  name: simple_eval_qagent
+  
