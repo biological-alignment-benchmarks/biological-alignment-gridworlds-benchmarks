@@ -36,7 +36,7 @@ PyTorch often needs you to specify a specific Cuda Version appropriate to your
 local graphics card. The easiest way to fix this is to simply manually install
 the correct version of PyTorch using pip. 
 For example, Nathan needed to do the following to get PyTorch with Cuda version 113:
-`pip3 install --use-deprecated=legacy-resolver torch==1.12.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html`
+`pip3 install --use-deprecated=legacy-resolver torch==1.12.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html`
 
 ### Code formatting
 
