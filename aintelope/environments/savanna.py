@@ -1,15 +1,11 @@
-from gym import spaces
-import gym
 import functools
 import typing as typ
 
 import numpy as np
 import pygame
+from gym import spaces
 from gym.spaces import Box, Discrete
 from gym.utils import seeding
-from pettingzoo import AECEnv, ParallelEnv
-from pettingzoo.test import api_test
-from pettingzoo.utils import agent_selector, wrappers, parallel_to_aec
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
 
@@ -105,7 +101,7 @@ def move_agent(agent_pos: np.ndarray, action: Action, map_min=0, map_max=100) ->
     return agent_pos
 
 
-class SavannaEnv(gym.Env):
+class SavannaEnv():
 
     metadata = {
         "name": "savanna-v2",
