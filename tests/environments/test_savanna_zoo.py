@@ -12,12 +12,14 @@ from pettingzoo.test import api_test
 from pettingzoo.test.seed_test import parallel_seed_test
 from pettingzoo.utils import parallel_to_aec
 
-from aintelope.aintelope.environments import savanna_zoo as sut
-from aintelope.aintelope.environments.savanna_zoo import SavannaZooEnv
 
+from aintelope.environments import savanna_zoo as sut
+from aintelope.environments.savanna import ACTION_MAP
+from aintelope.environments.savanna_zoo import SavannaZooEnv
+from aintelope.environments.env_utils.distance import vec_distance, distance_to_closest_item
 
 def test_pettingzoo_api_parallel():
-    parallel_api_test(sut.env(), num_cycles=1000)
+    parallel_api_test(sut.SavannaZooEnv(), num_cycles=1000)
     
     
     
@@ -39,22 +41,124 @@ def test_pettingzoo_api_sequential():
 
 
 def test_seed():
-    parallel_seed_test(sut.env, num_cycles=10, test_kept_state=True)
+    parallel_seed_test(sut.SavannaZooEnv, num_cycles=10, test_kept_state=True)
+
+
+def test_agent_states():
+    env = sut.SavannaZooEnv()
+
+    with pytest.raises(AttributeError):
+        env.agent_states
+    with pytest.raises(AttributeError):
+        env.unwrapped.agent_states
+
+    env.reset()
+    assert isinstance(env.unwrapped.agent_states, dict)
+    assert all(
+        isinstance(agent_state, np.ndarray)
+        for agent_state in env.unwrapped.agent_states.values()
+    )
+    assert all(
+        agent_state.shape == (2,)
+        for agent_state in env.unwrapped.agent_states.values()
+    )
+
+
+def test_reward_agent():
+    env = sut.SavannaZooEnv()
+    env.reset()
+    # single grass patch
+    agent_pos = np.random.randint(env.metadata['map_min'], env.metadata['map_max'], 2)
+    grass_patch = np.random.randint(env.metadata['map_min'], env.metadata['map_max'], 2)
+    min_grass_distance = distance_to_closest_item(agent_pos, grass_patch)
+    reward_single = sut.reward_agent(min_grass_distance)
+    assert reward_single == 1 / (1 + vec_distance(grass_patch, agent_pos))
+
+    # multiple grass patches
+    grass_patches = np.random.randint(env.metadata['map_min'], env.metadata['map_max'], size=(10, 2))
+    min_grass_distance = distance_to_closest_item(agent_pos, grass_patch)
+    reward_many = sut.reward_agent(min_grass_distance)
+    grass_patch_closest = grass_patches[
+        np.argmin(
+            np.linalg.norm(np.subtract(grass_patches, agent_pos), axis=1)
+        )
+    ]
+    assert reward_many == 1 / (
+        1 + vec_distance(grass_patch_closest, agent_pos)
+    )
+
+
+def test_move_agent():
+    env = sut.SavannaZooEnv()
+    env.reset()
+
+    agent = env.possible_agents[0]
+    agent_states = env.unwrapped.agent_states
+
+    for _ in range(1000):
+        prev_state = np.copy(agent_states[agent])
+        action = env.action_space(agent).sample()
+        agent_states[agent] = sut.move_agent(agent_states[agent], action)
+        npt.assert_array_equal(
+            np.clip(
+                prev_state + ACTION_MAP[action], env.metadata['map_min'], env.metadata['map_max']
+            ),
+            agent_states[agent],
+        )
+        assert env.metadata['map_min'] <= agent_states[agent][0] <= env.metadata['map_max']
+        assert env.metadata['map_min'] <= agent_states[agent][1] <= env.metadata['map_max']
+        assert agent_states[agent].dtype == sut.PositionFloat
+
+
+def test_done_step():
+    env = sut.SavannaZooEnv()
+    assert len(env.possible_agents) == 1
+    env.reset()
+
+    agent = env.possible_agents[0]
+    for _ in range(env.metadata['num_iters']):
+        action = {agent: env.action_space(agent).sample()}
+        _, _, dones, _ = env.step(action)
+
+    assert dones[agent]
+    with pytest.raises(ValueError):
+        action = {agent: env.action_space(agent).sample()}
+        env.step(action)
+
+
+def test_agents():
+    env = sut.SavannaZooEnv()
+
+    assert len(env.possible_agents) == env.metadata['amount_agents']
+    assert isinstance(env.possible_agents, list)
+    assert isinstance(env.unwrapped.agent_name_mapping, dict)
+    assert all(
+        agent_name in env.unwrapped.agent_name_mapping
+        for agent_name in env.possible_agents
+    )
+
+
+def test_action_spaces():
+    env = sut.SavannaZooEnv()
+
+    for agent in env.possible_agents:
+        assert isinstance(env.action_space(agent), Discrete)
+        assert env.action_space(agent).n == 4
 
 
 def test_max_cycles():
     # currently the environment does not accept parameters like max_cycles
-    # max_cycles_test(sut.env)
+    # max_cycles_test(sut.SavannaZooEnv)
     pass
 
 
 def test_render():
     # TODO: close method not implemented
-    # render_test(sut.env)
+    # render_test(sut.SavannaZooEnv)
     pass
 
 
 def test_performance_benchmark():
     # will print only timing to stdout; not shown per default
-    # performance_benchmark(sut.env())
+    # performance_benchmark(sut.SavannaZooEnv())
     pass

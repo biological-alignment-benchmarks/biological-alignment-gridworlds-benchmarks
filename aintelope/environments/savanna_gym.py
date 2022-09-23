@@ -11,11 +11,11 @@ from pettingzoo.utils import agent_selector, wrappers, parallel_to_aec
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
 
-from savanna import (
+from aintelope.environments.savanna import (
     RenderSettings, 
     RenderState,
     move_agent, 
-    calc_grass_reward,
+    reward_agent,
     PositionFloat,
     Action
     )
@@ -37,15 +37,15 @@ class SavannaGymEnv(gym.Env):
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
         print(f'initializing savanna env with params: {self.metadata}')
-        assert self.metadata['AMOUNT_AGENTS'] == 1, print(
+        assert self.metadata['amount_agents'] == 1, print(
             'agents must == 1 for gym env')
         self.action_space = Discrete(4)
         # observation space will be (object_type, pos_x, pos_y)
         self.observation_space = spaces.Box(
-            low=self.metadata['MAP_MIN'],
-            high=self.metadata['MAP_MAX'],
+            low=self.metadata['map_min'],
+            high=self.metadata['map_max'],
             shape=(
-                3 * (self.metadata['AMOUNT_AGENTS'] + self.metadata['AMOUNT_GRASS_PATCHES'] + self.metadata['AMOUNT_WATER_HOLES']),)
+                3 * (self.metadata['amount_agents'] + self.metadata['amount_grass_patches'] + self.metadata['amount_water_holes']),)
         )
         self.agent_state = np.ndarray([])  # just the agents position for now
         self._seed()
@@ -65,28 +65,28 @@ class SavannaGymEnv(gym.Env):
         self.last_action = action
         self.agent_state = move_agent(
             self.agent_state, action,
-            map_min=self.metadata['MAP_MIN'], map_max=self.metadata['MAP_MAX']
+            map_min=self.metadata['map_min'], map_max=self.metadata['map_max']
         )
         min_grass_distance = distance_to_closest_item(self.agent_state, self.grass_patches)
-        reward = calc_grass_reward(min_grass_distance)
+        reward = reward_agent(min_grass_distance)
         if min_grass_distance < 1.0:
             self.grass_patches = self.replace_grass(
                 self.agent_state, self.grass_patches)
         self.num_moves += 1
-        done = self.num_moves >= self.metadata['NUM_ITERS']
+        done = self.num_moves >= self.metadata['num_iters']
 
         observation = self._get_obs()
         return observation, reward, done
 
     def reset(self):
         self.agent_state = self.np_random.integers(
-            self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], 2)
+            self.metadata['map_min'], self.metadata['map_max'], 2)
         self.grass_patches = self.np_random.integers(
-            self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], size=(
-                self.metadata['AMOUNT_GRASS_PATCHES'], 2))
+            self.metadata['map_min'], self.metadata['map_max'], size=(
+                self.metadata['amount_grass_patches'], 2))
         self.water_holes = self.np_random.integers(
-            self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], size=(
-                self.metadata['AMOUNT_WATER_HOLES'], 2))
+            self.metadata['map_min'], self.metadata['map_max'], size=(
+                self.metadata['amount_water_holes'], 2))
         self.last_action = None
         self.num_moves = 0
         return self._get_obs()
@@ -106,7 +106,7 @@ class SavannaGymEnv(gym.Env):
             grass_patches = np.expand_dims(grass_patches, 0)
 
         replacement_grass = self.np_random.integers(
-            self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], size=(2))
+            self.metadata['map_min'], self.metadata['map_max'], size=(2))
         grass_patches[
             np.argmin(
                 np.linalg.norm(np.subtract(grass_patches, agent_pos), axis=1)

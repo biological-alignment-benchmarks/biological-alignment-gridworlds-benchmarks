@@ -90,7 +90,7 @@ class HumanRenderState:
         self.clock.tick(self.fps)
 
 
-def calc_grass_reward(min_grass_distance):
+def reward_agent(min_grass_distance):
     return 1 / (1 + min_grass_distance)
 
 
@@ -112,6 +112,12 @@ class SavannaEnv():
         "render_grass_color": (20, 200, 0),
         "render_modes": ("human", "ascii", "offline"),
         "render_window_size": 512,
+        "amount_agents": 1,
+        "map_min": 0,
+        "map_max": 10,
+        "amount_grass_patches": 2,
+        "amount_water_holes": 0,
+        "num_iters": 1
     }
 
     def __init__(self, env_params={}):
@@ -148,7 +154,7 @@ class SavannaEnv():
             map_min=self.metadata['map_min'], map_max=self.metadata['map_max']
         )
         min_grass_distance = distance_to_closest_item(self.agent_state, self.grass_patches)
-        reward = calc_grass_reward(min_grass_distance)
+        reward = reward_agent(min_grass_distance)
         if min_grass_distance < 1.0:
             self.grass_patches = self.replace_grass(
                 self.agent_state, self.grass_patches)

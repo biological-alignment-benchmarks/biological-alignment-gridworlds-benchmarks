@@ -1,7 +1,7 @@
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-from aintelope.aintelope.training.dqn_lightning_trainer import run_experiment
+from aintelope.training.dqn_lightning_trainer import run_experiment
 
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")

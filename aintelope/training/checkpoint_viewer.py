@@ -260,12 +260,12 @@ if __name__ == "__main__":
         'episode_length': 500,
         'warm_start_steps': 1000,
         'env_params': {
-            'NUM_ITERS': 500,  # duration of the game
-            'MAP_MIN': 0,
-            'MAP_MAX': 100,
+            'num_iters': 500,  # duration of the game
+            'map_min': 0,
+            'map_max': 100,
             'render_map_max': 100,
-            'AMOUNT_AGENTS': 1,  # for now only one agent
-            'AMOUNT_GRASS_PATCHES': 2
+            'amount_agents': 1,  # for now only one agent
+            'amount_grass_patches': 2
         }
 
     }

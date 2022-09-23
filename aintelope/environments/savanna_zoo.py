@@ -9,8 +9,9 @@ from pettingzoo import AECEnv, ParallelEnv
 from pettingzoo.test import api_test
 from pettingzoo.utils import agent_selector, wrappers
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
+from aintelope.environments.env_utils.distance import distance_to_closest_item
 
-from savanna import (
+from aintelope.environments.savanna import (
     RenderSettings, 
     RenderState,
     HumanRenderState, 
@@ -32,14 +33,20 @@ class SavannaZooEnv(ParallelEnv):
         "render_grass_color": (20, 200, 0),
         "render_modes": ("human", "ascii", "offline"),
         "render_window_size": 512,
+        "amount_agents": 1,
+        "map_min": 0,
+        "map_max": 10,
+        "amount_grass_patches": 2,
+        "amount_water_holes": 0,
+        "num_iters": 1
     }
 
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
         print(f'initializing savanna env with params: {self.metadata}')
-        self.possible_agents = [f"agent_{r}" for r in range(self.metadata['AMOUNT_AGENTS'])]
+        self.possible_agents = [f"agent_{r}" for r in range(self.metadata['amount_agents'])]
         self.agent_name_mapping = dict(
-            zip(self.possible_agents, list(range(self.metadata['AMOUNT_AGENTS'])))
+            zip(self.possible_agents, list(range(self.metadata['amount_agents'])))
         )
 
         self._action_spaces = {
@@ -47,9 +54,9 @@ class SavannaZooEnv(ParallelEnv):
         }  # agents can walk in 4 directions
         self._observation_spaces = {
             agent: Box(
-                self.metadata['MAP_MIN'],
-                self.metadata['MAP_MAX'],
-                shape=(2 * (self.metadata['AMOUNT_AGENTS'] + self.metadata['AMOUNT_GRASS_PATCHES']),),
+                self.metadata['map_min'],
+                self.metadata['map_max'],
+                shape=(2 * (self.metadata['amount_agents'] + self.metadata['amount_grass_patches']),),
             )
             for agent in self.possible_agents
         }
@@ -133,10 +140,10 @@ class SavannaZooEnv(ParallelEnv):
         # self.dones = {agent: False for agent in self.agents}
         # self.infos = {agent: {} for agent in self.agents}
         self.grass_patches = self.np_random.integers(
-            self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], size=(self.metadata['AMOUNT_GRASS_PATCHES'], 2)
+            self.metadata['map_min'], self.metadata['map_max'], size=(self.metadata['amount_grass_patches'], 2)
         ).astype(PositionFloat)
         self.agent_states = {
-            agent: self.np_random.integers(self.metadata['MAP_MIN'], self.metadata['MAP_MAX'], 2).astype(
+            agent: self.np_random.integers(self.metadata['map_min'], self.metadata['map_max'], 2).astype(
                 PositionFloat
             )
             for agent in self.agents
@@ -163,20 +170,19 @@ class SavannaZooEnv(ParallelEnv):
             return {}, {}, {}, {}
 
         if self.agents == []:
-            raise ValueError("No agents found; NUM_ITERS reached?")
+            raise ValueError("No agents found; num_iters reached?")
 
+        rewards = {}
         for agent in self.agents:
             self.agent_states[agent] = move_agent(
                 self.agent_states[agent], actions[agent],
-                map_min=self.metadata['MAP_MIN'], map_max=self.metadata['MAP_MAX']
+                map_min=self.metadata['map_min'], map_max=self.metadata['map_max']
             )
-        rewards = {
-            agent: reward_agent(self.agent_states[agent], self.grass_patches)
-            for agent in self.agents
-        }
+            min_grass_distance = distance_to_closest_item(self.agent_states[agent], self.grass_patches)
+            rewards[agent] = reward_agent(min_grass_distance)
 
         self.num_moves += 1
-        env_done = self.num_moves >= self.metadata['NUM_ITERS']
+        env_done = self.num_moves >= self.metadata['num_iters']
         self.dones = {agent: env_done for agent in self.agents}
 
         observations = {agent: self.observe(agent) for agent in self.agents}

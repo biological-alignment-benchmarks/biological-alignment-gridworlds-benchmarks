@@ -294,13 +294,13 @@ if __name__ == "__main__":
         'episode_length': 1010,
         'warm_start_steps': 100,
         'env_params': {
-            'NUM_ITERS': 1000,  # duration of the game
-            'MAP_MIN': 0,
-            'MAP_MAX': 5,
+            'num_iters': 1000,  # duration of the game
+            'map_min': 0,
+            'map_max': 5,
             'render_map_max': 5,
-            'AMOUNT_AGENTS': 1,  # for now only one agent
-            'AMOUNT_GRASS_PATCHES': 2,
-            'AMOUNT_WATER_HOLES': 2
+            'amount_agents': 1,  # for now only one agent
+            'amount_grass_patches': 2,
+            'amount_water_holes': 2
         },
         'agent_params': {
             'target_shards':['hunger', 'thirst', 'curiosity']

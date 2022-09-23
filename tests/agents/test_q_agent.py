@@ -3,7 +3,7 @@ import yaml
 from yaml.loader import SafeLoader
 
 
-from aintelope.aintelope.training.simple_eval import run_episode
+from aintelope.training.simple_eval import run_episode
 
 
 def test_qagent_in_savanna_zoo_sequential():
@@ -11,8 +11,11 @@ def test_qagent_in_savanna_zoo_sequential():
     # then override with these test params
 
     # Open the file and load the file
-    with open('U../../training/lightning.yaml') as f:
-        hparams = yaml.load(f, Loader=SafeLoader)
+    import os
+    print(os.getcwd())
+    with open('aintelope/training/lightning.yaml') as f:
+        full_params = yaml.load(f, Loader=SafeLoader)
+        hparams = full_params['hparams']
         print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
@@ -22,13 +25,14 @@ def test_qagent_in_savanna_zoo_sequential():
         "env_type": "zoo",
         "sequential_env": True,
         "env_params": {
-            "NUM_ITERS": 40,  # duration of the game
-            "MAP_MIN": 0,
-            "MAP_MAX": 20,
+            "num_iters": 40,  # duration of the game
+            "map_min": 0,
+            "map_max": 20,
             "render_map_max": 20,
-            "AMOUNT_AGENTS": 1,  # for now only one agent
-            "AMOUNT_GRASS_PATCHES": 2,
+            "amount_agents": 1,  # for now only one agent
+            "amount_grass_patches": 2,
         },
+        "agent_params": {}
     }
     hparams.update(test_params)
     run_episode(hparams=hparams)
