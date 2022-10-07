@@ -1,0 +1,11 @@
+name: lightning_lunar_qagent
+agent: q_agent
+hparams:
+  env_params:
+    env: "LunarLander-v2"
+    continuous: False
+    gravity: -10.0
+    enable_wind: False
+    wind_power: 15.0
+    turbulence_power: 1.5
+  agent_params:

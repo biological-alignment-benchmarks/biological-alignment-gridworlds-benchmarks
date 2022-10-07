@@ -2,23 +2,12 @@ import pytest
 import numpy as np
 import numpy.testing as npt
 from gym.spaces import Discrete
-from pettingzoo.test import (
-    max_cycles_test,
-    render_test,
-    performance_benchmark,
-)
-from pettingzoo.test.parallel_test import parallel_api_test
-from pettingzoo.test.seed_test import parallel_seed_test
+
 
 from aintelope.environments import savanna as sut
 
-
-def test_pettingzoo_api():
-    parallel_api_test(sut.env(), num_cycles=1000)
-
-
-def test_seed():
-    parallel_seed_test(sut.env, num_cycles=10, test_kept_state=True)
+# Base Savanna is not yet PettingZoo or Gym env
+# just the shared elements those will depend on
 
 
 def test_max_cycles():
@@ -33,71 +22,6 @@ def test_render():
     pass
 
 
-def test_performance_benchmark():
-    # will print only timing to stdout; not shown per default
-    # performance_benchmark(sut.env())
-    pass
-
-
-def test_reward_agent():
-    # single grass patch
-    agent_pos = np.random.randint(sut.MAP_MIN, sut.MAP_MAX, 2)
-    grass_patch = np.random.randint(sut.MAP_MIN, sut.MAP_MAX, 2)
-
-    reward_single = sut.reward_agent(agent_pos, grass_patch)
-    assert reward_single == 1 / (1 + sut.vec_distance(grass_patch, agent_pos))
-
-    # multiple grass patches
-    grass_patches = np.random.randint(sut.MAP_MIN, sut.MAP_MAX, size=(10, 2))
-    reward_many = sut.reward_agent(agent_pos, grass_patches)
-    grass_patch_closest = grass_patches[
-        np.argmin(
-            np.linalg.norm(np.subtract(grass_patches, agent_pos), axis=1)
-        )
-    ]
-    assert reward_many == 1 / (
-        1 + sut.vec_distance(grass_patch_closest, agent_pos)
-    )
-
-
-def test_move_agent():
-    env = sut.env()
-    env.reset()
-
-    agent = env.possible_agents[0]
-    agent_states = env.unwrapped.agent_states
-
-    for _ in range(1000):
-        prev_state = np.copy(agent_states[agent])
-        action = env.action_space(agent).sample()
-        agent_states[agent] = sut.move_agent(agent_states[agent], action)
-        npt.assert_array_equal(
-            np.clip(
-                prev_state + sut.ACTION_MAP[action], sut.MAP_MIN, sut.MAP_MAX
-            ),
-            agent_states[agent],
-        )
-        assert sut.MAP_MIN <= agent_states[agent][0] <= sut.MAP_MAX
-        assert sut.MAP_MIN <= agent_states[agent][1] <= sut.MAP_MAX
-        assert agent_states[agent].dtype == sut.PositionFloat
-
-
-def test_done_step():
-    env = sut.env()
-    assert len(env.possible_agents) == 1
-    env.reset()
-
-    agent = env.possible_agents[0]
-    for _ in range(sut.NUM_ITERS):
-        action = {agent: env.action_space(agent).sample()}
-        _, _, dones, _ = env.step(action)
-
-    assert dones[agent]
-    with pytest.raises(ValueError):
-        action = {agent: env.action_space(agent).sample()}
-        env.step(action)
-
-
 def test_step_result():
     env = sut.env()
     num_agents = len(env.possible_agents)
@@ -110,62 +34,27 @@ def test_step_result():
 
     assert not dones[agent]
     assert isinstance(observations, dict), "observations is not a dict"
-    assert isinstance(observations[agent], np.ndarray), "observations of agent is not an array"
+    assert isinstance(
+        observations[agent], np.ndarray
+    ), "observations of agent is not an array"
     assert isinstance(rewards, dict), "rewards is not a dict"
-    assert isinstance(rewards[agent], np.float64), "reward of agent is not a float64"
-
-def test_agents():
-    env = sut.env()
-
-    assert len(env.possible_agents) == sut.AMOUNT_AGENTS
-    assert isinstance(env.possible_agents, list)
-    assert isinstance(env.unwrapped.agent_name_mapping, dict)
-    assert all(
-        agent_name in env.unwrapped.agent_name_mapping
-        for agent_name in env.possible_agents
-    )
-
-
-def test_agent_states():
-    env = sut.env()
-
-    with pytest.raises(AttributeError):
-        env.agent_states
-    with pytest.raises(AttributeError):
-        env.unwrapped.agent_states
-
-    env.reset()
-    assert isinstance(env.unwrapped.agent_states, dict)
-    assert all(
-        isinstance(agent_state, np.ndarray)
-        for agent_state in env.unwrapped.agent_states.values()
-    )
-    assert all(
-        agent_state.shape == (2,)
-        for agent_state in env.unwrapped.agent_states.values()
-    )
-
-
-def test_action_spaces():
-    env = sut.env()
-
-    for agent in env.possible_agents:
-        assert isinstance(env.action_space(agent), Discrete)
-        assert env.action_space(agent).n == 4
+    assert isinstance(
+        rewards[agent], np.float64
+    ), "reward of agent is not a float64"
 
 
 def test_grass_patches():
-    env = sut.env()
+    env = sut.SavannaEnv()
 
     with pytest.raises(AttributeError):
         env.grass_patches
     with pytest.raises(AttributeError):
-        env.unwrapped.grass_patches
+        env.grass_patches
 
     env.reset()
-    assert len(env.unwrapped.grass_patches) == sut.AMOUNT_GRASS_PATCHES
-    assert isinstance(env.unwrapped.grass_patches, np.ndarray)
-    assert env.unwrapped.grass_patches.shape[1] == 2
+    assert len(env.grass_patches) == env.metadata['amount_grass_patches']
+    assert isinstance(env.grass_patches, np.ndarray)
+    assert env.grass_patches.shape[1] == 2
 
 
 def test_observation_spaces():
