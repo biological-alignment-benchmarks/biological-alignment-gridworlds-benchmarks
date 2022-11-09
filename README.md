@@ -48,28 +48,37 @@ See the `Makefile` for further instructions.
 
 ## Running
 
-Try `make run-training-short`.
-Then look in `aintelope/checkpoints/memory_records`. There should be two new files
-named `Record_{current timestamp}.csv` and `Record_{current timestamp}_plot..png`.
-The plot will be an image of the path the agent took during the test episode, using
-the best agent that the training produced. Green dots are food in the environment,
-blue dots are water.
+Try `make run-training-short`. Then look in
+`aintelope/checkpoints/memory_records`. There should be two new files named
+`Record_{current timestamp}.csv` and `Record_{current timestamp}_plot..png`. The
+plot will be an image of the path the agent took during the test episode, using
+the best agent that the training produced. Green dots are food in the
+environment, blue dots are water.
 
+## Logging
+
+The logging level can be controlled via hydra. By adding `hydra.verbose=True`
+all loggers will be executed with level `DEBUG`. Alternatively a string or list
+of loggers can be provided. See the
+[documentation](https://hydra.cc/docs/tutorials/basic/running_your_app/logging/)
+for more details.
 
 # Cygwin
-If you are a Windows user, note that this project does work fine 
-on linux ubuntu using Windows wsl2.
-If you would prefer not to use wsl2, and instead run this directly on Windows,
-you will need to figure out how to do that. We have not managed to get 
-aintelope to build under Windows/Cygwin!
+
+If you are a Windows user, note that this project does work fine on linux ubuntu
+using Windows wsl2. If you would prefer not to use wsl2, and instead run this
+directly on Windows, you will need to figure out how to do that. We have not
+managed to get aintelope to build under Windows/Cygwin!
 
 You need at least the following prerequisites:
 
-* Python: Cygwin modules Python 3.7 including python3-devel (but no 3.9+ available)
-* Pytorch: https://github.com/KoichiYasuoka/CygTorch
+- Python: Cygwin modules Python 3.7 including python3-devel (but no 3.9+
+  available)
+- Pytorch: https://github.com/KoichiYasuoka/CygTorch
 
 Problems:
-* Windows Python versions don't work with the poetry commands.
-* poetry shell doesn't work with paths with spaces.
-* Even with CygTorch pytorch-lightning can't find a Torch version.
-* other
+
+- Windows Python versions don't work with the poetry commands.
+- poetry shell doesn't work with paths with spaces.
+- Even with CygTorch pytorch-lightning can't find a Torch version.
+- other
