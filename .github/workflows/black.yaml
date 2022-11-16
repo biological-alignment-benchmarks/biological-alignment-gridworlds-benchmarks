@@ -1,6 +1,13 @@
-uses: RojerGS/python-black-check@master
-with:
-  line-length: '79'
-  path: '.'
-  include: ['aintelope', 'tests']
-  exclude: '(/*.html|/*.mo|/*.po|/*.png|/*.rst)'
+name: BlackLinter
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check --diff --verbose --line-length=79"
+          src: "./aintelope ./tests"
