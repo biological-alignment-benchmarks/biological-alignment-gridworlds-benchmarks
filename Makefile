@@ -44,6 +44,12 @@ typecheck-local: ## Local typechecking
 isort: ## Sort python imports
 	isort .
 
+.PHONY: clean
+clean:
+	rm -rf *.egg-info
+	rm -rf .mypy_cache
+	rm -rf .pytest_cache
+
 .PHONY: help
 help: ## Show this help
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
