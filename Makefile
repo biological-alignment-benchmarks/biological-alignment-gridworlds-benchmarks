@@ -34,7 +34,7 @@ build-local: ## install the project locally
 
 .PHONY: tests-local
 tests-local: ## Run tests locally
-	pytest --cov=$(PROJECT) $(TESTS)
+	python -m pytest --cov=$(PROJECT) $(TESTS)
 
 .PHONY: typecheck-local
 typecheck-local: ## Local typechecking

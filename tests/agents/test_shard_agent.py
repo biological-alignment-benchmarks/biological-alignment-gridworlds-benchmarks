@@ -4,18 +4,15 @@ from yaml.loader import SafeLoader
 
 from aintelope.environments.env_utils.cleanup import cleanup_gym_envs
 from aintelope.training.simple_eval import run_episode
+from tests.test_config import root_dir
 
 
-def test_shardagent_in_savanna_gym():
+def test_shardagent_in_savanna_gym(root_dir):
     # get the default params from training.lightning.yaml
     # then override with these test params
-
-    # Open the file and load the file
-    import os
-    print(os.getcwd())
-    with open('aintelope/training/lightning.yaml') as f:
+    with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
         full_params = yaml.load(f, Loader=SafeLoader)
-        hparams = full_params['hparams']
+        hparams = full_params["hparams"]
         print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
@@ -29,9 +26,9 @@ def test_shardagent_in_savanna_gym():
             "render_map_max": 20,
             "amount_agents": 1,  # for now only one agent
             "amount_grass_patches": 2,
-            "amount_water_holes": 1
+            "amount_water_holes": 1,
         },
     }
     hparams.update(test_params)
-    run_episode(hparams=hparams, device='cpu')
+    run_episode(hparams=hparams, device="cpu")
     cleanup_gym_envs()
