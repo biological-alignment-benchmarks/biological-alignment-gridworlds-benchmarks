@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Simulate agents with reinforcement learning over selected cue-response patterns"
 readme = "README.md"
 authors = [
+  {name = "Orpheus Lummis", email = "o@orpheuslummis.info"},
+  {name = "Nathan Helm-Burger", email = "nathan.helm.burger@gmail.com"},
   {name = "Hauke Rehfeld", email = "git@haukerehfeld.de"},
   {name = "Gunnar Zarncke", email = "gunnar@zarncke.de"},
   {name = "Andre Kochanke", email = "a.kochanke@posteo.net"}]
