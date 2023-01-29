@@ -2,18 +2,19 @@ name: lightning_savanna_shardagent
 
 trainer_params:
   resume_from_checkpoint: False
-  num_workers: 14
-  max_epochs: 200
-  record_path: "../checkpoints/memory_records/test2.csv"
-  device: "cuda"
+  num_workers: 4
+  max_epochs: 5
+  checkpoint: ${abs_path:outputs/checkpoints}
+  record_path: ${abs_path:outputs/memory_records}
+  device: cuda
 
 hparams:
   batch_size: 16
   lr: 0.001
-  env: "savanna-gym-v2"
+  env: savanna-gym-v2
   env_entry_point: "aintelope.environments.savanna_gym:SavannaGymEnv"
-  env_type: "gym"
-  model: "dqn"
+  env_type: gym
+  model: dqn
   agent: shard_agent
   gamma: 0.99
   sync_rate: 10
@@ -33,4 +34,4 @@ hparams:
     amount_grass_patches: 2
     amount_water_holes: 2
   agent_params:
-    target_shards: ["hunger", "thirst", "curiosity"]
+    target_shards: [hunger, thirst, curiosity]

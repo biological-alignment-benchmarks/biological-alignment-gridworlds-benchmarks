@@ -3,6 +3,7 @@ import logging
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
+from aintelope.config.config_utils import register_resolvers
 from aintelope.training.lightning_trainer import run_experiment
 
 logger = logging.getLogger("aintelope.__main__")
@@ -16,4 +17,5 @@ def aintelope_main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
+    register_resolvers()
     aintelope_main()

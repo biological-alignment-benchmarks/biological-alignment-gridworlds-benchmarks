@@ -1,5 +1,6 @@
 import typing as typ
 import logging
+from pathlib import Path
 from collections import OrderedDict
 from datetime import timedelta
 
@@ -171,10 +172,11 @@ class DQNLightning(LightningModule):
 
         return OrderedDict({"loss": loss, "log": log, "progress_bar": status})
 
-    def record_step(self, nb_batch, record_path) -> bool:
+    def record_step(self, nb_batch: int, record_file: Path) -> bool:
+        record_file.parent.mkdir(parents=True, exist_ok=True)
         if nb_batch == 0:
             init_string = "state,action,reward,done,shard_events,new_state\n"
-            with open(record_path, "w") as f:
+            with record_file.open("w", encoding="utf-8") as f:
                 f.write(init_string)
         device = "cpu"
         epsilon = max(
@@ -184,7 +186,7 @@ class DQNLightning(LightningModule):
 
         # step through environment with agent
         reward, done = self.agent.play_step(
-            self.net, epsilon, device, save_path=record_path
+            self.net, epsilon, device, save_path=record_file
         )
         self.episode_reward += reward
 
@@ -234,7 +236,7 @@ def run_experiment(cfg: DictConfig) -> None:
     )
 
     if cfg.trainer_params.resume_from_checkpoint:
-        checkpoint = "../checkpoints/last.ckpt"
+        checkpoint = cfg.trainer_params.checkpoint / "model.ckpt"
     else:
         checkpoint = None
     logger.info(f"checkpoint: {checkpoint}")
@@ -249,15 +251,12 @@ def run_experiment(cfg: DictConfig) -> None:
 
     trainer.fit(model, ckpt_path=checkpoint)
 
+    record_file = cfg.trainer_params.record_path / "records.csv"
     count = 0
-    record_done = model.record_step(
-        nb_batch=count, record_path=cfg.trainer_params.record_path
-    )
+    record_done = model.record_step(nb_batch=count, record_file=record_file)
     while not record_done:
         count += 1
-        record_done = model.record_step(
-            nb_batch=count, record_path=cfg.trainer_params.record_path
-        )
+        record_done = model.record_step(nb_batch=count, record_file=record_file)
 
     # Notes
     # resume from a specific checkpoint
