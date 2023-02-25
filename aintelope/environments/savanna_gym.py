@@ -20,7 +20,6 @@ from aintelope.environments.savanna import (
 
 
 class SavannaGymEnv(gym.Env):
-
     metadata = {
         "name": "savanna-v2",
         "render_fps": 3,

@@ -67,7 +67,6 @@ class RenderState:
 
 class HumanRenderState:
     def __init__(self, settings):
-
         self.fps = settings.fps
 
         window_size = settings.window_size
@@ -106,7 +105,6 @@ def get_agent_pos_from_state(agent_state):
 
 
 class SavannaEnv:
-
     metadata = {
         "name": "savanna-v2",
         "render_fps": 3,

@@ -9,7 +9,6 @@ Action = int
 
 class AsciiRenderState:
     def __init__(self, agent_states, grass_patches, settings):
-
         self.window_size = settings.map_max
         self.fps = settings.fps
         self.scene = Scene(

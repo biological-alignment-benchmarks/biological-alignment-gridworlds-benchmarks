@@ -244,7 +244,6 @@ def run_experiment(hparams={}, trainer_params={}):
 
 
 if __name__ == "__main__":
-
     hparams = {
         "batch_size": 16,
         "lr": 1e-3,

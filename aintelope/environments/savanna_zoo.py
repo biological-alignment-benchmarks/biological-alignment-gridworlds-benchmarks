@@ -23,7 +23,6 @@ from aintelope.environments.savanna import (
 
 
 class SavannaZooParallelEnv(ParallelEnv):
-
     metadata = {
         "name": "savanna_v1",
         "render_fps": 3,
