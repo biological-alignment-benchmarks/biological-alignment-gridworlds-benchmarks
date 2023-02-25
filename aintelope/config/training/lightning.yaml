@@ -1,4 +1,5 @@
 name: lightning_savanna_shardagent
+timestamp: ${now:%Y%m%d%H%M}
 
 trainer_params:
   resume_from_checkpoint: False
