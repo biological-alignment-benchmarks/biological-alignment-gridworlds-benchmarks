@@ -33,7 +33,6 @@ def test_qagent_in_savanna_zoo_sequential(root_dir):
         "agent_params": {},
     }
     hparams.update(test_params)
-    print(hparams)
     run_episode(hparams=hparams, device="cpu")
 
 
@@ -62,7 +61,6 @@ def test_qagent_in_savanna_zoo_parallel(root_dir):
         "agent_params": {},
     }
     hparams.update(test_params)
-    print(hparams)
     run_episode(hparams=hparams, device="cpu")
 
 
@@ -90,6 +88,5 @@ def test_qagent_in_savanna_gym(root_dir):
         "agent_params": {},
     }
     hparams.update(test_params)
-    print(hparams)
     run_episode(hparams=hparams, device="cpu")
     cleanup_gym_envs()

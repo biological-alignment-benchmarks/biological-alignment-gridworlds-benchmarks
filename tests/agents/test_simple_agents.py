@@ -13,7 +13,6 @@ def test_randomwalkagent_in_savanna_gym(root_dir):
     with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
         full_params = yaml.load(f, Loader=SafeLoader)
         hparams = full_params["hparams"]
-        print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
         "agent": "random_walk_agent",
@@ -41,7 +40,6 @@ def test_onestepperfectpredictionagent_in_savanna_gym(root_dir):
     with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
         full_params = yaml.load(f, Loader=SafeLoader)
         hparams = full_params["hparams"]
-        print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
         "agent": "one_step_perfect_prediction_agent",
@@ -69,7 +67,6 @@ def test_iterativeweightoptimizationagent_in_savanna_gym(root_dir):
     with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
         full_params = yaml.load(f, Loader=SafeLoader)
         hparams = full_params["hparams"]
-        print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
         "agent": "iterative_weight_optimization_agent",
