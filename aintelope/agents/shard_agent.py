@@ -71,7 +71,7 @@ class ShardAgent:
         else:
             # TODO: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at  ../torch/csrc/utils/tensor_new.cpp:201.)
 
-            state = torch.tensor([self.state])
+            state = torch.tensor(np.expand_dims(self.state, 0))
 
             if device not in ["cpu"]:
                 state = state.cuda(device)
