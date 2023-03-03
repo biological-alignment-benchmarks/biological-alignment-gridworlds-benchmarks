@@ -5,16 +5,16 @@ from aintelope.environments.savanna import get_agent_pos_from_state
 
 
 class Hunger:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.hunger_rate = None
         self.max_hunger_reward = None
         self.last_ate = None
 
     def reset(self):
-        self.hunger_rate = self.shard_params.get("hunger_rate", 10)
-        self.max_hunger_reward = self.shard_params.get("max_hunger_reward", 3.0)
-        self.last_ate = self.shard_params.get("last_ate", -10)
+        self.hunger_rate = self.instinct_params.get("hunger_rate", 10)
+        self.max_hunger_reward = self.instinct_params.get("max_hunger_reward", 3.0)
+        self.last_ate = self.instinct_params.get("last_ate", -10)
 
     def calc_reward(self, agent, state):
         """function of time since last ate and hunger rate and opportunity to eat"""
@@ -38,16 +38,16 @@ class Hunger:
 
 
 class Thirst:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.thirst_rate = None
         self.max_thirst_reward = None
         self.last_drank = None
 
     def reset(self):
-        self.thirst_rate = self.shard_params.get("thirst_rate", 10)
-        self.max_thirst_reward = self.shard_params.get("max_thirst_reward", 4.0)
-        self.last_drank = self.shard_params.get("last_drank", 0)
+        self.thirst_rate = self.instinct_params.get("thirst_rate", 10)
+        self.max_thirst_reward = self.instinct_params.get("max_thirst_reward", 4.0)
+        self.last_drank = self.instinct_params.get("last_drank", 0)
 
     def calc_reward(self, agent, state):
         """function of time since last ate and thirst rate and opportunity to eat"""
@@ -69,17 +69,17 @@ class Thirst:
 
 
 class Curiosity:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.curiosity_rate = None
         self.max_curiosity_reward = None
         self.last_discovery = None
 
     def reset(self):
-        self.curiosity_rate = self.shard_params.get("curiosity_rate", 2)
-        self.max_curiosity_reward = self.shard_params.get("max_curiosity_reward", 0.1)
-        self.curiosity_window = self.shard_params.get("curiosity_window", 20)
-        self.last_discovery = self.shard_params.get("last_discovery", 0)
+        self.curiosity_rate = self.instinct_params.get("curiosity_rate", 2)
+        self.max_curiosity_reward = self.instinct_params.get("max_curiosity_reward", 0.1)
+        self.curiosity_window = self.instinct_params.get("curiosity_window", 20)
+        self.last_discovery = self.instinct_params.get("last_discovery", 0)
 
     def calc_reward(self, agent, state):
         """prefer not to revist tiles within curiosity window
@@ -104,4 +104,4 @@ class Curiosity:
         return curiosity_reward, event_signal
 
 
-available_shards_dict = {"hunger": Hunger, "thirst": Thirst, "curiosity": Curiosity}
+available_instincts_dict = {"hunger": Hunger, "thirst": Thirst, "curiosity": Curiosity}

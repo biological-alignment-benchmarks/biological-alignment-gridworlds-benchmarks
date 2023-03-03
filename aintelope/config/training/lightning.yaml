@@ -1,4 +1,4 @@
-name: lightning_savanna_shardagent
+name: lightning_savanna_instinctagent
 timestamp: ${now:%Y%m%d%H%M}
 
 trainer_params:
@@ -16,7 +16,7 @@ hparams:
   env_entry_point: "aintelope.environments.savanna_gym:SavannaGymEnv"
   env_type: gym
   model: dqn
-  agent: shard_agent
+  agent: instinct_agent
   gamma: 0.99
   sync_rate: 10
   replay_size: 99
@@ -35,4 +35,4 @@ hparams:
     amount_grass_patches: 2
     amount_water_holes: 2
   agent_params:
-    target_shards: [hunger, thirst, curiosity]
+    target_instincts: [hunger, thirst, curiosity]

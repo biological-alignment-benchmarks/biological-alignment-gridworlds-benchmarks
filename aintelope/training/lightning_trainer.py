@@ -15,7 +15,7 @@ from pytorch_lightning.utilities.enums import DistributedType
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 from aintelope.agents.memory import ReplayBuffer, RLDataset
-from aintelope.agents.shard_agent import ShardAgent
+from aintelope.agents.instinct_agent import InstinctAgent
 from aintelope.models.dqn import DQN
 from aintelope.environments.savanna_gym import SavannaGymEnv
 
@@ -56,7 +56,7 @@ class DQNLightning(LightningModule):
         self.target_net = DQN(obs_size, n_actions)
 
         self.buffer = ReplayBuffer(self.hparams.replay_size)
-        self.agent = ShardAgent(
+        self.agent = InstinctAgent(
             self.env, self, self.buffer, **self.hparams.agent_params
         )
         self.total_reward = 0
@@ -175,7 +175,7 @@ class DQNLightning(LightningModule):
     def record_step(self, nb_batch: int, record_path: Path) -> bool:
         record_path.parent.mkdir(parents=True, exist_ok=True)
         if nb_batch == 0:
-            init_string = "state,action,reward,done,shard_events,new_state\n"
+            init_string = "state,action,reward,done,instinct_events,new_state\n"
             with record_path.open("w", encoding="utf-8") as f:
                 f.write(init_string)
         device = "cpu"

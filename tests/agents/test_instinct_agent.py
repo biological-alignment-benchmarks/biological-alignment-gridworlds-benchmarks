@@ -7,7 +7,7 @@ from aintelope.training.simple_eval import run_episode
 from tests.test_config import root_dir
 
 
-def test_shardagent_in_savanna_gym(root_dir):
+def test_instinctagent_in_savanna_gym(root_dir):
     # get the default params from training.lightning.yaml
     # then override with these test params
     with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
@@ -16,7 +16,7 @@ def test_shardagent_in_savanna_gym(root_dir):
         print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
-        "agent": "shard_agent",
+        "agent": "instinct_agent",
         "env": "savanna-gym-v2",
         "env_type": "gym",
         "env_params": {

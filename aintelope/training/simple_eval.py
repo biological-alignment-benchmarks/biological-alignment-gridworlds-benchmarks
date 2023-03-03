@@ -6,7 +6,7 @@ from gym.spaces import Discrete
 import gym
 from pettingzoo.utils import parallel_to_aec
 from aintelope.agents.q_agent import Agent as Qagent
-from aintelope.agents.shard_agent import ShardAgent
+from aintelope.agents.instinct_agent import InstinctAgent
 from aintelope.agents.simple_agents import (
     RandomWalkAgent,
     OneStepPerfectPredictionAgent,
@@ -24,7 +24,7 @@ from aintelope.environments.savanna_zoo import (
 # to register a lookup table from hparam name to function?
 AGENT_LOOKUP = {
     "q_agent": Qagent,
-    "shard_agent": ShardAgent,
+    "instinct_agent": InstinctAgent,
     "random_walk_agent": RandomWalkAgent,
     "one_step_perfect_prediction_agent": OneStepPerfectPredictionAgent,
     "iterative_weight_optimization_agent": IterativeWeightOptimizationAgent,

@@ -6,16 +6,16 @@ from aintelope.environments.env_utils.distance import distance_to_closest_item
 Nathan: I'm not too sure about this. If we create instincts for a 'lander' as if it were
 a creature in and of itself, rather than a vehicle being piloted by a creature,
 that limits our interchanagability. I think in the future we'd want a more general interpretation
-where these 'shards' are explicitly learned rather than hardcoded, and the underlying shards 
+where these 'instincts' are explicitly learned rather than hardcoded, and the underlying instincts 
 that we hardcode would be sufficiently generic that they'd work for the savanna roles (lion, antelope) as well as this.
-But if we want the learned-shards to be explicit (which would be nice) we'd need some different
+But if we want the learned-instincts to be explicit (which would be nice) we'd need some different
 learning system for that. Not sure how to accomplish this, more thought and discussion needed.
 """
 
 
 class Safety:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.previous_speed = None
         self.last_vertical_orientation = None
         self.reluctance_for_speed_at_obstacles = None
@@ -24,18 +24,18 @@ class Safety:
         self.max_safety_reward = None
 
     def reset(self):
-        self.speed = self.shard_params.get("speed", 10)
+        self.speed = self.instinct_params.get("speed", 10)
         self.last_vertical_orientation = 0
-        self.desired_obstacle_clearance = self.shard_params.get(
+        self.desired_obstacle_clearance = self.instinct_params.get(
             "desired_obstacle_clearance", 10
         )
-        self.reluctance_for_speed_at_obstacles = self.shard_params.get(
+        self.reluctance_for_speed_at_obstacles = self.instinct_params.get(
             "reluctance_for_speed_at_obstacles", 10
         )
-        self.reluctance_for_acceleration_at_obstacles = self.shard_params.get(
+        self.reluctance_for_acceleration_at_obstacles = self.instinct_params.get(
             "reluctance_for_acceleration_at_obstacles", 10
         )
-        self.max_safety_reward = self.shard_params.get("max_safety_reward", 10)
+        self.max_safety_reward = self.instinct_params.get("max_safety_reward", 10)
 
     def calc_reward(self, agent, state):
         """function of:
@@ -57,8 +57,8 @@ class Safety:
 
 
 class Fuel:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.starting_fuel = None
         self.current_fuel = None
         self.initial_goal_distance = None
@@ -66,11 +66,11 @@ class Fuel:
         self.fuel_location_in_state = None
 
     def reset(self):
-        self.starting_fuel = self.shard_params.get("starting_fuel", 10)
+        self.starting_fuel = self.instinct_params.get("starting_fuel", 10)
         self.current_fuel = self.starting_fuel
-        self.initial_goal_distance = self.shard_params.get("initial_goal_distance", 100)
-        self.max_fuel_reward = self.shard_params.get("max_fuel_reward", 4.0)
-        self.fuel_location_in_state = self.shard_params.get("fuel_location_in_state", 0)
+        self.initial_goal_distance = self.instinct_params.get("initial_goal_distance", 100)
+        self.max_fuel_reward = self.instinct_params.get("max_fuel_reward", 4.0)
+        self.fuel_location_in_state = self.instinct_params.get("fuel_location_in_state", 0)
 
     def calc_reward(self, agent, state):
         """function of starting fuel, current_fuel, goal_distance"""
@@ -89,12 +89,12 @@ class Fuel:
 
 
 class Mission:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.initial_goal_distance = None
 
     def reset(self):
-        self.initial_goal_distance = self.shard_params.get("initial_goal_distance", 100)
+        self.initial_goal_distance = self.instinct_params.get("initial_goal_distance", 100)
 
     def calc_reward(self, agent, state):
         """function of remaining distance to goal as percent of initial distance, plus big bonus for actually safely at goal"""
@@ -109,17 +109,17 @@ class Mission:
 
 
 class Curiosity:
-    def __init__(self, shard_params={}) -> None:
-        self.shard_params = shard_params
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
         self.curiosity_rate
         self.max_curiosity_reward
         self.last_discovery
 
     def reset(self):
-        self.curiosity_rate = self.shard_params.get("curiosity_rate", 2)
-        self.max_curiosity_reward = self.shard_params.get("max_curiosity_reward", 0.1)
-        self.curiosity_window = self.shard_params.get("curiosity_window", 20)
-        self.last_discovery = self.shard_params.get("last_discovery", 0)
+        self.curiosity_rate = self.instinct_params.get("curiosity_rate", 2)
+        self.max_curiosity_reward = self.instinct_params.get("max_curiosity_reward", 0.1)
+        self.curiosity_window = self.instinct_params.get("curiosity_window", 20)
+        self.last_discovery = self.instinct_params.get("last_discovery", 0)
 
     def calc_reward(self, agent, state):
         """a mild desire to experience new states not recently entered into.
@@ -141,7 +141,7 @@ class Curiosity:
         return curiosity_reward
 
 
-available_shards_dict = {
+available_instincts_dict = {
     "safety": Safety,
     "fuel": Fuel,
     "mission": Mission,

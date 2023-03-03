@@ -7,14 +7,14 @@ from torch import nn
 import csv
 
 from aintelope.agents.memory import Experience, ReplayBuffer
-from aintelope.agents.shards.savanna_shards import available_shards_dict
+from aintelope.agents.instincts.savanna_instincts import available_instincts_dict
 
 
-class ShardAgent:
+class InstinctAgent:
     """Base Agent class handeling the interaction with the environment."""
 
     def __init__(
-        self, env: gym.Env, model, replay_buffer: ReplayBuffer, target_shards: list = []
+        self, env: gym.Env, model, replay_buffer: ReplayBuffer, target_instincts: list = []
     ) -> None:
         """
         Args:
@@ -24,25 +24,25 @@ class ShardAgent:
         self.env = env
         self.model = model
         self.replay_buffer = replay_buffer
-        self.target_shards = target_shards
-        self.shards = {}
+        self.target_instincts = target_instincts
+        self.instincts = {}
         self.done = False
         self.reset()
 
-    def init_shards(self):
-        print("debug target_shards", self.target_shards)
-        for shard_name in self.target_shards:
-            if shard_name not in available_shards_dict:
-                print(f"Warning: could not find {shard_name} in available_shards_dict")
+    def init_instincts(self):
+        print("debug target_instincts", self.target_instincts)
+        for instinct_name in self.target_instincts:
+            if instinct_name not in available_instincts_dict:
+                print(f"Warning: could not find {instinct_name} in available_instincts_dict")
                 continue
 
-        self.shards = {
-            shard: available_shards_dict.get(shard)()
-            for shard in self.target_shards
-            if shard in available_shards_dict
+        self.instincts = {
+            instinct: available_instincts_dict.get(instinct)()
+            for instinct in self.target_instincts
+            if instinct in available_instincts_dict
         }
-        for shard in self.shards.values():
-            shard.reset()
+        for instinct in self.instincts.values():
+            instinct.reset()
 
     def reset(self) -> None:
         """Resents the environment and updates the state."""
@@ -51,7 +51,7 @@ class ShardAgent:
         self.state = self.env.reset()
         if isinstance(self.state, tuple):
             self.state = self.state[0]
-        self.init_shards()
+        self.init_instincts()
 
     def get_action(self, net: nn.Module, epsilon: float, device: str) -> int:
         """Using the given network, decide what action to carry out using an
@@ -124,21 +124,21 @@ class ShardAgent:
         # the 'body'/'instincts'/'hindbrain' of the agent decides what reward the 'mind' should receive
         # based on the current and historical state reported by the environment
         # and also the 'state' that the agent receives, based on sense thresholds.
-        if len(self.shards) == 0:
+        if len(self.instincts) == 0:
             # use env reward as default
-            shard_events = []
+            instinct_events = []
             reward = env_reward
         else:
             # interpret new_state and env_reward to compute actual reward
 
             # state = [0] + [agent_x, agent_y] + [[1, x[0], x[1]] for x in self.grass_patches] + [[2, x[0], x[1]] for x in self.water_holes]
             reward = 0
-            shard_events = []
-            for shard_name, shard_object in self.shards.items():
-                shard_reward, shard_event = shard_object.calc_reward(self, new_state)
-                reward += shard_reward
-                if shard_event != 0:
-                    shard_events.append((shard_name, shard_event))
+            instinct_events = []
+            for instinct_name, instinct_object in self.instincts.items():
+                instinct_reward, instinct_event = instinct_object.calc_reward(self, new_state)
+                reward += instinct_reward
+                if instinct_event != 0:
+                    instinct_events.append((instinct_name, instinct_event))
 
         # the action taken, the environment's response, and the body's reward are all recorded together in memory
         exp = Experience(self.state, action, reward, done, new_state)
@@ -146,7 +146,7 @@ class ShardAgent:
             with open(save_path, "a+") as f:
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(
-                    [self.state.tolist(), action, reward, done, shard_events, new_state]
+                    [self.state.tolist(), action, reward, done, instinct_events, new_state]
                 )
 
         self.replay_buffer.append(exp)
