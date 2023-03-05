@@ -183,7 +183,14 @@ class InstinctAgent:
 
     def get_history(self) -> pd.DataFrame:
         return pd.DataFrame(
-            columns=["state", "action", "reward", "done", "instinct_events", "new_state"],
+            columns=[
+                "state",
+                "action",
+                "reward",
+                "done",
+                "instinct_events",
+                "new_state",
+            ],
             data=self.history,
         )
 
