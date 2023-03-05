@@ -1,4 +1,5 @@
 import typing as typ
+import logging
 
 import gym
 import numpy as np
@@ -6,6 +7,8 @@ import torch
 from torch import nn
 
 from aintelope.agents.memory import Experience, ReplayBuffer
+
+logger = logging.getLogger("aintelope.agents.q_agent")
 
 
 class Agent:
@@ -54,12 +57,9 @@ class Agent:
             # GYM_INTERACTION
             action = self.action_space.sample()
         else:
-            # TODO: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at  ../torch/csrc/utils/tensor_new.cpp:201.)
-            # is state already a tensor here?
-            # is it already a numpy array?
-            print("debug state", type(self.state))
-            state = torch.tensor([self.state])
-            print("debug state tensor", type(self.state), state.shape)
+            logger.debug("debug state", type(self.state))
+            state = torch.tensor(np.expand_dims(self.state, 0))
+            logger.debug("debug state tensor", type(self.state), state.shape)
             if device not in ["cpu"]:
                 state = state.cuda(device)
 

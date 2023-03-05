@@ -13,7 +13,6 @@ def test_shardagent_in_savanna_gym(root_dir):
     with open(root_dir / "aintelope/config/training/lightning.yaml") as f:
         full_params = yaml.load(f, Loader=SafeLoader)
         hparams = full_params["hparams"]
-        print(hparams)
     # TODO: refactor out into test constants? Or leave here? /shrug
     test_params = {
         "agent": "shard_agent",

@@ -1,3 +1,5 @@
+# Not actively in use; for illustrative purposes
+
 import functools
 
 import numpy as np

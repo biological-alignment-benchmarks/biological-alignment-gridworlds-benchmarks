@@ -1,13 +1,16 @@
+import logging
 import functools
-import typing as typ
 
 import numpy as np
 import pygame
 from gym import spaces
-from gym.spaces import Box, Discrete
+from gym.spaces import Discrete
 from gym.utils import seeding
+
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
+
+logger = logging.getLogger("aintelope.environments.savanna")
 
 # typing aliases
 PositionFloat = np.float32
@@ -124,10 +127,8 @@ class SavannaEnv:
 
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
-        print(f"initializing savanna env with params: {self.metadata}")
-        assert self.metadata["amount_agents"] == 1, print(
-            "agents must == 1 for gym env"
-        )
+        logger.info(f"initializing savanna env with params: {self.metadata}")
+        assert self.metadata["amount_agents"] == 1, "agents must == 1 for gym env"
         self.action_space = Discrete(4)
         # observation space will be (object_type, pos_x, pos_y)
         self.observation_space = spaces.Box(

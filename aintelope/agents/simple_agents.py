@@ -1,19 +1,17 @@
-import typing as typ
+import logging
 import random
-import gym
+
 import numpy as np
-import torch
-from torch import nn
-from pprint import pprint
 
 from aintelope.agents.q_agent import Agent
-
 from aintelope.environments.savanna import (
     move_agent,
     reward_agent,
     get_agent_pos_from_state,
 )
 from aintelope.environments.env_utils.distance import distance_to_closest_item
+
+logger = logging.getLogger("aintelope.agents.simple_agents")
 
 # numerical constants
 EPS = 0.0001
@@ -57,8 +55,6 @@ class OneStepPerfectPredictionAgent(Agent):
                 if reward > bestreward:
                     bestreward = reward
                     ibestaction = iaction
-            # print(observation)
-            # print(reward, iaction)
             action = ibestaction
         return action
 
@@ -89,7 +85,7 @@ class IterativeWeightOptimizationAgent(Agent):
 
         recent_memories = self.replay_buffer.fetch_recent_memories(2)
 
-        print("info", recent_memories)
+        logger.info("info", recent_memories)
 
         # last_action = info.get(LAST_ACTION_KEY)
         # last_reward = info.get(LAST_REWARD_KEY, 0)
@@ -103,7 +99,7 @@ class IterativeWeightOptimizationAgent(Agent):
         if last_action is not None and previous_reward > EPS:
             last_action_reward_delta = reward - previous_reward
             last_action_weight = self.action_weights[last_action]
-            print(
+            logger.info(
                 "dreward",
                 last_action_reward_delta,
                 last_action,
@@ -111,7 +107,7 @@ class IterativeWeightOptimizationAgent(Agent):
             last_action_weight += last_action_reward_delta * learning_rate
             last_action_weight = max(MIN_WEIGHT, last_action_weight)
             self.action_weights[last_action] = last_action_weight
-            print("action_weights", self.action_weights)
+            logger.info("action_weights", self.action_weights)
 
             weight_sum = np.sum(self.action_weights)
             self.action_weights /= weight_sum
@@ -136,14 +132,14 @@ class IterativeWeightOptimizationAgent(Agent):
             return k
 
         action_weights_cdf = cdf(enumerate(self.action_weights))
-        print(
+        logger.info(
             "cdf",
             ", ".join([f"{iaction}: {w}" for iaction, w in action_weights_cdf.items()]),
         )
 
-        pprint(action_weights_cdf)
+        logger.info(action_weights_cdf)
         action = choose(action_weights_cdf)
         if random.uniform(0, 1) < learning_randomness:
             action = self.action_space.sample()
-        print("chose action", action)
+        logger.info("chose action", action)
         return action

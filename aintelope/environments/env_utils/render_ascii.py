@@ -1,6 +1,10 @@
+import logging
+
+
 import numpy as np
 from gemini import Scene, Sprite, txtcolours as tc, sleep
 
+logger = logging.getLogger("aintelope.environments.env_utils.render_ascii")
 
 # typing aliases
 PositionFloat = np.float32
@@ -40,7 +44,7 @@ class AsciiRenderState:
 
         self.grass_sprites = []
         for grass_pos in grass_patches:  # np.argwhere(grass_patches==1):
-            print("debug init grass", grass_pos, grass_patches)
+            logger.debug("debug init grass", grass_pos, grass_patches)
             grass_image = """x""".replace("x", self.ascii_symbols["food"])
             grass_sprite = Sprite(
                 (grass_pos[0], self.window_size - grass_pos[1]),

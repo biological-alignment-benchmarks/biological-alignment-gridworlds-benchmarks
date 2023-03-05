@@ -1,4 +1,5 @@
 import typing as typ
+import logging
 import csv
 
 import matplotlib.pyplot as plt
@@ -11,6 +12,8 @@ from torch import nn
 
 from aintelope.agents.memory import Experience, ReplayBuffer
 from aintelope.agents.shards.savanna_shards import available_shards_dict
+
+logger = logging.getLogger("aintelope.agents.shard_agent")
 
 
 class ShardAgent:
@@ -34,9 +37,12 @@ class ShardAgent:
         self.reset()
 
     def init_shards(self):
+        logger.debug("debug target_shards", self.target_shards)
         for shard_name in self.target_shards:
             if shard_name not in available_shards_dict:
-                print(f"Warning: could not find {shard_name} in available_shards_dict")
+                logger.warning(
+                    f"Warning: could not find {shard_name} in available_shards_dict"
+                )
                 continue
 
         self.shards = {
@@ -72,9 +78,7 @@ class ShardAgent:
             # GYM_INTERACTION
             action = self.env.action_space.sample()
         else:
-            # TODO: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at  ../torch/csrc/utils/tensor_new.cpp:201.)
-
-            state = torch.tensor([self.state])
+            state = torch.tensor(np.expand_dims(self.state, 0))
 
             if device not in ["cpu"]:
                 state = state.cuda(device)

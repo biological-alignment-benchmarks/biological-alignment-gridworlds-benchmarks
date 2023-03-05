@@ -1,14 +1,12 @@
-from gym import spaces
-import gym
+import logging
 
 import numpy as np
+import gym
 from gym.spaces import Box, Discrete
 from gym.utils import seeding
-from pettingzoo import AECEnv, ParallelEnv
-from pettingzoo.utils import agent_selector, wrappers, parallel_to_aec
+
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
-
 from aintelope.environments.savanna import (
     RenderSettings,
     RenderState,
@@ -17,6 +15,8 @@ from aintelope.environments.savanna import (
     PositionFloat,
     Action,
 )
+
+logger = logging.getLogger("aintelope.environments.savanna_gym")
 
 
 class SavannaGymEnv(gym.Env):
@@ -33,13 +33,11 @@ class SavannaGymEnv(gym.Env):
 
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
-        print(f"initializing savanna env with params: {self.metadata}")
-        assert self.metadata["amount_agents"] == 1, print(
-            "agents must == 1 for gym env"
-        )
+        logger.info(f"initializing savanna env with params: {self.metadata}")
+        assert self.metadata["amount_agents"] == 1, "agents must == 1 for gym env"
         self.action_space = Discrete(4)
         # observation space will be (object_type, pos_x, pos_y)
-        self.observation_space = spaces.Box(
+        self.observation_space = Box(
             low=self.metadata["map_min"],
             high=self.metadata["map_max"],
             shape=(

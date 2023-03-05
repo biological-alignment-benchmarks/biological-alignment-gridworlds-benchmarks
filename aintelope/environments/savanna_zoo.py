@@ -1,16 +1,16 @@
-import functools
 import typing as typ
+import logging
+import functools
 
 import numpy as np
 import pygame
 from gym.spaces import Box, Discrete
 from gym.utils import seeding
 from pettingzoo import AECEnv, ParallelEnv
-from pettingzoo.test import api_test
-from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils import agent_selector
+
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
-
 from aintelope.environments.savanna import (
     RenderSettings,
     RenderState,
@@ -20,6 +20,8 @@ from aintelope.environments.savanna import (
     PositionFloat,
     Action,
 )
+
+logger = logging.getLogger("aintelope.environments.savanna_zoo")
 
 
 class SavannaZooParallelEnv(ParallelEnv):
@@ -42,7 +44,7 @@ class SavannaZooParallelEnv(ParallelEnv):
 
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
-        print(f"initializing savanna env with params: {self.metadata}")
+        logger.info(f"initializing savanna env with params: {self.metadata}")
         self.possible_agents = [
             f"agent_{r}" for r in range(self.metadata["amount_agents"])
         ]
@@ -168,7 +170,7 @@ class SavannaZooParallelEnv(ParallelEnv):
         dicts where each dict looks like {agent_1: action_of_agent_1, agent_2: action_of_agent_2}
         or generally {<agent_name>: <agent_action or None if agent is done>}
         """
-        print("debug actions", actions)
+        logger.debug("debug actions", actions)
         # If a user passes in actions with no agents, then just return empty observations, etc.
         if not actions:
             self.agents = []
@@ -185,7 +187,7 @@ class SavannaZooParallelEnv(ParallelEnv):
             if action is None:
                 continue
 
-            print("debug action", action)
+            logger.debug("debug action", action)
             self.agent_states[agent] = move_agent(
                 self.agent_states[agent],
                 action,
@@ -213,7 +215,7 @@ class SavannaZooParallelEnv(ParallelEnv):
 
         if env_done:
             self.agents = []
-        print("debug return", observations, rewards, self.dones, infos)
+        logger.debug("debug return", observations, rewards, self.dones, infos)
         return observations, rewards, self.dones, infos
 
 

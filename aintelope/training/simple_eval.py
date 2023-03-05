@@ -1,10 +1,7 @@
-import random
-import os
-from pprint import pprint
-import numpy as np
-from gym.spaces import Discrete
+import logging
+
 import gym
-from pettingzoo.utils import parallel_to_aec
+
 from aintelope.agents.q_agent import Agent as Qagent
 from aintelope.agents.shard_agent import ShardAgent
 from aintelope.agents.simple_agents import (
@@ -19,6 +16,7 @@ from aintelope.environments.savanna_zoo import (
     SavannaZooSequentialEnv,
 )
 
+logger = logging.getLogger("aintelope.training.simple_eval")
 
 # is there a better way to do this?
 # to register a lookup table from hparam name to function?
@@ -45,7 +43,7 @@ def run_episode(hparams: dict = {}, **args):
     verbose = hparams.get("verbose", False)
 
     env_type = hparams.get("env_type")
-    print("env type", env_type)
+    logger.info("env type", env_type)
     # gym_vec_env_v0(env, num_envs) creates a Gym vector environment with num_envs copies of the environment.
     # https://tristandeleu.github.io/gym/vector/
     # https://github.com/Farama-Foundation/SuperSuit
@@ -55,15 +53,15 @@ def run_episode(hparams: dict = {}, **args):
     if env_type == "zoo":
         env = ENV_LOOKUP[hparams["env"]](env_params=env_params)
         # if hparams.get('sequential_env', False) is True:
-        #     print('converting to sequential from parallel')
+        #     logger.info('converting to sequential from parallel')
         #     env = parallel_to_aec(env)
         # assumption here: all agents in zoo have same observation space shape
         env.reset()
         obs_size = env.observation_space("agent_0").shape[0]
 
-        print("obs size", obs_size)
+        logger.info("obs size", obs_size)
         n_actions = env.action_space("agent_0").n
-        print("n actions", n_actions)
+        logger.info("n actions", n_actions)
 
     elif env_type == "gym":
         # GYM_INTERACTION
@@ -80,7 +78,7 @@ def run_episode(hparams: dict = {}, **args):
         n_actions = env.action_space.n
         # env = gym_vec_env_v0(env, num_envs=1)
     else:
-        print(
+        logger.info(
             f'env_type {hparams.get("env_type")} not implemented. Choose: [zoo, gym]. TODO: add stable_baselines3'
         )
 
@@ -121,10 +119,10 @@ def run_episode(hparams: dict = {}, **args):
                 actions[agent.name] = agent.get_action(
                     epsilon=epsilon, device=hparams.get("device", "cpu")
                 )
-            print("debug actions", actions)
-            print("debug step")
-            print(env.__dict__)
-            print(env.step(actions))
+            logger.debug("debug actions", actions)
+            logger.debug("debug step")
+            logger.debug(env.__dict__)
+            logger.debug(env.step(actions))
             observations, rewards, dones, infos = env.step(actions)
         else:
             # the assumption by non-zoo env will be 1 agent generally I think
@@ -136,7 +134,7 @@ def run_episode(hparams: dict = {}, **args):
         if any(dones):
             for agent in agents:
                 if agent.done and verbose:
-                    print(
+                    logger.warning(
                         f"Uhoh! Your agent {agent.name} terminated during warmup on step {step}/{warm_start_steps}"
                     )
         if all(dones):
@@ -169,6 +167,6 @@ def run_episode(hparams: dict = {}, **args):
             env.render(render_mode)
 
     if verbose:
-        print(
+        logger.info(
             f"Simple Episode Evaluation completed. Final episode rewards: {episode_rewards}"
         )
