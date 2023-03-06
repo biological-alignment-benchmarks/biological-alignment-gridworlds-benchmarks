@@ -19,7 +19,7 @@ class Hunger:
     def calc_reward(self, agent, state):
         """function of time since last ate and hunger rate and opportunity to eat"""
         current_step = agent.env.num_moves
-        agent_pos = get_agent_pos_from_state(agent.state)
+        agent_pos = get_agent_pos_from_state(state)
         min_grass_distance = distance_to_closest_item(
             agent_pos, agent.env.grass_patches
         )
