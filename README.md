@@ -48,6 +48,22 @@ There should be two new files named `Record_{current timestamp}.csv` and
 agent took during the test episode, using the best agent that the training
 produced. Green dots are food in the environment, blue dots are water.
 
+## Experiment Analysis
+
+Some metrics and visualizations are logged with
+[`tensorboard`](https://www.tensorflow.org/tensorboard). This information can be
+accessed by starting a `tensorboard` server locally. To do that switch to the
+directory where pytorch-lightning stores the experiments (e.g.
+`outputs/lightning_logs`). Within you find one folder for each experiment
+containing `events.out.tfevents` files. Start the server via
+
+```
+cd outputs/lightning_logs
+tensorboard --logdir=. --bind_all
+```
+
+You can access the dashboard using your favorit browser at `127.0.0.1:6006`.
+
 ## Logging
 
 The logging level can be controlled via hydra. By adding `hydra.verbose=True`
