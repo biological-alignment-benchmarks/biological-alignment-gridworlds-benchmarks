@@ -1,6 +1,7 @@
 import logging
 
 import gym
+from omegaconf import DictConfig
 
 from aintelope.agents.q_agent import Agent as Qagent
 from aintelope.agents.instinct_agent import InstinctAgent
@@ -36,7 +37,7 @@ ENV_LOOKUP = {
 MODEL_LOOKUP = {"dqn": DQN}
 
 
-def run_episode(hparams: dict = {}, **args):
+def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
     env_params = hparams.get("env_params", {})
     agent_params = hparams.get("agent_params", {})
     render_mode = hparams.get("render_mode")
@@ -92,7 +93,7 @@ def run_episode(hparams: dict = {}, **args):
     else:
         models = [MODEL_LOOKUP[model_spec](obs_size, n_actions)]
 
-    agent_spec = hparams["agent"]
+    agent_spec = hparams["agent_id"]
     if isinstance(agent_spec, list) or env_params.get("num_agents", 1) > 1:
         if not isinstance(agent_spec, list):
             agent_spec = [agent_spec]
