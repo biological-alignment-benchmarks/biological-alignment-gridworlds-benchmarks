@@ -17,7 +17,7 @@ def test_hparams(root_dir: pathlib.Path) -> DictConfig:
 
 def test_instinctagent_in_savanna_gym(test_hparams: DictConfig):
     params_savanna_gym = {
-        "agent": "instinct_agent",
+        "agent_id": "instinct_agent",
         "env": "savanna-gym-v2",
         "env_type": "gym",
         "env_params": {

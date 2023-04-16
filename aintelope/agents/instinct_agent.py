@@ -1,67 +1,46 @@
-import typing as typ
+from typing import Optional, List, Tuple
 import logging
 import csv
 
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-import gym
 import numpy as np
-import pandas as pd
 import torch
 from torch import nn
 
+from aintelope.agents import Environment, register_agent_class
+from aintelope.agents.q_agent import QAgent
 from aintelope.agents.memory import Experience, ReplayBuffer
 from aintelope.agents.instincts.savanna_instincts import available_instincts_dict
 
 logger = logging.getLogger("aintelope.agents.instinct_agent")
 
 
-class InstinctAgent:
-    """Base Agent class handeling the interaction with the environment."""
+class InstinctAgent(QAgent):
+    """Agent class with instincts"""
 
     def __init__(
         self,
-        env: gym.Env,
-        model,
+        env: Environment,
+        model: nn.Module,
         replay_buffer: ReplayBuffer,
-        target_instincts: list = [],
+        target_instincts: List[str] = [],
     ) -> None:
         """
         Args:
-            env: training environment
-            replay_buffer: replay buffer storing experiences
+            env (Environment): environment instance
+            model (nn.Module): neural network instance
+            replay_buffer (ReplayBuffer): replay buffer of the agent
+            target_instincts (List[str]): names if used instincts
         """
-        self.env = env
-        self.model = model
-        self.replay_buffer = replay_buffer
-        self.history = []
         self.target_instincts = target_instincts
         self.instincts = {}
         self.done = False
-        self.reset()
 
-    def init_instincts(self):
-        logger.debug("debug target_instincts", self.target_instincts)
-        for instinct_name in self.target_instincts:
-            if instinct_name not in available_instincts_dict:
-                logger.warning(
-                    f"Warning: could not find {instinct_name} in available_instincts_dict"
-                )
-                continue
-
-        self.instincts = {
-            instinct: available_instincts_dict.get(instinct)()
-            for instinct in self.target_instincts
-            if instinct in available_instincts_dict
-        }
-        for instinct in self.instincts.values():
-            instinct.reset()
+        # reset after attribute setup
+        super().__init__(env=env, model=model, replay_buffer=replay_buffer)
 
     def reset(self) -> None:
-        """Resents the environment and updates the state."""
+        """Reset environment and initialize instincts"""
         self.done = False
-        # GYM_INTERACTION
         self.state = self.env.reset()
         if isinstance(self.state, tuple):
             self.state = self.state[0]
@@ -72,15 +51,14 @@ class InstinctAgent:
         epsilon-greedy policy.
 
         Args:
-            net: DQN network
-            epsilon: value to determine likelihood of taking a random action
-            device: current device
+            net (nn.Module): DQN network instance
+            epsilon (float): value to determine likelihood of taking a random action
+            device (str): current device
 
         Returns:
-            action
+            action (int): index of action
         """
         if np.random.random() < epsilon:
-            # GYM_INTERACTION
             action = self.env.action_space.sample()
         else:
             state = torch.tensor(np.expand_dims(self.state, 0))
@@ -100,18 +78,19 @@ class InstinctAgent:
         net: nn.Module,
         epsilon: float = 0.0,
         device: str = "cpu",
-        save_path: str = None,
-    ) -> typ.Tuple[float, bool]:
+        save_path: Optional[str] = None,
+    ) -> Tuple[float, bool]:
         """Carries out a single interaction step between the agent and the
         environment.
 
         Args:
-            net: DQN network
+            net: DQN network instance
             epsilon: value to determine likelihood of taking a random action
             device: current device
+            save_path (typ.Optional[str]): path to save agent history
 
         Returns:
-            reward, done
+            reward, done (Tuple[float, bool]): reward value and done state
         """
 
         # The 'mind' of the agent decides what to do next
@@ -182,104 +161,22 @@ class InstinctAgent:
             self.reset()
         return reward, done
 
-    def get_history(self) -> pd.DataFrame:
-        return pd.DataFrame(
-            columns=[
-                "state",
-                "action",
-                "reward",
-                "done",
-                "instinct_events",
-                "new_state",
-            ],
-            data=self.history,
-        )
+    def init_instincts(self) -> None:
+        logger.debug("debug target_instincts", self.target_instincts)
+        for instinct_name in self.target_instincts:
+            if instinct_name not in available_instincts_dict:
+                logger.warning(
+                    f"Warning: could not find {instinct_name} in available_instincts_dict"
+                )
+                continue
 
-    @staticmethod
-    def process_history(
-        history_df: pd.DataFrame,
-    ) -> typ.Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        x = []
-        y = []
-        event_x = []
-        event_y = []
-        event_type = []
-        food_x = []
-        food_y = []
-        water_x = []
-        water_y = []
+        self.instincts = {
+            instinct: available_instincts_dict.get(instinct)()
+            for instinct in self.target_instincts
+            if instinct in available_instincts_dict
+        }
+        for instinct in self.instincts.values():
+            instinct.reset()
 
-        for _, row in history_df.iterrows():
-            state = row["state"]
-            # fmt: off
-            i = 1
-            x.append(state[i]); i += 1
-            y.append(state[i]); i += 1
-            i += 1
 
-            food_x.append(state[i]); i += 1
-            food_y.append(state[i]); i += 1
-            i += 1
-            food_x.append(state[i]); i += 1
-            food_y.append(state[i]); i += 1
-            i += 1
-
-            water_x.append(state[i]); i += 1
-            water_y.append(state[i]); i += 1
-            i += 1
-            water_x.append(state[i]); i += 1
-            water_y.append(state[i]); i += 1
-            # fmt: on
-
-            if row["instinct_events"] != "[]":
-                event_x.append(x[-1])
-                event_y.append(y[-1])
-                event_type.append(row["instinct_events"])
-            assert i == len(state)
-
-        agent_df = pd.DataFrame(data={"x": x, "y": y})
-        food_df = pd.DataFrame(data={"x": food_x, "y": food_y})
-        water_df = pd.DataFrame(data={"x": water_x, "y": water_y})
-        event_df = pd.DataFrame(
-            data={"x": event_x, "y": event_y, "event_type": event_type}
-        )
-        return agent_df, food_df, water_df, event_df
-
-    def plot_history(self, style: str = "thickness", color: str = "viridis") -> Figure:
-        history_df = self.get_history()
-        agent_df, food_df, water_df, event_df = self.process_history(history_df)
-
-        fig, ax = plt.subplots(figsize=(8, 8))
-
-        if style == "thickness":
-            ax.plot(agent_df["x"], agent_df["y"], ".r-")
-        elif style == "colormap":
-            cmap = matplotlib.colormaps[color]
-
-            agent_arr = agent_df.to_numpy()  # coordinates x y
-            # coordinates are ordered in x1 y1 x2 y2
-            step_pairs = np.concatenate([agent_arr[:-1], agent_arr[1:]], axis=1)
-            unique_steps, step_freq = np.unique(step_pairs, axis=0, return_counts=True)
-
-            for line_segment, col in zip(unique_steps, step_freq / step_freq.max()):
-                if (line_segment[:2] == line_segment[2:]).all():  # agent did not move
-                    im = ax.scatter(
-                        line_segment[0],
-                        line_segment[1],
-                        s=70,
-                        marker="o",
-                        color=cmap(col),
-                    )
-                else:
-                    ax.plot(line_segment[[0, 2]], line_segment[[1, 3]], color=cmap(col))
-
-            cbar = fig.colorbar(im)
-            cbar.set_label("Relative Frequency Agent")
-        else:
-            raise NotImplementedError(f"{style} is not a valid plot style!")
-
-        ax.plot(food_df["x"], food_df["y"], "xg", markersize=8, label="Food")
-        ax.plot(water_df["x"], water_df["y"], "xb", markersize=8, label="Water")
-        ax.legend()
-        plt.tight_layout()
-        return fig
+register_agent_class("instinct_agent", InstinctAgent)

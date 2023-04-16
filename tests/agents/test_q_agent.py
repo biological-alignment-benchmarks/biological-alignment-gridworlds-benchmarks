@@ -17,7 +17,7 @@ def test_hparams(root_dir: pathlib.Path) -> DictConfig:
 
 def test_qagent_in_savanna_zoo_sequential(test_hparams: DictConfig):
     params_zoo_sequential = {
-        "agent": "q_agent",
+        "agent_id": "q_agent",
         "env": "savanna-zoo-sequential-v2",
         "env_entry_point": None,
         "env_type": "zoo",
@@ -39,7 +39,7 @@ def test_qagent_in_savanna_zoo_sequential(test_hparams: DictConfig):
 
 def test_qagent_in_savanna_zoo_parallel(test_hparams: DictConfig):
     params_zoo_parallel = {
-        "agent": "q_agent",
+        "agent_id": "q_agent",
         "env": "savanna-zoo-parallel-v2",
         "env_entry_point": None,
         "env_type": "zoo",
@@ -60,7 +60,7 @@ def test_qagent_in_savanna_zoo_parallel(test_hparams: DictConfig):
 
 def test_qagent_in_savanna_gym(test_hparams: DictConfig):
     params_savanna_gym = {
-        "agent": "q_agent",
+        "agent_id": "q_agent",
         "env": "savanna-gym-v2",
         "env_type": "gym",
         "env_params": {

@@ -1,9 +1,14 @@
+"""
+Collection of simple (rule based) agents, e.g. a completely random agent
+"""
+
 import logging
 import random
 
 import numpy as np
 
-from aintelope.agents.q_agent import Agent
+from aintelope.agents import register_agent_class
+from aintelope.agents.q_agent import QAgent
 from aintelope.environments.savanna import (
     move_agent,
     reward_agent,
@@ -18,12 +23,12 @@ EPS = 0.0001
 INF = 9999999999
 
 
-class RandomWalkAgent(Agent):
+class RandomWalkAgent(QAgent):
     def get_action(self, epsilon: float, device: str) -> int:
         return self.action_space.sample()
 
 
-class OneStepPerfectPredictionAgent(Agent):
+class OneStepPerfectPredictionAgent(QAgent):
     def get_action(self, epsilon: float, device: str) -> int:
         """Using the given network, decide what action to carry out using an
         epsilon-greedy policy.
@@ -59,7 +64,7 @@ class OneStepPerfectPredictionAgent(Agent):
         return action
 
 
-class IterativeWeightOptimizationAgent(Agent):
+class IterativeWeightOptimizationAgent(QAgent):
     def reset(self) -> None:
         """Resents the environment and updates the state."""
         self.done = False
@@ -143,3 +148,10 @@ class IterativeWeightOptimizationAgent(Agent):
             action = self.action_space.sample()
         logger.info("chose action", action)
         return action
+
+
+register_agent_class("random_walk_agent", RandomWalkAgent)
+register_agent_class("one_step_perfect_prediction_agent", OneStepPerfectPredictionAgent)
+register_agent_class(
+    "iterative_weight_optimization_agent", IterativeWeightOptimizationAgent
+)

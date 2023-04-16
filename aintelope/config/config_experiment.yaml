@@ -1,4 +1,4 @@
-name: lightning_savanna_instinctagent
+name: experiment
 timestamp: ${now:%Y%m%d%H%M}
 
 trainer_params:
@@ -16,7 +16,7 @@ hparams:
   env_entry_point: "aintelope.environments.savanna_gym:SavannaGymEnv"
   env_type: gym
   model: dqn
-  agent: instinct_agent
+  agent_id: instinct_agent
   gamma: 0.99
   sync_rate: 10
   replay_size: 99
