@@ -16,6 +16,8 @@ logger = logging.getLogger("aintelope.environments.savanna")
 ObservationFloat = np.float32
 PositionFloat = np.float32
 Action = int
+AgentId = str
+AgentStates = typ.Dict[AgentId, np.ndarray]
 
 # environment constants
 ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=PositionFloat)
