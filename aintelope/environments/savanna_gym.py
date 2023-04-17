@@ -37,17 +37,6 @@ class SavannaGymEnv(SavannaEnv, gym.Env):
         gym.Env.__init__(self)
         assert self.metadata["amount_agents"] == 1, "agents must == 1 for gym env"
 
-    # override zoo stuff
-    def _get_obs(self):
-        # this was the gym format:
-        # observations = [0] + self.agent_state.tolist()
-        # for x in self.grass_patches:
-        #     observations += [1, x[0], x[1]]
-        # for x in self.water_holes:
-        #     observations += [2, x[0], x[1]]
-        # return np.array(observations, dtype=np.float32)
-        pass
-
     def step(self, action):
         actions = {self._agent_id: action}
         # should be: observations, rewards, dones, infos

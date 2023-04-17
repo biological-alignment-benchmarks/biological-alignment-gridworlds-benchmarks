@@ -279,15 +279,16 @@ class SavannaEnv:
 
     def observe(self, agent: str):
         """Return observation of given agent."""
+        def stack(*args):
+            return np.hstack(args, dtype=ObservationFloat)
+
+        observations = stack(self.agent_states[agent])
+        for x in self.grass_patches:
+            observations = stack(observations, x)
+        for x in self.water_holes:
+            observations = stack(observations, x)
         # just put all positions into one row
-        return np.concatenate(
-            [
-                self.agent_states[agent],
-                self.grass_patches.reshape(-1),
-                self.water_holes.reshape(-1),
-            ],
-            dtype=ObservationFloat,
-        )
+        return observations.reshape(-1)
 
     def render(self, mode="human"):
         """Render the environment."""
