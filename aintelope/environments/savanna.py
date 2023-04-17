@@ -1,10 +1,11 @@
+import typing as typ
+from typing import Tuple, Dict
 import logging
 import functools
 
 import numpy as np
 import pygame
-from gym import spaces
-from gym.spaces import Discrete
+from gym.spaces import Box, Discrete
 from gym.utils import seeding
 
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
@@ -13,8 +14,23 @@ from aintelope.environments.env_utils.distance import distance_to_closest_item
 logger = logging.getLogger("aintelope.environments.savanna")
 
 # typing aliases
+ObservationFloat = np.float32
 PositionFloat = np.float32
 Action = int
+AgentId = str
+AgentStates = typ.Dict[AgentId, np.ndarray]
+
+Observation = np.ndarray
+Reward = float
+Info = dict
+
+Step = Tuple[
+    Dict[AgentId, Observation],
+    Dict[AgentId, Reward],
+    Dict[AgentId, bool],
+    Dict[AgentId, bool],
+    Dict[AgentId, Info],
+]
 
 # environment constants
 ACTION_MAP = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]], dtype=PositionFloat)
@@ -57,7 +73,7 @@ class RenderState:
             )
 
         for agent, agent_pos in agents_state.items():
-            assert len(agent_pos) == 2, agent_pos
+            assert len(agent_pos) == 2, ("malformed agent_pos", agent_pos)
             # TODO: render agent name as text
             p = project(agent_pos)
             pygame.draw.circle(
@@ -103,11 +119,12 @@ def move_agent(
     return agent_pos
 
 
-def get_agent_pos_from_state(agent_state):
+def get_agent_pos_from_state(agent_state) -> typ.List[PositionFloat]:
     return [agent_state[0], agent_state[1]]
 
 
 class SavannaEnv:
+    # @zoo-api
     metadata = {
         "name": "savanna-v2",
         "render_fps": 3,
@@ -128,97 +145,164 @@ class SavannaEnv:
     def __init__(self, env_params={}):
         self.metadata.update(env_params)
         logger.info(f"initializing savanna env with params: {self.metadata}")
-        assert self.metadata["amount_agents"] == 1, "agents must == 1 for gym env"
-        self.action_space = Discrete(4)
-        # observation space will be (object_type, pos_x, pos_y)
-        self.observation_space = spaces.Box(
-            low=self.metadata["map_min"],
-            high=self.metadata["map_max"],
-            shape=(
-                3
-                * (
-                    self.metadata["amount_agents"]
-                    + self.metadata["amount_grass_patches"]
-                    + self.metadata["amount_water_holes"]
-                ),
-            ),
+
+        # @zoo-api
+        self.possible_agents = [
+            f"agent_{r}" for r in range(self.metadata["amount_agents"])
+        ]
+        # FIXME: needed?
+        self.agent_name_mapping = dict(
+            zip(self.possible_agents, list(range(self.metadata["amount_agents"])))
         )
-        self.agent_state = np.ndarray([])  # just the agents position for now
-        self._seed()
+
+        # for @zoo-api
+        self._action_spaces = {
+            agent: Discrete(4) for agent in self.possible_agents
+        }  # agents can walk in 4 directions
+
+        # for @zoo-api
+        self._observation_spaces = {
+            agent: Box(
+                low=self.metadata["map_min"],
+                high=self.metadata["map_max"],
+                shape=(
+                    2
+                    * (
+                        self.metadata["amount_agents"]
+                        + self.metadata["amount_grass_patches"]
+                        + self.metadata["amount_water_holes"]
+                    ),
+                ),
+            )
+            for agent in self.possible_agents
+        }
+
+        # our own state
+        self.agent_states: AgentStates = {}
+        self.seed()
+
         render_settings = RenderSettings(self.metadata)
         self.render_state = RenderState(render_settings)
         self.human_render_state = None
         self.ascii_render_state = None
+        self.dones = None
 
-    def _seed(self, seed=None):
+    def seed(self, seed: typ.Optional[int] = None) -> None:
         self.np_random, seed = seeding.np_random(seed)
-        return [seed]
 
-    def step(self, action):
-        # costs = np.sum(u**2) + np.sum(self.state**2)
-        # self.state = np.clip(
-        #     self.state + u, self.observation_space.low, self.observation_space.high)
-        self.last_action = action
-        self.agent_state = move_agent(
-            self.agent_state,
-            action,
-            map_min=self.metadata["map_min"],
-            map_max=self.metadata["map_max"],
-        )
-        min_grass_distance = distance_to_closest_item(
-            self.agent_state, self.grass_patches
-        )
-        reward = reward_agent(min_grass_distance)
-        if min_grass_distance < 1.0:
-            self.grass_patches = self.replace_grass(
-                self.agent_state, self.grass_patches
-            )
-        self.num_moves += 1
-        done = self.num_moves >= self.metadata["num_iters"]
+    def reset(self, seed: typ.Optional[int] = None, options=None):
+        """Reset needs to initialize the following attributes:
+            - agents
+            - rewards
+            - _cumulative_rewards
+            - dones
+            - infos
+            - agent_selection
+        And must set up the environment so that render(), step(), and observe()
+        can be called without issues.
+        """
+        self.seed(seed)
 
-        observation = self._get_obs()
-        return observation, reward, done
-
-    def reset(self):
-        self.agent_state = self.np_random.integers(
-            self.metadata["map_min"], self.metadata["map_max"], 2
-        )
+        self.agents = self.possible_agents[:]
+        # self.rewards = {agent: 0 for agent in self.agents}
+        # self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        # self.dones = {agent: False for agent in self.agents}
+        # self.infos = {agent: {} for agent in self.agents}
         self.grass_patches = self.np_random.integers(
             self.metadata["map_min"],
             self.metadata["map_max"],
             size=(self.metadata["amount_grass_patches"], 2),
-        )
+        ).astype(PositionFloat)
         self.water_holes = self.np_random.integers(
             self.metadata["map_min"],
             self.metadata["map_max"],
             size=(self.metadata["amount_water_holes"], 2),
-        )
-        self.last_action = None
+        ).astype(PositionFloat)
+        self.agent_states = {
+            agent: self.np_random.integers(
+                self.metadata["map_min"], self.metadata["map_max"], 2
+            ).astype(PositionFloat)
+            for agent in self.agents
+        }
         self.num_moves = 0
-        return self._get_obs()
 
-    def _get_obs(self):
-        observations = [0] + self.agent_state.tolist()
-        for x in self.grass_patches:
-            observations += [1, x[0], x[1]]
-        for x in self.water_holes:
-            observations += [2, x[0], x[1]]
-        return np.array(observations, dtype=np.float64)
+        # # cycle through the agents; needed for wrapper
+        # self._agent_selector = agent_selector(self.agents)
+        # self.agent_selection = self._agent_selector.next()
+        self.dones = {agent: False for agent in self.agents}
+        observations = {agent: self.observe(agent) for agent in self.agents}
+        return observations
 
-    def replace_grass(
-        self, agent_pos: np.ndarray, grass_patches: np.ndarray
-    ) -> np.float64:
-        if len(grass_patches.shape) == 1:
-            grass_patches = np.expand_dims(grass_patches, 0)
+    def step(self, actions: typ.Dict[str, Action]) -> Step:
+        """step(action) takes in an action for each agent and should return the
+        - observations
+        - rewards
+        - dones
+        - info
+        dicts where each dict looks like {agent_1: action_of_agent_1, agent_2: action_of_agent_2}
+        or generally {<agent_name>: <agent_action or None if agent is done>}
+        """
+        logger.debug("debug actions", actions)
+        # If a user passes in actions with no agents, then just return empty observations, etc.
+        if not actions:
+            self.agents = []
+            return {}, {}, {}, {}
 
-        replacement_grass = self.np_random.integers(
-            self.metadata["map_min"], self.metadata["map_max"], size=(2)
+        if self.agents == []:
+            raise ValueError("No agents found; num_iters reached?")
+
+        rewards = {}
+        for agent in self.agents:
+            action = actions.get(agent)
+            if isinstance(action, dict):
+                action = action.get(agent)
+            if action is None:
+                continue
+
+            logger.debug("debug action", action)
+            self.agent_states[agent] = move_agent(
+                self.agent_states[agent],
+                action,
+                map_min=self.metadata["map_min"],
+                map_max=self.metadata["map_max"],
+            )
+            min_grass_distance = distance_to_closest_item(
+                self.agent_states[agent], self.grass_patches
+            )
+            rewards[agent] = reward_agent(min_grass_distance)
+
+        self.num_moves += 1
+        env_done = (self.num_moves >= self.metadata["num_iters"]) or all(
+            [actions.get(agent) is None for agent in self.agents]
         )
-        grass_patches[
-            np.argmin(np.linalg.norm(np.subtract(grass_patches, agent_pos), axis=1))
-        ] = replacement_grass
+        self.dones = {
+            agent: env_done or (actions.get(agent) is None) for agent in self.agents
+        }
 
-        return grass_patches
+        observations = {agent: self.observe(agent) for agent in self.agents}
+
+        # typically there won't be any information in the infos, but there must
+        # still be an entry for each agent
+        infos: Dict[AgentId, dict] = {agent: {} for agent in self.agents}
+
+        if env_done:
+            self.agents = []
+        logger.debug("debug return", observations, rewards, self.dones, infos)
+        return observations, rewards, self.dones, infos
+
+    def observe(self, agent: str):
+        """Return observation of given agent."""
+
+        def stack(*args):
+            return np.hstack(args, dtype=ObservationFloat)
+
+        observations = stack(self.agent_states[agent])
+        for x in self.grass_patches:
+            observations = stack(observations, x)
+        for x in self.water_holes:
+            observations = stack(observations, x)
+        # just put all positions into one row
+        return observations.reshape(-1)
 
     def render(self, mode="human"):
         """Render the environment."""
@@ -242,3 +326,10 @@ class SavannaEnv:
                 np.array(pygame.surfarray.pixels3d(self.render_state.canvas)),
                 axes=(1, 0, 2),
             )
+
+    def close(self):
+        """Release any graphical display, subprocesses, network connections
+        or any other environment data which should not be kept around after
+        the user is no longer using the environment.
+        """
+        raise NotImplementedError

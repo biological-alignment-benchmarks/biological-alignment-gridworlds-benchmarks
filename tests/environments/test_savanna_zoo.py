@@ -53,11 +53,6 @@ def test_seed():
 def test_agent_states():
     env = sut.SavannaZooParallelEnv()
 
-    with pytest.raises(AttributeError):
-        env.agent_states
-    with pytest.raises(AttributeError):
-        env.unwrapped.agent_states
-
     env.reset()
     assert isinstance(env.unwrapped.agent_states, dict)
     assert all(
