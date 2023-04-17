@@ -39,9 +39,11 @@ def test_grass_patches():
 def test_get_agent_pos_from_stats():
     env = sut.SavannaEnv()
     env.reset()
-    agent_state_env = env.agent_state
-    agent_state_func = sut.get_agent_pos_from_state(agent_state_env)
-    assert [agent_state_env[0], agent_state_env[1]] == agent_state_func
+    assert isinstance(env.agent_states, dict)
+    for agent_state in env.agent_states:
+        agent_state_env = agent_state
+        agent_state_func = sut.get_agent_pos_from_state(agent_state_env)
+        assert [agent_state_env[0], agent_state_env[1]] == agent_state_func
 
 
 def test_observation_spaces():
