@@ -37,13 +37,13 @@ ENV_LOOKUP = {
 MODEL_LOOKUP = {"dqn": DQN}
 
 
-def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
-    env_params = hparams.get("env_params", {})
-    agent_params = hparams.get("agent_params", {})
-    render_mode = hparams.get("render_mode")
-    verbose = hparams.get("verbose", False)
+def run_episode(tparams: DictConfig, hparams: DictConfig) -> None:
+    env_params = hparams["env_params"]
+    agent_params = hparams["agent_params"]
+    render_mode = env_params["render_mode"]
+    verbose = tparams["verbose"]
 
-    env_type = hparams.get("env_type")
+    env_type = hparams["env_type"]
     logger.info("env type", env_type)
     # gym_vec_env_v0(env, num_envs) creates a Gym vector environment with num_envs copies of the environment.
     # https://tristandeleu.github.io/gym/vector/
@@ -66,7 +66,7 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
 
     elif env_type == "gym":
         # GYM_INTERACTION
-        if hparams.get("env_entry_point") is not None:
+        if hparams["env_entry_point"] is not None:
             gym.envs.register(
                 id=hparams["env"],
                 entry_point=hparams[
@@ -80,7 +80,8 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
         # env = gym_vec_env_v0(env, num_envs=1)
     else:
         logger.info(
-            f'env_type {hparams.get("env_type")} not implemented. Choose: [zoo, gym]. TODO: add stable_baselines3'
+            f"env_type {hparams['env_type']} not implemented."
+            "Choose: [zoo, gym]. TODO: add stable_baselines3"
         )
 
     env.reset(options={})
@@ -94,21 +95,27 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
         models = [MODEL_LOOKUP[model_spec](obs_size, n_actions)]
 
     agent_spec = hparams["agent_id"]
-    if isinstance(agent_spec, list) or env_params.get("num_agents", 1) > 1:
+    if isinstance(agent_spec, list) or env_params["amount_agents"] > 1:
         if not isinstance(agent_spec, list):
             agent_spec = [agent_spec]
         if len(models) < len(agent_spec):
             models *= len(agent_spec)
         agents = [
-            AGENT_LOOKUP[agent](env, model, buffer, **agent_params)
+            AGENT_LOOKUP[agent](
+                env, model, buffer, hparams["warm_start_size"], **agent_params
+            )
             for agent, model in zip(agent_spec, models)
         ]
     else:
-        agents = [AGENT_LOOKUP[agent_spec](env, models[0], buffer, **agent_params)]
+        agents = [
+            AGENT_LOOKUP[agent_spec](
+                env, models[0], buffer, hparams["warm_start_size"], **agent_params
+            )
+        ]
 
     episode_rewards = [0 for x in agents]
     dones = [False for x in agents]
-    warm_start_steps = hparams.get("warm_start_steps", 1000)
+    warm_start_steps = hparams["warm_start_steps"]
 
     for step in range(warm_start_steps):
         epsilon = 1.0  # forces random action for warmup steps
@@ -118,7 +125,7 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
                 # agent doesn't get to play_step, only env can, for multi-agent env compatibility
                 # reward, done = agent.play_step(nets[i], epsilon=1.0)
                 actions[agent.name] = agent.get_action(
-                    epsilon=epsilon, device=hparams.get("device", "cpu")
+                    epsilon=epsilon, device=tparams["device"]
                 )
             logger.debug("debug actions", actions)
             logger.debug("debug step")
@@ -128,15 +135,14 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
         else:
             # the assumption by non-zoo env will be 1 agent generally I think
             for agent in agents:
-                reward, done = agent.play_step(
-                    agent.model, epsilon, hparams.get("device", "cpu")
-                )
+                reward, done = agent.play_step(agent.model, epsilon, tparams["device"])
                 dones = [done]
         if any(dones):
             for agent in agents:
                 if agent.done and verbose:
                     logger.warning(
-                        f"Uhoh! Your agent {agent.name} terminated during warmup on step {step}/{warm_start_steps}"
+                        f"Uhoh! Your agent {agent.name} terminated during warmup"
+                        "on step {step}/{warm_start_steps}"
                     )
         if all(dones):
             break
@@ -152,15 +158,13 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
                 # agent doesn't get to play_step, only env can, for multi-agent env compatibility
                 # reward, done = agent.play_step(nets[i], epsilon=1.0)
                 actions[agent.name] = agent.get_action(
-                    epsilon=1.0, device=hparams.get("device", "cpu")
+                    epsilon=1.0, device=tparams["device"]
                 )
             observations, rewards, dones, infos = env.step(actions)
         else:
             # the assumption by non-zoo env will be 1 agent generally I think
             for agent in agents:
-                reward, done = agent.play_step(
-                    agent.model, epsilon, hparams.get("device", "cpu")
-                )
+                reward, done = agent.play_step(agent.model, epsilon, tparams["device"])
                 dones = [done]
                 rewards = [reward]
         episode_rewards += rewards
@@ -169,5 +173,6 @@ def run_episode(hparams: DictConfig, device: str = "cpu") -> None:
 
     if verbose:
         logger.info(
-            f"Simple Episode Evaluation completed. Final episode rewards: {episode_rewards}"
+            f"Simple Episode Evaluation completed."
+            "Final episode rewards: {episode_rewards}"
         )
