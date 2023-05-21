@@ -172,7 +172,7 @@ def test_action_spaces():
 def test_action_space_valid_step():
     env = sut.SavannaZooParallelEnv()
     env.reset()
-    map_min, map_max = 0, 25
+    map_min, map_max = env.metadata["map_min"], env.metadata["map_max"]
 
     agent = env.possible_agents[0]
     agent_states = env.unwrapped.agent_states
