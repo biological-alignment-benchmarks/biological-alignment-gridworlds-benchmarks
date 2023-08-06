@@ -216,7 +216,7 @@ class DQNLightning(LightningModule):
 
 def run_experiment(cfg: DictConfig) -> None:
     dir_out, dir_logs, exp_name = "outputs", "lightning_logs", f"{cfg.experiment_name}"
-    dir_experiment = Path("/".join([dir_out, dir_logs, exp_name]))
+    dir_experiment = Path(dir_out) / dir_logs / exp_name
     lightning_module = DQNLightning(cfg.hparams)
 
     checkpoint_callback = ModelCheckpoint(
