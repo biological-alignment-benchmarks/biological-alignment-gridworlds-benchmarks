@@ -149,6 +149,10 @@ class QAgent(Agent):
     def process_history(
         history_df: pd.DataFrame,
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """Function to convert the agent history dataframe into individual dataframe for
+        agent position, grass and water locations. Instinct events are currently not
+        processed.
+        """
         state_df = pd.DataFrame(history_df.state.to_list())
         agent_df = pd.DataFrame(
             columns=["x", "y"], data=state_df.agent_coords.to_list()
@@ -164,7 +168,6 @@ class QAgent(Agent):
             columns=["x", "y"], data=set(water_df.stack().to_list())
         )
 
-        # TODO: events are currently not in use; what do we want them for?
         return agent_df, grass_df, water_df
 
     def plot_history(self, style: str = "thickness", color: str = "viridis") -> Figure:
