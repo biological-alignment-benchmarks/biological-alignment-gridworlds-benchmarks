@@ -104,7 +104,6 @@ class DQNLightning(LightningModule):
         states, actions, rewards, dones, next_states = batch
 
         state_action_values = (
-            # added .long() - Compatibility with newer versions of pytorch: without it actions.unsqueeze(-1) results in error "gather(): Expected dtype int64 for index" because unsqueeze returns an int tensor and gather requires them to be int64.
             self.net(states)
             .gather(1, actions.unsqueeze(-1).long())
             .squeeze(-1)
@@ -197,7 +196,6 @@ class DQNLightning(LightningModule):
         record_path.parent.mkdir(parents=True, exist_ok=True)
         if nb_batch == 0:
             init_string = "state,action,reward,done,instinct_events,new_state\n"
-            os.makedirs(os.path.dirname(record_path), exist_ok=True)
             with record_path.open("w", encoding="utf-8") as f:
                 f.write(init_string)
         device = "cpu"
