@@ -1,6 +1,6 @@
-timestamp: ${now:%Y%m%d%H%M%S}
-experiment: hunger
-experiment_dir: .outputs/{experiment}_{timestamp}/
+define: &timestamp ${now:%Y%m%d%H%M%S}
+define: &experiment hunger
+define: &experiment_dir .outputs/{experiment}_{timestamp}/
 
 experiment_name: {experiment}
 timestamp: {timestamp}
