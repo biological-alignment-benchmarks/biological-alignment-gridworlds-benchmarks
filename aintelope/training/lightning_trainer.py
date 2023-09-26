@@ -218,17 +218,17 @@ class DQNLightning(LightningModule):
 def run_experiment(cfg: DictConfig) -> None:
     dir_out, exp_name = f"{cfg.experiment_dir}", f"{cfg.experiment_name}"
     dir_experiment = Path(dir_out)
-    
+
     lightning_module = DQNLightning(cfg.hparams)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=dir_experiment / "checkpoints",
-        filename="{epoch}-{val_loss:.2f}", 
+        filename="{epoch}-{val_loss:.2f}",
         auto_insert_metric_name=True,
         save_last=True,
         save_top_k=-1,
         save_on_train_epoch_end=True,
-        every_n_epochs=3, # should this be enough? or add some other
+        every_n_epochs=3,  # should this be enough? or add some other
     )
 
     if cfg.trainer_params.resume_from_checkpoint:
@@ -237,8 +237,9 @@ def run_experiment(cfg: DictConfig) -> None:
     else:
         checkpoint = None
     tb_logger = pl_loggers.TensorBoardLogger(
-        save_dir=dir_out, name=exp_name
-        #save_dir=dir_out, name=dir_logs, version=exp_name
+        save_dir=dir_out,
+        name=exp_name
+        # save_dir=dir_out, name=dir_logs, version=exp_name
     )
 
     trainer = Trainer(
