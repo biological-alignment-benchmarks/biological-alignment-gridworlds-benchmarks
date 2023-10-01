@@ -3,8 +3,11 @@ PROJECT = aintelope
 TESTS = tests
 VENV = venv_$(PROJECT)
 
-run-training:
-	python -m ${PROJECT}
+run-training-baseline:
+	python -m ${PROJECT} baseline
+
+run-training-instinct:
+	python -m ${PROJECT} instinct
 
 .PHONY: venv
 venv: ## create virtual environment
