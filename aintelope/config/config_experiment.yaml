@@ -2,10 +2,6 @@ timestamp: ${now:%Y%m%d%H%M%S}
 experiment_name: hunger
 experiment_dir: outputs/${experiment_name}_${timestamp}/
 
-hydra:
-  run:
-    dir: ${experiment_dir}/hydra_logs/
-
 trainer_params:
   resume_from_checkpoint: False
   num_workers: 4
@@ -44,3 +40,7 @@ hparams:
     amount_water_holes: 2
   agent_params:
     target_instincts: [hunger, thirst, curiosity]
+    
+hydra:
+  run:
+    dir: ${experiment_dir}/hydra_logs/
