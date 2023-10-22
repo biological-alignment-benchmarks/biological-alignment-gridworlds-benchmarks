@@ -2,7 +2,8 @@ from typing import Optional, Dict
 from collections import OrderedDict
 from datetime import timedelta
 
-import gym
+import gymnasium as gym
+
 import torch
 from pytorch_lightning import LightningModule, Trainer
 from pytorch_lightning.utilities import DistributedType

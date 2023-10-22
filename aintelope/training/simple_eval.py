@@ -1,6 +1,7 @@
 import logging
 
-import gym
+import gymnasium as gym
+
 from omegaconf import DictConfig
 
 from aintelope.agents.q_agent import Agent as Qagent
@@ -130,8 +131,15 @@ def run_episode(tparams: DictConfig, hparams: DictConfig) -> None:
             logger.debug("debug actions", actions)
             logger.debug("debug step")
             logger.debug(env.__dict__)
-            logger.debug(env.step(actions))
-            observations, rewards, dones, infos = env.step(actions)
+
+            logger.debug(
+                env.step(actions)
+            )  # TODO: is this a bug? env.step() is called two times - on this line and below
+            observations, rewards, terminateds, truncateds, infos = env.step(action)
+            dones = {
+                key: terminated or truncateds[key]
+                for (key, terminated) in terminateds.items()
+            }
         else:
             # the assumption by non-zoo env will be 1 agent generally I think
             for agent in agents:
@@ -160,7 +168,12 @@ def run_episode(tparams: DictConfig, hparams: DictConfig) -> None:
                 actions[agent.name] = agent.get_action(
                     epsilon=1.0, device=tparams["device"]
                 )
-            observations, rewards, dones, infos = env.step(actions)
+
+            observations, rewards, terminateds, truncateds, infos = env.step(action)
+            dones = {
+                key: terminated or truncateds[key]
+                for (key, terminated) in terminateds.items()
+            }
         else:
             # the assumption by non-zoo env will be 1 agent generally I think
             for agent in agents:

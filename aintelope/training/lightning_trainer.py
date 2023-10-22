@@ -4,7 +4,9 @@ from pathlib import Path
 from collections import OrderedDict
 
 from omegaconf import DictConfig
-import gym
+
+import gymnasium as gym
+
 import torch
 from torch import Tensor, nn
 from torch.optim import Adam, Optimizer

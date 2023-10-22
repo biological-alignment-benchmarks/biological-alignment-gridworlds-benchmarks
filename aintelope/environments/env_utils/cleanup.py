@@ -1,7 +1,6 @@
 import logging
 
-import gym
-
+import gymnasium as gym
 
 logger = logging.getLogger("aintelope.environments.env_utils.cleanup")
 

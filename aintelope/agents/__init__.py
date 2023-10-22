@@ -1,7 +1,8 @@
 from typing import Union, Mapping, Tuple, Optional, Type
 from abc import ABC, abstractmethod
 
-import gym
+import gymnasium as gym
+
 from pettingzoo import AECEnv, ParallelEnv
 import pandas as pd
 from torch import nn

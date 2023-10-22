@@ -1,7 +1,8 @@
 import pytest
 import numpy as np
 import numpy.testing as npt
-from gym.spaces import Discrete
+
+from gymnasium.spaces import Discrete
 
 
 from aintelope.environments import savanna as sut

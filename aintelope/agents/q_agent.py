@@ -116,7 +116,17 @@ class QAgent(Agent):
 
         # do step in the environment
         # the environment reports the result of that decision
-        new_state, reward, done, info = self.env.step(action)
+        if isinstance(self.env, GymEnv):
+            new_state, env_reward, terminated, truncated, info = self.env.step(action)
+            done = terminated or truncated
+        elif isinstance(self.env, PettingZooEnv):
+            new_state, env_reward, terminateds, truncateds, info = self.env.step(action)
+            done = {
+                key: terminated or truncateds[key]
+                for (key, terminated) in terminateds.items()
+            }
+        else:
+            new_state, reward, done, info = self.env.step(action)
 
         exp = Experience(self.state, action, reward, done, new_state)
 

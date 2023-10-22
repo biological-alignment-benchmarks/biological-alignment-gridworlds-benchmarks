@@ -5,8 +5,9 @@ from collections import namedtuple
 import numpy as np
 import numpy.typing as npt
 import pygame
-from gym.spaces import Box, Discrete
-from gym.utils import seeding
+
+from gymnasium.spaces import Box, Discrete
+from gymnasium.utils import seeding
 
 from aintelope.environments.env_utils.render_ascii import AsciiRenderState
 from aintelope.environments.env_utils.distance import distance_to_closest_item
@@ -233,7 +234,8 @@ class SavannaEnv:
         # self.agent_selection = self._agent_selector.next()
         self.dones = {agent: False for agent in self.agents}
         observations = {agent: self.observe(agent) for agent in self.agents}
-        return observations
+        infos = {agent: {} for agent in self.agents}
+        return observations, infos
 
     def step(self, actions: Dict[str, Action]) -> Step:
         """step(action) takes in an action for each agent and should return the
@@ -290,7 +292,9 @@ class SavannaEnv:
         if env_done:
             self.agents = []
         logger.debug("debug return", observations, rewards, self.dones, infos)
-        return observations, rewards, self.dones, infos
+
+        terminateds = {key: False for key in self.dones.keys()}
+        return observations, rewards, self.dones, terminateds, infos
 
     def observe(self, agent: str) -> npt.NDArray[ObservationFloat]:
         """Return observation of given agent."""
@@ -364,4 +368,4 @@ class SavannaEnv:
         or any other environment data which should not be kept around after
         the user is no longer using the environment.
         """
-        raise NotImplementedError
+        pass

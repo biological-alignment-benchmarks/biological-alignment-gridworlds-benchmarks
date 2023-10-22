@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from aintelope.agents import Environment, register_agent_class
+from aintelope.agents import Environment, register_agent_class, GymEnv, PettingZooEnv
 from aintelope.agents.q_agent import QAgent, HistoryStep
 from aintelope.agents.memory import Experience, ReplayBuffer
 from aintelope.agents.instincts.savanna_instincts import available_instincts_dict
@@ -111,7 +111,17 @@ class InstinctAgent(QAgent):
 
         # do step in the environment
         # the environment reports the result of that decision
-        new_state, env_reward, done, info = self.env.step(action)
+        if isinstance(self.env, GymEnv):
+            new_state, env_reward, terminated, truncated, info = self.env.step(action)
+            done = terminated or truncated
+        elif isinstance(self.env, PettingZooEnv):
+            new_state, env_reward, terminateds, truncateds, info = self.env.step(action)
+            done = {
+                key: terminated or truncateds[key]
+                for (key, terminated) in terminateds.items()
+            }
+        else:
+            new_state, env_reward, done, info = self.env.step(action)
 
         # we need a layer of body interpretation of the physical state of the environment
         # to track things like impact which can cause persistent injuries
