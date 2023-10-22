@@ -64,8 +64,8 @@ class SavannaGymEnv(SavannaEnv, gym.Env):
         if options is None:
             options = {}
 
-        observations, info = SavannaEnv.reset(self, seed, options)
-        return (observations[self._agent_id], info[self._agent_id])
+        observations, infos = SavannaEnv.reset(self, seed, options)
+        return (observations[self._agent_id], infos[self._agent_id])
 
     @property
     def _agent_id(self):
