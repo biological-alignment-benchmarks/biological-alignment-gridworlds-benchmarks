@@ -3,9 +3,6 @@ PROJECT = aintelope
 TESTS = tests
 VENV = venv_$(PROJECT)
 
-run-training:
-	python -m ${PROJECT}
-
 run-training-baseline:
 	python -m ${PROJECT} config_baseline.yaml
 

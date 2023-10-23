@@ -1,5 +1,6 @@
 defaults:
   - config_experiment
+  - _self_
 
 hparams:
   agent_id: q_agent
