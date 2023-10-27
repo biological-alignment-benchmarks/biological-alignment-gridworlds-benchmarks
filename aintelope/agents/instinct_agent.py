@@ -20,7 +20,7 @@ class InstinctAgent(QAgent):
     def __init__(
         self,
         env: Environment,
-        model: nn.Module,
+        # model: nn.Module,
         replay_buffer: ReplayBuffer,
         warm_start_steps: int,
         target_instincts: List[str] = [],
@@ -28,7 +28,7 @@ class InstinctAgent(QAgent):
         """
         Args:
             env (Environment): environment instance
-            model (nn.Module): neural network instance
+            #model (nn.Module): neural network instance
             replay_buffer (ReplayBuffer): replay buffer of the agent
             warm_start_steps (int): amount of initial random buffer
             target_instincts (List[str]): names if used instincts
@@ -40,43 +40,30 @@ class InstinctAgent(QAgent):
         # reset after attribute setup
         super().__init__(
             env=env,
-            model=model,
+            # model=model,
             replay_buffer=replay_buffer,
             warm_start_steps=warm_start_steps,
         )
 
     def reset(self) -> None:
         """Reset environment and initialize instincts"""
-        self.done = False
-        self.state = self.env.reset()
-        if isinstance(self.state, tuple):
-            self.state = self.state[0]
+        super().reset()
         self.init_instincts()
 
     def get_action(self, net: nn.Module, epsilon: float, device: str) -> int:
-        """Using the given network, decide what action to carry out using an
+        """Decide what action to carry out using an
         epsilon-greedy policy.
 
         Args:
-            net (nn.Module): DQN network instance
+            net (nn.Module): neural network instance
             epsilon (float): value to determine likelihood of taking a random action
             device (str): current device
 
         Returns:
             action (int): index of action
         """
-        if np.random.random() < epsilon:
-            action = self.env.action_space.sample()
-        else:
-            state = torch.tensor(np.expand_dims(self.state, 0))
-
-            if device not in ["cpu"]:
-                state = state.cuda(device)
-
-            q_values = net(state)
-            _, action = torch.max(q_values, dim=1)
-            action = int(action.item())
-
+        action = super().get_action(net, epsilon, device)
+        # Add further instinctual responses here later to modify action
         return action
 
     @torch.no_grad()
@@ -100,17 +87,8 @@ class InstinctAgent(QAgent):
             reward, done (Tuple[float, bool]): reward value and done state
         """
 
-        # The 'mind' of the agent decides what to do next
         action = self.get_action(net, epsilon, device)
 
-        # you could optionally have a filter step here where the body'/'instincts'/'hindbrain'
-        # can veto certain actions, for example stepping off a cliff
-        # or trying to run fast despite a broken leg
-        # this would be like Redwood Research's Harm/Failure Classifier
-        body_veto = "stub"
-
-        # do step in the environment
-        # the environment reports the result of that decision
         if isinstance(self.env, GymEnv):
             new_state, env_reward, terminated, truncated, info = self.env.step(action)
             done = terminated or truncated
@@ -123,22 +101,12 @@ class InstinctAgent(QAgent):
         else:
             new_state, env_reward, done, info = self.env.step(action)
 
-        # we need a layer of body interpretation of the physical state of the environment
-        # to track things like impact which can cause persistent injuries
-        # or death (catatrophic failure of episode). Also, what physical inputs rise above
-        # sense thresholds. How 'embodied' do we need to make our agent? Not sure. This
-        # requires more thought and discussion.
-
-        # the 'body'/'instincts'/'hindbrain' of the agent decides what reward the 'mind' should receive
-        # based on the current and historical state reported by the environment
-        # and also the 'state' that the agent receives, based on sense thresholds.
         if len(self.instincts) == 0:
             # use env reward as default
             instinct_events = []
             reward = env_reward
         else:
             # interpret new_state and env_reward to compute actual reward
-
             reward = 0
             instinct_events = []
             for instinct_name, instinct_object in self.instincts.items():
@@ -146,6 +114,7 @@ class InstinctAgent(QAgent):
                     self, new_state
                 )
                 reward += instinct_reward
+                logger.debug("debug reward instinct", reward)
                 if instinct_event != 0:
                     instinct_events.append((instinct_name, instinct_event))
 

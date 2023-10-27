@@ -4,6 +4,24 @@ from aintelope.environments.env_utils.distance import distance_to_closest_item
 from aintelope.environments.savanna import get_agent_pos_from_state
 
 
+class Smell:
+    def __init__(self, instinct_params={}) -> None:
+        self.instinct_params = instinct_params
+
+    def reset(self):
+        return None
+
+    def calc_reward(self, agent, state):
+        """function of smell intensity for food"""
+        agent_pos = get_agent_pos_from_state(state)
+        min_grass_distance = distance_to_closest_item(
+            agent_pos, agent.env.grass_patches
+        )
+        event_signal = 0
+        smell_reward = 1.0 / (min_grass_distance + 1.0)
+        return smell_reward, event_signal
+
+
 class Hunger:
     def __init__(self, instinct_params: Optional[Dict] = None) -> None:
         self.instinct_params = {} if instinct_params is None else instinct_params

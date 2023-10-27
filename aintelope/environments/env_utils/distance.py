@@ -9,7 +9,7 @@ def distance_to_closest_item(agent_pos: np.ndarray, items: np.ndarray) -> np.flo
     if len(items.shape) == 1:
         items = np.expand_dims(items, 0)
 
-    grass_patch_closest = items[
+    closest_item = items[
         np.argmin(np.linalg.norm(np.subtract(items, agent_pos), axis=1))
     ]
-    return vec_distance(grass_patch_closest, agent_pos)
+    return vec_distance(closest_item, agent_pos)

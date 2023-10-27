@@ -36,11 +36,11 @@ hparams:
     render_mode: null
     render_map_max: 5
     amount_agents: 1 # for now only one agent
-    amount_grass_patches: 2
-    amount_water_holes: 2
+    amount_grass_patches: 1
+    amount_water_holes: 0
   agent_params:
-    target_instincts: [hunger, thirst, curiosity]
-    
+    target_instincts: []
+
 hydra:
   run:
     dir: ${experiment_dir}/hydra_logs/

@@ -37,9 +37,10 @@ class QAgent(Agent):
     def __init__(
         self,
         env: Environment,
-        model: nn.Module,
+        # model: nn.Module,
         replay_buffer: ReplayBuffer,
         warm_start_steps: int,
+        target_instincts: List[str] = [],
     ) -> None:
         self.env = env
         if isinstance(env, GymEnv):
@@ -48,7 +49,7 @@ class QAgent(Agent):
             self.action_space = self.env.action_space("agent0")
         else:
             raise TypeError(f"{type(env)} is not a valid environment")
-        self.model = model
+        # self.model = model
         self.replay_buffer = replay_buffer
         self.warm_start_steps = warm_start_steps
         self.history: List[HistoryStep] = []
@@ -61,11 +62,12 @@ class QAgent(Agent):
         if isinstance(self.state, tuple):
             self.state = self.state[0]
 
-    def get_action(self, epsilon: float, device: str) -> Optional[int]:
+    def get_action(self, net: nn.Module, epsilon: float, device: str) -> Optional[int]:
         """Using the given network, decide what action to carry out using an
         epsilon-greedy policy.
 
         Args:
+            net: pytorch Module instance, the model
             epsilon: value to determine likelihood of taking a random action
             device: current device
 
@@ -83,7 +85,7 @@ class QAgent(Agent):
             if device not in ["cpu"]:
                 state = state.cuda(device)
 
-            q_values = self.model(state)
+            q_values = net(state)  # self.model(state)
             _, action = torch.max(q_values, dim=1)
             action = int(action.item())
 
@@ -112,7 +114,7 @@ class QAgent(Agent):
         """
 
         # The 'mind' (model) of the agent decides what to do next
-        action = self.get_action(epsilon, device)
+        action = self.get_action(net, epsilon, device)
 
         # do step in the environment
         # the environment reports the result of that decision
@@ -129,6 +131,30 @@ class QAgent(Agent):
             new_state, reward, done, info = self.env.step(action)
 
         exp = Experience(self.state, action, reward, done, new_state)
+        self.history.append(
+            HistoryStep(
+                state=self.env.state_to_namedtuple(self.state.tolist()),
+                action=action,
+                reward=reward,
+                done=done,
+                instinct_events=[],
+                new_state=self.env.state_to_namedtuple(new_state.tolist()),
+            )
+        )
+
+        if save_path is not None:
+            with open(save_path, "a+") as f:
+                csv_writer = csv.writer(f)
+                csv_writer.writerow(
+                    [
+                        self.state.tolist(),
+                        action,
+                        reward,
+                        done,
+                        instinct_events,
+                        new_state,
+                    ]
+                )
 
         self.replay_buffer.append(exp)
         self.state = new_state

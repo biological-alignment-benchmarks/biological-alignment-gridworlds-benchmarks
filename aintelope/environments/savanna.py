@@ -108,7 +108,11 @@ class HumanRenderState:
 
 
 def reward_agent(min_grass_distance):
-    return 1 / (1 + min_grass_distance)
+    # For now measure if agent can eat. Was #1 / (1 + min_grass_distance), moving to instincts
+    if min_grass_distance > 1:
+        return np.float64(0.0)
+    else:
+        return np.float64(1.0)
 
 
 def move_agent(
