@@ -132,24 +132,24 @@ class QAgent(Agent):
             done = terminated or truncated
         elif isinstance(self.env, PettingZooEnv):
             actions = {"agent_0": action}  # TODO: multi-agent handling
-            new_state, env_reward, terminateds, truncateds, _ = self.env.step(action)
+            new_state, env_reward, terminateds, truncateds, _ = self.env.step(actions)
             done = {
                 key: terminated or truncateds[key]
                 for (key, terminated) in terminateds.items()
             }
             # TODO: multi-agent handling
             new_state = new_state["agent_0"]
-            score = score["agent_0"]
+            env_reward = env_reward["agent_0"]
             done = done["agent_0"]
         else:
             logger.warning(f"{self.env} is not of type GymEnv or PettingZooEnv")
             new_state, env_reward, done, _ = self.env.step(action)
             # TODO: multi-agent handling
             new_state = new_state["agent_0"]
-            score = score["agent_0"]
+            env_reward = env_reward["agent_0"]
             done = done["agent_0"]
 
-        reward = score  # temporary, until play_step is separated from agent
+        reward = env_reward  # temporary, until play_step is separated from agent
         exp = Experience(self.state, action, env_reward, done, new_state)
         self.history.append(
             HistoryStep(
