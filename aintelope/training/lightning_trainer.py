@@ -46,20 +46,28 @@ class DQNLightning(LightningModule):
         super().__init__()
         self.save_hyperparameters(hparams)  # make hparams available as self.hparams
 
-        if hparams.env == "savanna-safetygrid-parallel-v1":
+        if hparams.env == "savanna-zoo-parallel-v2":
             self.env = SavannaGridworldParallelEnv(env_params=hparams.env_params)
             # observation_space and action_space require agent argument: https://pettingzoo.farama.org/content/basic_usage/#additional-environment-api
             obs_size = self.env.observation_space("agent_0").shape[0]
             n_actions = self.env.action_space("agent_0").n
-        elif hparams.env == "savanna-safetygrid-sequential-v1":
+        elif hparams.env == "savanna-safetygrid-parallel-v1": # TODO: merge with above block
+            self.env = SavannaGridworldParallelEnv(env_params=hparams.env_params)
+            # observation_space and action_space require agent argument: https://pettingzoo.farama.org/content/basic_usage/#additional-environment-api
+            obs_size = self.env.observation_space("agent_0").shape[0]
+            n_actions = self.env.action_space("agent_0").n
+
+        elif hparams.env == "savanna-zoo-sequential-v2":
             self.env = SavannaGridworldSequentialEnv(env_params=hparams.env_params)
             # observation_space and action_space require agent argument: https://pettingzoo.farama.org/content/basic_usage/#additional-environment-api
             obs_size = self.env.observation_space("agent_0").shape[0]
             n_actions = self.env.action_space("agent_0").n
-        elif hparams.env == "savanna-gym-v2":
-            self.env = SavannaGymEnv(env_params=hparams.env_params)
-            obs_size = self.env.observation_space.shape[0]
-            n_actions = self.env.action_space.n
+        elif hparams.env == "savanna-safetygrid-sequential-v1": # TODO: merge with above block
+            self.env = SavannaGridworldSequentialEnv(env_params=hparams.env_params)
+            # observation_space and action_space require agent argument: https://pettingzoo.farama.org/content/basic_usage/#additional-environment-api
+            obs_size = self.env.observation_space("agent_0").shape[0]
+            n_actions = self.env.action_space("agent_0").n
+
         else:
             # GYM_INTERACTION
             # can't register as a gym env unless we rewrite as a gym env

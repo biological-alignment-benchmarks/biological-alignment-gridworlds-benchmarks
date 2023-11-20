@@ -7,4 +7,3 @@ PettingZoo==1.24.1
 pygame==2.4
 pytorch-lightning==1.6.4
 -e git+https://github.com/levitation-opensource/ai-safety-gridworlds#egg=ai-safety-gridworlds
-absl-py==1.4.0

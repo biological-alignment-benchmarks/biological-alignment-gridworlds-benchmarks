@@ -11,7 +11,6 @@ from torch import nn
 
 from aintelope.agents import (
     Agent,
-    GymEnv,
     PettingZooEnv,
     Environment,
     register_agent_class,
@@ -43,9 +42,7 @@ class QAgent(Agent):
         target_instincts: List[str] = [],
     ) -> None:
         self.env = env
-        if isinstance(env, GymEnv):
-            self.action_space = self.env.action_space
-        elif isinstance(env, PettingZooEnv):
+        if isinstance(env, PettingZooEnv):
             self.action_space = self.env.action_space("agent_0")
         else:
             raise TypeError(f"{type(env)} is not a valid environment")
@@ -62,9 +59,7 @@ class QAgent(Agent):
         if isinstance(self.state, tuple):
             self.state = self.state[0]
 
-        if isinstance(self.env, GymEnv):
-            pass
-        elif isinstance(self.env, PettingZooEnv):
+        if isinstance(self.env, PettingZooEnv):
             # TODO: multi-agent handling
             self.state = self.state["agent_0"]
         else:
@@ -127,10 +122,7 @@ class QAgent(Agent):
 
         # do step in the environment
         # the environment reports the result of that decision
-        if isinstance(self.env, GymEnv):
-            new_state, env_reward, terminated, truncated, _ = self.env.step(action)
-            done = terminated or truncated
-        elif isinstance(self.env, PettingZooEnv):
+        if isinstance(self.env, PettingZooEnv):
             actions = {"agent_0": action}  # TODO: multi-agent handling
             new_state, env_reward, terminateds, truncateds, _ = self.env.step(actions)
             done = {
@@ -142,7 +134,7 @@ class QAgent(Agent):
             env_reward = env_reward["agent_0"]
             done = done["agent_0"]
         else:
-            logger.warning(f"{self.env} is not of type GymEnv or PettingZooEnv")
+            logger.warning(f"{self.env} is not of type PettingZooEnv")
             new_state, env_reward, done, _ = self.env.step(action)
             # TODO: multi-agent handling
             new_state = new_state["agent_0"]

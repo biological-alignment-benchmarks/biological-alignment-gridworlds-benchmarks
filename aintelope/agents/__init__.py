@@ -7,7 +7,6 @@ from pettingzoo import AECEnv, ParallelEnv
 import pandas as pd
 from torch import nn
 
-GymEnv = gym.Env
 PettingZooEnv = Union[AECEnv, ParallelEnv]
 Environment = Union[gym.Env, PettingZooEnv]
 

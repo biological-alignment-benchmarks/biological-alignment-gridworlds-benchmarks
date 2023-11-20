@@ -17,6 +17,10 @@ from aintelope.environments.savanna_zoo import (
     SavannaZooParallelEnv,
     SavannaZooSequentialEnv,
 )
+from aintelope.environments.savanna_safetygrid import (
+    SavannaGridworldParallelEnv,
+    SavannaGridworldSequentialEnv,
+)
 
 logger = logging.getLogger("aintelope.training.simple_eval")
 
@@ -33,6 +37,8 @@ AGENT_LOOKUP = {
 ENV_LOOKUP = {
     "savanna-zoo-parallel-v2": SavannaZooParallelEnv,
     "savanna-zoo-sequential-v2": SavannaZooSequentialEnv,
+    "savanna-safetygrid-parallel-v1": SavannaGridworldParallelEnv,
+    "savanna-safetygrid-sequential-v1": SavannaGridworldSequentialEnv,
 }
 
 MODEL_LOOKUP = {"dqn": DQN}
