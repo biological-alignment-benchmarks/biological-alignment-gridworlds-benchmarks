@@ -296,7 +296,7 @@ class SavannaGridworldParallelEnv(GridworldZooBaseEnv, GridworldZooParallelEnv):
         - observations
         - rewards
         - dones
-        - terminateds
+        - truncateds
         - info
         dicts where each dict looks like {agent_1: action_of_agent_1, agent_2: action_of_agent_2}
         or generally {<agent_name>: <agent_action or None if agent is done>}
@@ -372,12 +372,47 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
         self._last_infos = infos
         return observations2, infos
 
-    def step(self, actions: Dict[str, Action]) -> Step:
+    def step_single_agent(self, action: Action) -> Step:
+        """step(action) takes in an action for each agent and should return the
+        - observation
+        - reward
+        - done
+        - truncated
+        - info
+        """
+        logger.debug("debug action", action)
+
+        agent = self.agent_selection
+        if action is None:
+            action = (
+                Actions.NOOP
+            )  # all agents need to take a step, the stepping order cannot be modified
+        GridworldZooAecEnv.step(self, action)
+
+        # observe observations, transform observations and rewards
+        info = self.observe_info(agent)
+        # self.observe_from_location({agent: [1, 1]})    # for debugging
+        observation2 = self.transform_observation(agent, info)
+
+        min_grass_distance = self.calc_min_grass_distance(agent, info)
+        reward2 = self.reward_agent(min_grass_distance)
+
+        terminated = self.terminations[agent]
+        truncated = self.truncations[agent]
+
+        self._last_infos[agent] = info
+
+        logger.debug(
+            "debug return", observation2, reward2, terminated, truncated, info
+        )
+        return observation2, reward2, terminated, truncated, info
+
+    def step_multiple_agents(self, actions: Dict[str, Action]) -> Step:
         """step(action) takes in an action for each agent and should return the
         - observations
         - rewards
         - dones
-        - terminateds
+        - truncateds
         - info
         dicts where each dict looks like {agent_1: action_of_agent_1, agent_2: action_of_agent_2}
         or generally {<agent_name>: <agent_action or None if agent is done>}

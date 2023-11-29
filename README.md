@@ -50,6 +50,15 @@ produced. Green dots are food in the environment, blue dots are water.
 
 ## Experiment Analysis
 
+To see the results, do the following:
+1. Run the following n-times (you can choose n, say 3, this is just for statistical significance):
+  `make run-training-baseline`
+  `make run-training-instinct`
+2. Run `jupyter lab`, and run the blocks by targeting them and Shift+Enter/play button.
+  Initialize: run the first three blocks to start
+  Then run the blocks under a title to show those results
+There are currently three distinct plots available, training plots, E(R) -plots and simulations of the trained models. 
+
 Some metrics and visualizations are logged with
 [`tensorboard`](https://www.tensorflow.org/tensorboard). This information can be
 accessed by starting a `tensorboard` server locally. To do that switch to the

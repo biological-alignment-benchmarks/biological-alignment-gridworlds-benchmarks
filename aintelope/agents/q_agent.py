@@ -1,5 +1,6 @@
 from typing import Optional, Tuple, NamedTuple, List
 import logging
+import numpy.typing as npt
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -9,14 +10,26 @@ import pandas as pd
 import torch
 from torch import nn
 
+from gymnasium.spaces import Discrete
+
+from aintelope.environments.savanna_gym import SavannaGymEnv  # TODO used for hack
+from aintelope.training.dqn_training import Trainer
 from aintelope.agents import (
     Agent,
-    PettingZooEnv,
-    Environment,
     register_agent_class,
 )
-from aintelope.agents.memory import Experience, ReplayBuffer
 
+# from aintelope.agents.memory import Experience
+from aintelope.environments.typing import (
+    ObservationFloat,
+    PositionFloat,
+    Action,
+    AgentId,
+    AgentStates,
+    Observation,
+    Reward,
+    Info,
+)
 
 logger = logging.getLogger("aintelope.agents.q_agent")
 
@@ -27,7 +40,7 @@ class HistoryStep(NamedTuple):
     reward: float
     done: bool
     instinct_events: List[Tuple[str, int]]
-    new_state: NamedTuple
+    next_state: NamedTuple
 
 
 class QAgent(Agent):
@@ -35,40 +48,32 @@ class QAgent(Agent):
 
     def __init__(
         self,
-        env: Environment,
-        # model: nn.Module,
-        replay_buffer: ReplayBuffer,
-        warm_start_steps: int,
+        agent_id: str,
+        trainer: Trainer,
+        action_space: Discrete,
         target_instincts: List[str] = [],
     ) -> None:
-        self.env = env
-        if isinstance(env, PettingZooEnv):
-            self.action_space = self.env.action_space("agent_0")
-        else:
-            raise TypeError(f"{type(env)} is not a valid environment")
-        # self.model = model
-        self.replay_buffer = replay_buffer
-        self.warm_start_steps = warm_start_steps
+        self.id = agent_id
+        self.action_space = action_space
+        self.trainer = trainer
         self.history: List[HistoryStep] = []
-        self.reset()
+        self.done = False
+        self.last_action = 0
 
-    def reset(self) -> None:
-        """Resents the environment and updates the state."""
-        self.done = False  # TODO: multi-agent handling
-        self.state = self.env.reset()
+    def reset(self, state) -> None:
+        """Resets self and updates the state."""
+        self.done = False
+        self.state = state
         if isinstance(self.state, tuple):
             self.state = self.state[0]
 
-        if isinstance(self.env, PettingZooEnv):
-            # TODO: multi-agent handling
-            self.state = self.state["agent_0"]
-        else:
-            # TODO: multi-agent handling
-            self.state = self.state["agent_0"]
-
-    def get_action(self, net: nn.Module, epsilon: float, device: str) -> Optional[int]:
-        """Using the given network, decide what action to carry out using an
-        epsilon-greedy policy.
+    def get_action(
+        self,
+        observation: npt.NDArray[ObservationFloat] = None,
+        step: int = 0,  # net: nn.Module, epsilon: float, device: str
+    ) -> Optional[int]:
+        """Given an observation, ask your net what to do. State is needed to be given here
+        as other agents have changed the state!
 
         Args:
             net: pytorch Module instance, the model
@@ -80,77 +85,49 @@ class QAgent(Agent):
         """
         if self.done:
             return None
-        elif np.random.random() < epsilon:
-            action = self.action_space.sample()
         else:
-            logger.debug("debug state", type(self.state))
-            state = torch.tensor(np.expand_dims(self.state, 0))
-            logger.debug("debug state tensor", type(self.state), state.shape)
-            if device not in ["cpu"]:
-                state = state.cuda(device)
+            # For future: observation can go to instincts here
+            action = self.trainer.get_action(self.id, observation, step)
 
-            q_values = net(state)  # self.model(state)
-            _, action = torch.max(q_values, dim=1)
-            action = int(action.item())
-
+        self.last_action = action
         return action
 
-    @torch.no_grad()
-    def play_step(
+    def update(
         self,
-        net: nn.Module,
-        epsilon: float = 0.0,
-        device: str = "cpu",
+        env: SavannaGymEnv = None,  # TODO hack, figure out if state_to_namedtuple can be static somewhere
+        observation: npt.NDArray[ObservationFloat] = None,
+        score: float = 0.0,
+        done: bool = False,
         save_path: Optional[str] = None,
-    ) -> Tuple[float, float, bool]:
+    ) -> None:
         """
-        Only for Gym envs, not PettingZoo envs
-        Carries out a single interaction step between the agent and the
-        environment.
+        Takes observations and updates trainer on perceived experiences. Needed here to catch instincts.
 
         Args:
-            net: DQN network
-            epsilon: value to determine likelihood of taking a random action
-            device: current device
+            observation: ObservationArray
+            score: Only baseline uses score as a reward
+            done: boolean whether run is done
 
         Returns:
-            env_reward, done
+            None
         """
-
-        # The 'mind' (model) of the agent decides what to do next
-        action = self.get_action(net, epsilon, device)
-
-        # do step in the environment
-        # the environment reports the result of that decision
-        if isinstance(self.env, PettingZooEnv):
-            actions = {"agent_0": action}  # TODO: multi-agent handling
-            new_state, env_reward, terminateds, truncateds, _ = self.env.step(actions)
-            done = {
-                key: terminated or truncateds[key]
-                for (key, terminated) in terminateds.items()
-            }
-            # TODO: multi-agent handling
-            new_state = new_state["agent_0"]
-            env_reward = env_reward["agent_0"]
-            done = done["agent_0"]
+        next_state = observation
+        # For future: add state (interoception) handling here when needed
+        # TODO: hacky. empty next states introduced by new example code,
+        # and I'm wondering if we need to save these steps too due to agent death
+        # Discussion in slack.
+        if next_state is not None:
+            next_s_hist = env.state_to_namedtuple(next_state.tolist())
         else:
-            logger.warning(f"{self.env} is not of type PettingZooEnv")
-            new_state, env_reward, done, _ = self.env.step(action)
-            # TODO: multi-agent handling
-            new_state = new_state["agent_0"]
-            env_reward = env_reward["agent_0"]
-            done = done["agent_0"]
-
-        reward = env_reward  # temporary, until play_step is separated from agent
-        exp = Experience(self.state, action, env_reward, done, new_state)
+            next_s_hist = None
         self.history.append(
             HistoryStep(
-                state=self.env.state_to_namedtuple(self.state.tolist()),
-                action=action,
-                reward=env_reward,
+                state=env.state_to_namedtuple(self.state.tolist()),
+                action=self.last_action,
+                reward=score,
                 done=done,
                 instinct_events=[],
-                new_state=self.env.state_to_namedtuple(new_state.tolist()),
+                next_state=next_s_hist,
             )
         )
 
@@ -160,23 +137,18 @@ class QAgent(Agent):
                 csv_writer.writerow(
                     [
                         self.state.tolist(),
-                        action,
-                        env_reward,
+                        self.last_action,
+                        score,
                         done,
                         [],
-                        new_state,
+                        next_state,
                     ]
                 )
 
-        self.replay_buffer.append(exp)
-        self.state = new_state
-
-        # if scenario is complete or agent experiences catastrophic failure,
-        # end the agent.
-        if done:
-            self.reset()
-
-        return env_reward, done
+        self.trainer.update_memory(
+            self.id, self.state, self.last_action, score, done, next_state
+        )  # exp)
+        self.state = next_state
 
     def get_history(self) -> pd.DataFrame:
         """
@@ -189,7 +161,7 @@ class QAgent(Agent):
                 "reward",
                 "done",
                 "instinct_events",
-                "new_state",
+                "next_state",
             ],
             data=self.history[self.warm_start_steps :],
         )

@@ -225,9 +225,11 @@ class DQNLightning(LightningModule):
         )
         return dataloader
 
+    ''' 
     def train_dataloader(self) -> DataLoader:
         """Get train loader."""
         return self.__dataloader()
+    '''
 
     def get_device(self, batch) -> str:
         """Retrieve device currently being used by minibatch."""

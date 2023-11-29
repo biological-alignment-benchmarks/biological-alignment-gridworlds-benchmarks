@@ -15,15 +15,15 @@ hparams:
   lr: 0.001
   __env: savanna-zoo-parallel-v2
   __env_entry_point: "aintelope.environments.savanna_zoo:SavannaZooParallelEnv"
-  __env_type: gym
-  env: savanna-safetygrid-parallel-v1
-  env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldParallelEnv"
+  __env_type: zoo
+  ___env: savanna-safetygrid-parallel-v1
+  ___env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldParallelEnv"
+  ___env_type: zoo
+  env: savanna-safetygrid-sequential-v1
+  env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldSequentialEnv"
   env_type: zoo
-  _env: savanna-safetygrid-sequential-v1
-  _env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldSequentialEnv"
-  _env_type: zoo
   model: dqn
-  agent_id: instinct_agent
+  agent_id: q_agent
   gamma: 0.99
   sync_rate: 10
   replay_size: 99
@@ -31,12 +31,14 @@ hparams:
   eps_last_frame: 1000
   eps_start: 1.0
   eps_end: 0.01
+  tau: 0.05
+  num_episodes: 10 # how long to train
   episode_length: 1010
   warm_start_steps: 100
   log_figures_every_n_epochs: 5
-  every_n_epochs: 1 # how often save a model
+  every_n_episodes: 1 # how often save a model
   env_params:
-    num_iters: 1000 # duration of the game
+    num_iters: 100 # duration of a single episode (should be step, zoo needs iter?)
     map_min: 0
     map_max: 5
     render_mode: null

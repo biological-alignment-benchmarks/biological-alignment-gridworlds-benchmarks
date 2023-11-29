@@ -238,14 +238,14 @@ class SavannaEnv:
         self.dones = {agent: False for agent in self.agents}
         observations = {agent: self.observe(agent) for agent in self.agents}
         infos = {agent: {} for agent in self.agents}
-        return observations, infos
+        return observations, infos  # TODO remove these returns as unused?
 
     def step(self, actions: Dict[str, Action]) -> Step:
         """step(action) takes in an action for each agent and should return the
         - observations
         - rewards
         - dones
-        - terminateds
+        - truncateds
         - info
         dicts where each dict looks like {agent_1: action_of_agent_1, agent_2: action_of_agent_2}
         or generally {<agent_name>: <agent_action or None if agent is done>}
@@ -338,6 +338,8 @@ class SavannaEnv:
 
     def state_to_namedtuple(self, state: npt.NDArray[ObservationFloat]) -> NamedTuple:
         """Method to convert a state array into a named tuple."""
+        if state is None:
+            return None
         agent_coords = {"agent_coords": state[:2]}
         grass_patches_coords = {}
         gp_offset = 2
