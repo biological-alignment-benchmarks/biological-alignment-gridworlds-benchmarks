@@ -1,15 +1,13 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List
 import logging
 import csv
 
 import numpy as np
-import torch
-from torch import nn
 
-from aintelope.agents import Environment, register_agent_class, GymEnv, PettingZooEnv
+from aintelope.agents import Environment, register_agent_class
 from aintelope.agents.q_agent import QAgent, HistoryStep
-from aintelope.agents.memory import Experience, ReplayBuffer
 from aintelope.agents.instincts.savanna_instincts import available_instincts_dict
+from aintelope.environments.savanna_gym import SavannaGymEnv
 
 logger = logging.getLogger("aintelope.agents.instinct_agent")
 
@@ -66,41 +64,32 @@ class InstinctAgent(QAgent):
         # Add further instinctual responses here later to modify action
         return action
 
-    @torch.no_grad()
-    def play_step(
+    def update(
         self,
-        net: nn.Module,
-        epsilon: float = 0.0,
-        device: str = "cpu",
+        env: SavannaGymEnv = None,  # TODO hack, figure out if state_to_namedtuple can be static somewhere
+        observation: npt.NDArray[ObservationFloat] = None,
+        score: float = 0.0,
+        done: bool = False,
         save_path: Optional[str] = None,
-    ) -> Tuple[float, float, bool]:
-        """Carries out a single interaction step between the agent and the
-        environment.
+    ) -> None:
+        """
+        Takes observations and updates trainer on perceived experiences. Needed here to catch instincts.
 
         Args:
-            net: DQN network instance
-            epsilon: value to determine likelihood of taking a random action
-            device: current device
-            save_path (typ.Optional[str]): path to save agent history
+            observation: ObservationArray
+            score: Only baseline uses score as a reward
+            done: boolean whether run is done
 
         Returns:
-            reward, done (Tuple[float, bool]): reward value and done state
+            None
         """
+        next_state = observation
+        # For future: add state (interoception) handling here when needed
+        # TODO: hacky. empty next states introduced by new example code,
+        # and I'm wondering if we need to save these steps too due to agent death
+        # Discussion in slack.
 
-        action = self.get_action(net, epsilon, device)
-
-        if isinstance(self.env, GymEnv):
-            new_state, score, terminated, truncated, info = self.env.step(action)
-            done = terminated or truncated
-        elif isinstance(self.env, PettingZooEnv):
-            new_state, score, terminateds, truncateds, info = self.env.step(action)
-            done = {
-                key: terminated or truncateds[key]
-                for (key, terminated) in terminateds.items()
-            }
-        else:
-            new_state, score, done, info = self.env.step(action)
-
+        # interrupt to do instinctual learning
         if len(self.instincts) == 0:
             # use env reward if no instincts available
             instinct_events = []
@@ -120,18 +109,20 @@ class InstinctAgent(QAgent):
                 )
                 if instinct_event != 0:
                     instinct_events.append((instinct_name, instinct_event))
+        # interruption done
 
-        # the action taken, the environment's response, and the body's reward are all
-        # recorded together in memory
-        exp = Experience(self.state, action, reward, done, new_state)
+        if next_state is not None:
+            next_s_hist = env.state_to_namedtuple(next_state.tolist())
+        else:
+            next_s_hist = None
         self.history.append(
             HistoryStep(
-                state=self.env.state_to_namedtuple(self.state.tolist()),
-                action=action,
+                state=env.state_to_namedtuple(self.state.tolist()),
+                action=self.last_action,
                 reward=reward,
                 done=done,
                 instinct_events=instinct_events,
-                new_state=self.env.state_to_namedtuple(new_state.tolist()),
+                next_state=next_s_hist,
             )
         )
 
@@ -141,22 +132,18 @@ class InstinctAgent(QAgent):
                 csv_writer.writerow(
                     [
                         self.state.tolist(),
-                        action,
-                        reward,
+                        self.last_action,
+                        score,
                         done,
                         instinct_events,
-                        new_state,
+                        next_state,
                     ]
                 )
 
-        self.replay_buffer.append(exp)
-        self.state = new_state
-
-        # if scenario is complete or agent experiences catastrophic failure,
-        # end the agent.
-        if done:
-            self.reset()
-        return reward, score, done
+        self.trainer.update_memory(
+            self.id, self.state, self.last_action, score, done, next_state
+        )
+        self.state = next_state
 
     def init_instincts(self) -> None:
         logger.debug(f"target_instincts: {self.target_instincts}")
