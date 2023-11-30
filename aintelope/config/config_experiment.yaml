@@ -13,15 +13,15 @@ trainer_params:
 hparams:
   batch_size: 16
   lr: 0.001
-  env: savanna-zoo-parallel-v2
-  env_entry_point: "aintelope.environments.savanna_zoo:SavannaZooParallelEnv"
-  env_type: zoo
+  _env: savanna-zoo-parallel-v2
+  _env_entry_point: "aintelope.environments.savanna_zoo:SavannaZooParallelEnv"
+  _env_type: zoo
   __env: savanna-zoo-sequential-v2
   __env_entry_point: "aintelope.environments.savanna_zoo:SavannaZooSequentialEnv"
   __env_type: zoo
-  ___env: savanna-safetygrid-parallel-v1
-  ___env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldParallelEnv"
-  ___env_type: zoo
+  env: savanna-safetygrid-parallel-v1
+  env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldParallelEnv"
+  env_type: zoo
   ____env: savanna-safetygrid-sequential-v1
   ____env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldSequentialEnv"
   ____env_type: zoo

@@ -79,6 +79,7 @@ class GridworldZooBaseEnv:
         "observation_direction_mode": 0,  # TODO: Joel wanted to use relative direction, so need to use mode 1 or 2 in this case  # 0 - fixed, 1 - relative, depending on last move, 2 - relative, controlled by separate turning actions.
         "action_direction_mode": 0,  # TODO: Joel wanted to use relative direction, so need to use mode 1 or 2 in this case    # 0 - fixed, 1 - relative, depending on last move, 2 - relative, controlled by separate turning actions.
         "map_randomization_frequency": 1,  # TODO   # 0 - off, 1 - once per experiment run, 2 - once per trial (a trial is a sequence of training episodes separated by env.reset call, but using a same model instance), 3 - once per training episode.
+        "remove_unused_tile_types_from_layers": True,  # Whether to remove tile types not present on initial map from observation layers. - set to False when same agent brain is trained over multiple environments
     }
 
     def __init__(self, env_params: Optional[Dict] = None):
@@ -102,6 +103,12 @@ class GridworldZooBaseEnv:
             "action_direction_mode": self.metadata[
                 "action_direction_mode"
             ],  # 0 - fixed, 1 - relative, depending on last move, 2 - relative, controlled by separate turning actions.
+            "map_randomization_frequency": self.metadata[
+                "map_randomization_frequency"
+            ],  # 0 - off, 1 - once per experiment run, 2 - once per trial (a trial is a sequence of training episodes separated by env.reset call, but using a same model instance), 3 - once per training episode.
+            "remove_unused_tile_types_from_layers": self.metadata[
+                "remove_unused_tile_types_from_layers"
+            ],  # Whether to remove tile types not present on initial map from observation layers. - set to False when same agent brain is trained over multiple environments
         }
 
     def init_observation_spaces(self):

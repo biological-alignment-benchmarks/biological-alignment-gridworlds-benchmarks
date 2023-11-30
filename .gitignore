@@ -148,3 +148,6 @@ tags
 
 # pytorch_lightning
 **/lightning_logs
+/ai_safety_gridworlds
+/pettingzoo
+/pycolab
