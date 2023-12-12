@@ -153,7 +153,5 @@ def test_performance_benchmark():
     pass
 
 
-if (
-    __name__ == "__main__" and os.name == "nt" and sys.gettrace() is not None
-):  # detect debugging
+if __name__ == "__main__" and os.name == "nt":  # detect debugging
     pytest.main([__file__])  # run tests only in this file

@@ -16,9 +16,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_randomwalkagent_in_savanna_zoo_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_randomwalkagent = {
 #        "agent": "random_walk_agent",
 #        "env": "savanna-zoo-parallel-v2",
@@ -40,9 +40,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_onestepperfectpredictionagent_in_savanna_zoo_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_perfectpredictionagent = {
 #        "agent": "one_step_perfect_prediction_agent",
 #        "env": "savanna-zoo-parallel-v2",
@@ -66,9 +66,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_iterativeweightoptimizationagent_in_savanna_zoo_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_weightoptimizationagent = {
 #        "agent": "iterative_weight_optimization_agent",
 #        "env": "savanna-zoo-parallel-v2",
@@ -92,9 +92,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_randomwalkagent_in_savanna_gridworlds_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_randomwalkagent = {
 #        "agent": "random_walk_agent",
 #        "env": "savanna-safetygrid-parallel-v1",
@@ -116,9 +116,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_onestepperfectpredictionagent_in_savanna_gridworlds_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_perfectpredictionagent = {
 #        "agent": "one_step_perfect_prediction_agent",
 #        "env": "savanna-safetygrid-parallel-v1",
@@ -142,9 +142,9 @@ from aintelope.training.simple_eval import run_episode
 
 
 # def test_iterativeweightoptimizationagent_in_savanna_gridworlds_parallel(
-#    full_params: Dict
+#    tparams_hparams: Dict
 # ) -> None:
-#
+#    full_params = tparams_hparams
 #    params_weightoptimizationagent = {
 #        "agent": "iterative_weight_optimization_agent",
 #        "env": "savanna-safetygrid-parallel-v1",
@@ -167,7 +167,5 @@ from aintelope.training.simple_eval import run_episode
 #    run_episode(full_params=full_params)
 
 
-if (
-    __name__ == "__main__" and os.name == "nt" and sys.gettrace() is not None
-):  # detect debugging
+if __name__ == "__main__" and os.name == "nt":  # detect debugging
     pytest.main([__file__])  # run tests only in this file
