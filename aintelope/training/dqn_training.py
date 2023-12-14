@@ -84,7 +84,7 @@ class Trainer:
         self.hparams = params.hparams
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.optimizer = optim.AdamW(
-            DQN(self.n_observations, self.action_space.n).parameters(),
+            DQN(self.n_observations, self.action_space("agent_0").n).parameters(),
             lr=self.hparams.lr,
             amsgrad=True,
         )
