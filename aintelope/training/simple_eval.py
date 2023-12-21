@@ -91,10 +91,6 @@ def run_episode(full_params: Dict) -> None:
             "Choose: [zoo, gym]. TODO: add stable_baselines3"
         )
 
-    env.reset(options={})
-
-    action_space = env.action_space
-
     if isinstance(env, ParallelEnv):
         (
             observations,
@@ -105,10 +101,14 @@ def run_episode(full_params: Dict) -> None:
     else:
         raise NotImplementedError(f"Unknown environment type {type(env)}")
 
+    action_space = env.action_space
+
     # Common trainer for each agent's models
     trainer = Trainer(full_params)
 
     model_spec = hparams["model"]
+    # TODO: support for different observation shapes in different agents?
+    # TODO: support for different action spaces in different agents?
     if isinstance(model_spec, list):
         models = [MODEL_LOOKUP[net](obs_size, n_actions) for net in model_spec]
     else:
@@ -167,43 +167,69 @@ def run_episode(full_params: Dict) -> None:
 
     for step in range(warm_start_steps):
         if env_type == "zoo":
-            dones = {}
-            for agent_id in env.agent_iter(
-                max_iter=env.num_agents
-            ):  # num_agents returns number of alive (non-done) agents
-                agent = agents_dict[agent_id]
-                observation = env.observe(agent.id)  # TODO: parallel env support
-                # agent doesn't get to play_step, only env can, for multi-agent env compatibility
-                # reward, score, done = agent.play_step(nets[i], epsilon=1.0)
-                # Per Zoo API, a dead agent must call .step(None) once more after becoming dead. Only after that call will this dead agent be removed from various dictionaries and from .agent_iter loop.
-                if env.terminations[agent_id] or env.truncations[agent.id]:
-                    action = None
-                else:
-                    # action = action_space(agent.id).sample()
-                    action = agent.get_action(
-                        observation,
-                        step=0,
-                    )
+            if isinstance(env, ParallelEnv):
+                # loop: get observations and collect actions
+                actions = {}
+                for agent in agents:  # TODO: exclude terminated agents
+                    if dones[agent.id]:
+                        continue
+                    observation = observations[agent.id]
+                    actions[agent.id] = agent.get_action(observation, step)
 
-                logger.debug("debug action", action)
+                logger.debug("debug actions", actions)
                 logger.debug("debug step")
                 logger.debug(env.__dict__)
 
-                # NB! both AIntelope Zoo and Gridworlds Zoo wrapper in AIntelope provide slightly modified Zoo API. Normal Zoo sequential API step() method does not return values and is not allowed to return values else Zoo API tests will fail.
-                result = env.step_single_agent(action)  # TODO: parallel env support
+                # call: send actions and get observations
+                observations, rewards, terminateds, truncateds, infos = env.step(
+                    actions
+                )
 
-                if agent.id in env.agents:  # was not "dead step"
-                    (
-                        observation,
-                        reward,  # NB! This is only initial reward upon agent's own step. When other agents take their turns then the reward of the agent may change. If you need to learn an agent's accumulated reward over other agents turns (plus its own step's reward) then use env.last property.
-                        terminated,
-                        truncated,
-                        info,
-                    ) = result
+                logger.debug((observations, rewards, terminateds, truncateds, infos))
+                dones.update(
+                    {  # call update since the list of terminateds will become smaller on second step after agents have died
+                        key: terminated or truncateds[key]
+                        for (key, terminated) in terminateds.items()
+                    }
+                )
 
-                    logger.debug((observation, reward, terminated, truncated, info))
-                    done = terminated or truncated
-                    dones[agent.id] = done
+            elif isinstance(env, AECEnv):
+	            for agent_id in env.agent_iter(
+	                max_iter=env.num_agents
+	            ):  # num_agents returns number of alive (non-done) agents
+	                agent = agents_dict[agent_id]
+	                observation = env.observe(agent.id)  # TODO: parallel env support
+	                # agent doesn't get to play_step, only env can, for multi-agent env compatibility
+	                # reward, score, done = agent.play_step(nets[i], epsilon=1.0)
+	                # Per Zoo API, a dead agent must call .step(None) once more after becoming dead. Only after that call will this dead agent be removed from various dictionaries and from .agent_iter loop.
+	                if env.terminations[agent_id] or env.truncations[agent.id]:
+	                    action = None
+	                else:
+	                    # action = action_space(agent.id).sample()
+	                    action = agent.get_action(
+	                        observation,
+	                        step=0,
+	                    )
+
+	                logger.debug("debug action", action)
+	                logger.debug("debug step")
+	                logger.debug(env.__dict__)
+
+	                # NB! both AIntelope Zoo and Gridworlds Zoo wrapper in AIntelope provide slightly modified Zoo API. Normal Zoo sequential API step() method does not return values and is not allowed to return values else Zoo API tests will fail.
+	                result = env.step_single_agent(action)  # TODO: parallel env support
+
+	                if agent.id in env.agents:  # was not "dead step"
+	                    (
+	                        observation,
+	                        reward,  # NB! This is only initial reward upon agent's own step. When other agents take their turns then the reward of the agent may change. If you need to learn an agent's accumulated reward over other agents turns (plus its own step's reward) then use env.last property.
+	                        terminated,
+	                        truncated,
+	                        info,
+	                    ) = result
+
+	                    logger.debug((observation, reward, terminated, truncated, info))
+	                    done = terminated or truncated
+	                    dones[agent.id] = done
 
         else:
             logger.warning("Simple_eval: non-zoo env, test not yet implemented!")
@@ -221,45 +247,75 @@ def run_episode(full_params: Dict) -> None:
 
     step = -1
     while not all(dones.values()):
-        step += 1  # debugging only
+        step += 1
         if env_type == "zoo":
             rewards = {}
-            for agent_id in env.agent_iter(
-                max_iter=env.num_agents
-            ):  # num_agents returns number of alive (non-done) agents
-                agent = agents_dict[agent_id]
-                # agent doesn't get to play_step, only env can, for multi-agent env compatibility
-                # reward, score, done = agent.play_step(nets[i], epsilon=1.0)
-                # Per Zoo API, a dead agent must call .step(None) once more after becoming dead. Only after that call will this dead agent be removed from various dictionaries and from .agent_iter loop.
-                if env.terminations[agent_id] or env.truncations[agent.id]:
-                    action = None
-                else:
-                    # action = action_space(agent.id).sample()
-                    action = agent.get_action(
-                        observation,
-                        step=0,
-                    )
 
-                logger.debug("debug action", action)
+            if isinstance(env, ParallelEnv):
+                # loop: get observations and collect actions
+                actions = {}
+                for agent in agents:  # TODO: exclude terminated agents
+                    if dones[agent.id]:
+                        continue
+                    observation = observations[agent.id]
+                    actions[agent.id] = agent.get_action(observation, step)
+
+                logger.debug("debug actions", actions)
                 logger.debug("debug step")
                 logger.debug(env.__dict__)
 
-                # NB! both AIntelope Zoo and Gridworlds Zoo wrapper in AIntelope provide slightly modified Zoo API. Normal Zoo sequential API step() method does not return values and is not allowed to return values else Zoo API tests will fail.
-                result = env.step_single_agent(action)  # TODO: parallel env support
+                # call: send actions and get observations
+                observations, rewards, terminateds, truncateds, infos = env.step(
+                    actions
+                )
 
-                if agent.id in env.agents:  # was not "dead step"
-                    (
-                        observation,
-                        reward,  # NB! This is only initial reward upon agent's own step. When other agents take their turns then the reward of the agent may change. If you need to learn an agent's accumulated reward over other agents turns (plus its own step's reward) then use env.last property.
-                        terminated,
-                        truncated,
-                        info,
-                    ) = result
+                logger.debug((observations, rewards, terminateds, truncateds, infos))
+                dones.update(
+                    {  # call update since the list of terminateds will become smaller on second step after agents have died
+                        key: terminated or truncateds[key]
+                        for (key, terminated) in terminateds.items()
+                    }
+                )
 
-                    logger.debug((observation, reward, terminated, truncated, info))
-                    done = terminated or truncated
-                    dones[agent.id] = done
-                    rewards[agent] = reward
+                # rewards is already in a proper format here
+
+            elif isinstance(env, AECEnv):
+	            for agent_id in env.agent_iter(
+	                max_iter=env.num_agents
+	            ):  # num_agents returns number of alive (non-done) agents
+	                agent = agents_dict[agent_id]
+	                # agent doesn't get to play_step, only env can, for multi-agent env compatibility
+	                # reward, score, done = agent.play_step(nets[i], epsilon=1.0)
+	                # Per Zoo API, a dead agent must call .step(None) once more after becoming dead. Only after that call will this dead agent be removed from various dictionaries and from .agent_iter loop.
+	                if env.terminations[agent_id] or env.truncations[agent.id]:
+	                    action = None
+	                else:
+	                    # action = action_space(agent.id).sample()
+	                    action = agent.get_action(
+	                        observation,
+	                        step=0,
+	                    )
+
+	                logger.debug("debug action", action)
+	                logger.debug("debug step")
+	                logger.debug(env.__dict__)
+
+	                # NB! both AIntelope Zoo and Gridworlds Zoo wrapper in AIntelope provide slightly modified Zoo API. Normal Zoo sequential API step() method does not return values and is not allowed to return values else Zoo API tests will fail.
+	                result = env.step_single_agent(action)  # TODO: parallel env support
+
+	                if agent.id in env.agents:  # was not "dead step"
+	                    (
+	                        observation,
+	                        reward,  # NB! This is only initial reward upon agent's own step. When other agents take their turns then the reward of the agent may change. If you need to learn an agent's accumulated reward over other agents turns (plus its own step's reward) then use env.last property.
+	                        terminated,
+	                        truncated,
+	                        info,
+	                    ) = result
+
+	                    logger.debug((observation, reward, terminated, truncated, info))
+	                    done = terminated or truncated
+	                    dones[agent.id] = done
+	                    rewards[agent] = reward
         else:
             logger.warning("Simple_eval: non-zoo env, test not yet implemented!")
             pass

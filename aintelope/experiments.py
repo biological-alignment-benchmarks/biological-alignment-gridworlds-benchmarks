@@ -103,15 +103,17 @@ def run_experiment(cfg: DictConfig) -> None:
                 # loop: get observations and collect actions
                 actions = {}
                 for agent in agents:  # TODO: exclude terminated agents
-                    observation = env.observe(agent.id)
+                    observation = observations[agent.id]
                     actions[agent.id] = agent.get_action(observation, step)
 
                 # call: send actions and get observations
                 observations, scores, terminateds, truncateds, _ = env.step(actions)
-                dones = {
-                    key: terminated or truncateds[key]
-                    for (key, terminated) in terminateds.items()
-                }
+                dones.update(
+                    {  # call update since the list of terminateds will become smaller on second step after agents have died
+                        key: terminated or truncateds[key]
+                        for (key, terminated) in terminateds.items()
+                    }
+                )
 
                 # loop: update
                 for agent in agents:
@@ -120,9 +122,12 @@ def run_experiment(cfg: DictConfig) -> None:
                     done = dones[agent.id]
                     terminated = terminateds[agent.id]
                     if terminated:
-                        observation = None
+                        observation = None  # TODO: why is this here?
                     agent.update(
-                        env, observation, score, done
+                        env,
+                        observation,
+                        score,
+                        done,  # TODO: should it be "terminated" in place of "done" here?
                     )  # note that score is used ONLY by baseline
 
             elif isinstance(env, AECEnv):
