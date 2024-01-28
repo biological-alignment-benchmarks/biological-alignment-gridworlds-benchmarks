@@ -7,7 +7,6 @@ from gymnasium.spaces import Discrete
 from pettingzoo.test import api_test
 from pettingzoo.test.seed_test import seed_test
 
-from aintelope.environments import savanna_zoo as zoo
 from aintelope.environments.env_utils.distance import distance_to_closest_item
 from aintelope.environments.savanna import ACTION_MAP, move_agent, reward_agent
 from aintelope.environments.savanna_zoo import SavannaZooSequentialEnv
@@ -58,15 +57,15 @@ def test_zoo_seed(execution_number):
     np.random.seed(execution_number)
 
     try:
-        seed_test(zoo.SavannaZooSequentialEnv, num_cycles=10)
+        seed_test(SavannaZooSequentialEnv, num_cycles=10)
     except TypeError:
         # for some reason the test env in Git does not recognise the num_cycles
         # neither as named or positional argument
-        seed_test(zoo.SavannaZooSequentialEnv)
+        seed_test(SavannaZooSequentialEnv)
 
 
 def test_zoo_agent_states():
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
 
     env.reset()
     assert isinstance(env.unwrapped.agent_states, dict)
@@ -81,7 +80,7 @@ def test_zoo_agent_states():
 
 @pytest.mark.parametrize("execution_number", range(10))
 def test_zoo_reward_agent(execution_number):
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
     env.reset(seed=execution_number)
     # single grass patch
     agent_pos = np.random.randint(env.metadata["map_min"], env.metadata["map_max"], 2)
@@ -102,7 +101,7 @@ def test_zoo_reward_agent(execution_number):
 
 
 def test_zoo_move_agent():
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
     env.reset()
 
     agent = env.possible_agents[0]
@@ -136,7 +135,7 @@ def test_zoo_move_agent():
 
 @pytest.mark.parametrize("execution_number", range(10))
 def test_zoo_step_result(execution_number):
-    env = zoo.SavannaZooSequentialEnv(
+    env = SavannaZooSequentialEnv(
         env_params={"num_iters": 2}
     )  # default is 1 iter which means that the env is done after 1 step below and the test will fail
     num_agents = len(env.possible_agents)
@@ -166,7 +165,7 @@ def test_zoo_step_result(execution_number):
 
 @pytest.mark.parametrize("execution_number", range(10))
 def test_zoo_done_step(execution_number):
-    env = zoo.SavannaZooSequentialEnv(env_params={"amount_agents": 1})
+    env = SavannaZooSequentialEnv(env_params={"amount_agents": 1})
     assert len(env.possible_agents) == 1
     env.seed(execution_number)
     env.reset()
@@ -188,7 +187,7 @@ def test_zoo_done_step(execution_number):
 
 
 def test_zoo_agents():
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
 
     assert len(env.possible_agents) == env.metadata["amount_agents"]
     assert isinstance(env.possible_agents, list)
@@ -200,7 +199,7 @@ def test_zoo_agents():
 
 
 def test_zoo_action_spaces():
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
 
     for agent in env.possible_agents:
         assert isinstance(env.action_space(agent), Discrete)
@@ -208,7 +207,7 @@ def test_zoo_action_spaces():
 
 
 def test_zoo_action_space_valid_step():
-    env = zoo.SavannaZooSequentialEnv()
+    env = SavannaZooSequentialEnv()
     env.reset()
     map_min, map_max = env.metadata["map_min"], env.metadata["map_max"]
 
@@ -233,19 +232,19 @@ def test_zoo_action_space_valid_step():
 
 def test_max_cycles():
     # currently the environment does not accept parameters like max_cycles
-    # max_cycles_test(zoo.SavannaZooSequentialEnv)
+    # max_cycles_test(SavannaZooSequentialEnv)
     pass
 
 
 def test_render():
     # TODO: close method not implemented
-    # render_test(zoo.SavannaZooSequentialEnv)
+    # render_test(SavannaZooSequentialEnv)
     pass
 
 
 def test_performance_benchmark():
     # will print only timing to stdout; not shown per default
-    # performance_benchmark(zoo.SavannaZooSequentialEnv())
+    # performance_benchmark(SavannaZooSequentialEnv())
     pass
 
 
