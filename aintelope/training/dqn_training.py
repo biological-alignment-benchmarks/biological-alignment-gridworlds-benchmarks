@@ -8,12 +8,10 @@ import numpy as np
 import torch
 from torch import nn
 import torch.optim as optim
-from torch import nn
 
 from aintelope.environments.typing import ObservationFloat
 from aintelope.models.dqn import DQN
 from aintelope.training.memory import ReplayMemory
-from aintelope.environments.typing import ObservationFloat
 
 logger = logging.getLogger("aintelope.training.dqn_training")
 Transition = namedtuple(

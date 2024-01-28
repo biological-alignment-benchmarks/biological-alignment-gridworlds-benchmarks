@@ -3,32 +3,19 @@ import os
 from pathlib import Path
 
 from omegaconf import DictConfig
-
-from aintelope.training.dqn_training import Trainer
-
-from aintelope.agents import (
-    Agent,
-    PettingZooEnv,
-    Environment,
-    register_agent_class,
-)
-
-# initialize environment registries
 from pettingzoo import AECEnv, ParallelEnv
 
-import aintelope.agents.instinct_agent  # noqa: F401
+from aintelope.training.dqn_training import Trainer
 from aintelope.agents import get_agent_class
-from aintelope.environments.savanna_safetygrid import (
+from aintelope.environments import get_env_class
+import aintelope.agents.instinct_agent  # noqa: F401
+from aintelope.agents.instinct_agent import InstinctAgent  # noqa: F401
+from aintelope.agents.q_agent import QAgent  # noqa: F401
+from aintelope.environments.savanna_safetygrid import (  # noqa: F401
     SavannaGridworldParallelEnv,
     SavannaGridworldSequentialEnv,
 )
-from aintelope.environments import get_env_class
-
-# initialize agent registries
-from aintelope.agents.instinct_agent import InstinctAgent
-from aintelope.agents.q_agent import QAgent
-from aintelope.agents import get_agent_class
-from aintelope.environments.savanna_zoo import (
+from aintelope.environments.savanna_zoo import (  # noqa: F401
     SavannaZooParallelEnv,
     SavannaZooSequentialEnv,
 )

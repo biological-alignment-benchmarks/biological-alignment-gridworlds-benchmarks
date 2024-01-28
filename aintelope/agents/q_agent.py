@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from gymnasium.spaces import Discrete
 from matplotlib.figure import Figure
 
 from aintelope.agents import Agent, register_agent_class

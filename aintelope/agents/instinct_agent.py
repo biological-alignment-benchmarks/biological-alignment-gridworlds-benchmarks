@@ -3,7 +3,6 @@ import logging
 from typing import List, Optional
 
 import numpy.typing as npt
-from gymnasium.spaces import Discrete
 
 from aintelope.agents import PettingZooEnv, register_agent_class
 from aintelope.agents.instincts.savanna_instincts import available_instincts_dict
