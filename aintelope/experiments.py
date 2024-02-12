@@ -84,7 +84,7 @@ def run_experiment(cfg: DictConfig) -> None:
     #    agents.play_step(self.net, epsilon=1.0)
 
     # Main loop
-    history = pd.DataFrame(
+    events = pd.DataFrame(
         columns=[
             "Episode",
             "Step",
@@ -150,7 +150,7 @@ def run_experiment(cfg: DictConfig) -> None:
 
                     # Record what just happened
                     env_step_info = [score]  # TODO package the score info into a list
-                    history.loc[len(history)] = (
+                    events.loc[len(events)] = (
                         [i_episode, step] + agent_step_info + env_step_info
                     )
 
@@ -198,7 +198,7 @@ def run_experiment(cfg: DictConfig) -> None:
                         env_step_info = [
                             score
                         ]  # TODO package the score info into a list
-                        history.loc[len(history)] = (
+                        events.loc[len(events)] = (
                             [i_episode, step] + agent_step_info + env_step_info
                         )
 
@@ -221,14 +221,13 @@ def run_experiment(cfg: DictConfig) -> None:
 
         # Save models
         # https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html
-        dir_out = f"{cfg.experiment_dir}"
         if i_episode % cfg.hparams.every_n_episodes == 0:
-            dir_cp = dir_out + "checkpoints/"
+            dir_cp = f"{cfg.experiment_dir}" + f"{cfg.checkpoint_dir}"
             os.makedirs(dir_cp, exist_ok=True)
             trainer.save_models(i_episode, dir_cp)
 
-    record_path = Path(cfg.experiment_dir) / "history.csv"
-    rec.record_history(record_path, history)
+    record_path = f"{cfg.experiment_dir}" + f"{cfg.events_dir}"
+    rec.record_events(record_path, events)
 
 
 # @hydra.main(version_base=None, config_path="config", config_name="config_experiment")

@@ -1,6 +1,8 @@
 timestamp: ${now:%Y%m%d%H%M%S}
 experiment_name: hunger
 experiment_dir: outputs/${experiment_name}_${timestamp}/
+events_dir: events.csv
+checkpoint_dir: checkpoints/
 
 trainer_params:
   resume_from_checkpoint: False

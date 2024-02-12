@@ -8,29 +8,70 @@ from typing import Optional, Tuple, NamedTuple, List
 import logging
 import csv
 
+from pathlib import Path
+import os
+import sys
+
 # Library for handling saving to file
 
 logger = logging.getLogger("aintelope.analytics.recording")
 
+"""
+Uses config_experiment.yaml's fields:
+experiment_dir: outputs/${experiment_name}_${timestamp}/
+events_dir: events.csv
+checkpoint_dir: checkpoints/
 
-def record_history(record_path, history):
+HOWTO:
+One test_conf will form one folder in outputs, that contains 
+1..n same runs for significance
+1..n different runs for pipeline
+1 agent.
+You need to change the agent params in the main config_experiment
+and run the same again in order to have a comparison point.
+"""
+
+def record_events(record_path, events):
     """
-    Record history of the training to given path.
-    Data is saved step-wise, with each column containing what happened at one time period.
+    Record events of the training to given path.
     """
     logger.info(f"Saving training records to disk at {record_path}")
     record_path.parent.mkdir(exist_ok=True, parents=True)
-    history.to_csv(record_path, index=False)
+    events.to_csv(record_path, index=False)
+
+def read_events(record_path, events_filename):
+    """
+    Read the events saved in record_events. 
+    """
+    events = []
+    
+    for path in Path(record_path).rglob(events_filename):
+        events.append(pd.read_csv(path))
+    
+    return events
 
 
-def process_history(
-    history_df: pd.DataFrame,
+def read_checkpoints(checkpoint_dir):
+    """
+    Read models from a checkpoint.
+    """
+    model_paths = []
+    for path in Path(checkpoint_dir).rglob("*"):
+        model_paths.append(path)
+    model_paths.sort(key=lambda x: os.path.getmtime(x))
+
+    return model_paths
+
+### Old stuff, not in use, but should belong here:
+
+def process_events(
+    events_df: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Function to convert the agent history dataframe into individual dataframe for
+    """Function to convert the agent events dataframe into individual dataframe for
     agent position, grass and water locations. Instinct events are currently not
     processed.
     """
-    state_df = pd.DataFrame(history_df.state.to_list())
+    state_df = pd.DataFrame(events_df.state.to_list())
     agent_df = pd.DataFrame(columns=["x", "y"], data=state_df.agent_coords.to_list())
     grass_columns = [c for c in list(state_df) if c.startswith("grass")]
     grass_df = state_df[grass_columns].applymap(lambda x: tuple(x))
@@ -42,12 +83,12 @@ def process_history(
     return agent_df, grass_df, water_df
 
 
-def plot_history(agent, style: str = "thickness", color: str = "viridis") -> Figure:
+def plot_events(agent, style: str = "thickness", color: str = "viridis") -> Figure:
     """
     Docstring missing, these are old functions I'm unsure are in use atm.
     """
-    history_df = agent.get_history()
-    agent_df, food_df, water_df = agent.process_history(history_df)
+    events_df = agent.get_events()
+    agent_df, food_df, water_df = agent.process_events(events_df)
 
     fig, ax = plt.subplots(figsize=(8, 8))
 
