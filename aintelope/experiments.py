@@ -152,7 +152,9 @@ def run_experiment(cfg: DictConfig) -> None:
                     # Record what just happened
                     env_step_info = [score]  # TODO package the score info into a list
                     events.loc[len(events)] = (
-                        [cfg.experiment_name, i_episode, step] + agent_step_info + env_step_info
+                        [cfg.experiment_name, i_episode, step]
+                        + agent_step_info
+                        + env_step_info
                     )
 
             elif isinstance(env, AECEnv):
@@ -200,7 +202,9 @@ def run_experiment(cfg: DictConfig) -> None:
                             score
                         ]  # TODO package the score info into a list
                         events.loc[len(events)] = (
-                            [cfg.experiment_name, i_episode, step] + agent_step_info + env_step_info
+                            [cfg.experiment_name, i_episode, step]
+                            + agent_step_info
+                            + env_step_info
                         )
 
                         # NB! any agent could die at any other agent's step
