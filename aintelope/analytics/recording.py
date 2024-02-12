@@ -31,6 +31,7 @@ You need to change the agent params in the main config_experiment
 and run the same again in order to have a comparison point.
 """
 
+
 def record_events(record_path, events):
     """
     Record events of the training to given path.
@@ -39,15 +40,16 @@ def record_events(record_path, events):
     record_path.parent.mkdir(exist_ok=True, parents=True)
     events.to_csv(record_path, index=False)
 
+
 def read_events(record_path, events_filename):
     """
-    Read the events saved in record_events. 
+    Read the events saved in record_events.
     """
     events = []
-    
+
     for path in Path(record_path).rglob(events_filename):
         events.append(pd.read_csv(path))
-    
+
     return events
 
 
@@ -62,7 +64,9 @@ def read_checkpoints(checkpoint_dir):
 
     return model_paths
 
+
 ### Old stuff, not in use, but should belong here:
+
 
 def process_events(
     events_df: pd.DataFrame,
