@@ -131,7 +131,9 @@ class Trainer:
 
             observation = (
                 torch.tensor(
-                    np.expand_dims(observation[0], 0),  # vision
+                    np.expand_dims(
+                        observation[0], 0
+                    ),  # vision     # call .flatten() in case you want to force 1D network even on 3D vision
                 ),
                 torch.tensor(np.expand_dims(observation[1], 0)),  # interoception
             )
@@ -148,9 +150,7 @@ class Trainer:
                     observation[1].cuda(self.device),
                 )
 
-            # TODO Joel: handle vision cube dimensions, currently there will be an error "RuntimeError: mat1 and mat2 shapes cannot be multiplied (121x5 and 11x128)"
-            # TODO Joel: handle observation[1] which contains interoception
-            q_values = self.policy_nets[agent_id].net(observation[0])
+            q_values = self.policy_nets[agent_id](observation)
             _, action = torch.max(q_values, dim=1)
             action = int(action.item())
 
@@ -182,18 +182,30 @@ class Trainer:
         # add experience to torch device if bugged
         if done:
             return
-        # TODO Joel: handle state[1] which contains interoception
-        state = torch.tensor(
-            state[0], dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
+
+        state = (
+            torch.tensor(state[0], dtype=torch.float32, device=self.device).unsqueeze(
+                0
+            ),
+            torch.tensor(state[1], dtype=torch.float32, device=self.device).unsqueeze(
+                0
+            ),
+        )
+
         action = torch.tensor(action, device=self.device).unsqueeze(0).view(1, 1)
         reward = torch.tensor(
             reward, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
-        # TODO Joel: handle next_state[1] which contains interoception
-        next_state = torch.tensor(
-            next_state[0], dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
+
+        next_state = (
+            torch.tensor(
+                next_state[0], dtype=torch.float32, device=self.device
+            ).unsqueeze(0),
+            torch.tensor(
+                next_state[1], dtype=torch.float32, device=self.device
+            ).unsqueeze(0),
+        )
+
         self.replay_memories[agent_id].push(state, action, reward, done, next_state)
 
     def optimize_models(self):
@@ -219,10 +231,14 @@ class Trainer:
                 device=self.device,
                 dtype=torch.bool,
             )
-            non_final_next_states = torch.cat(
-                [s for s in batch.next_state if s is not None]
+            non_final_next_states = (
+                torch.cat([s[0] for s in batch.next_state if s is not None]),
+                torch.cat([s[1] for s in batch.next_state if s is not None]),
             )
-            state_batch = torch.cat(batch.state)
+            state_batch = (
+                torch.cat([s[0] for s in batch.state]),
+                torch.cat([s[1] for s in batch.state]),
+            )
             action_batch = torch.cat(batch.action)
             reward_batch = torch.cat(batch.reward)
 

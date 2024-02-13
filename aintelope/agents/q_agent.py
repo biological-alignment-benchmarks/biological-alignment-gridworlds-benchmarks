@@ -26,12 +26,12 @@ logger = logging.getLogger("aintelope.agents.q_agent")
 
 
 class HistoryStep(NamedTuple):
-    state: NamedTuple
+    state: Tuple[npt.NDArray[ObservationFloat], npt.NDArray[ObservationFloat]]
     action: int
     reward: float
     done: bool
     instinct_events: List[Tuple[str, int]]
-    next_state: NamedTuple
+    next_state: Tuple[npt.NDArray[ObservationFloat], npt.NDArray[ObservationFloat]]
 
 
 class QAgent(Agent):
@@ -111,16 +111,12 @@ class QAgent(Agent):
         # For future: add state (interoception) handling here when needed
 
         if next_state is not None:
-            next_s_hist = env.state_to_namedtuple(
-                next_state[0].tolist()
-            )  # TODO Joel: I think state has no longer namedtuple representation
+            next_s_hist = next_state
         else:
             next_s_hist = None
         self.history.append(
             HistoryStep(
-                state=env.state_to_namedtuple(
-                    self.state[0].tolist()
-                ),  # TODO Joel: I think state has no longer namedtuple representation
+                state=self.state,
                 action=self.last_action,
                 reward=score,
                 done=done,
@@ -129,19 +125,20 @@ class QAgent(Agent):
             )
         )
 
-        if save_path is not None:
-            with open(save_path, "a+") as f:
-                csv_writer = csv.writer(f)
-                csv_writer.writerow(
-                    [
-                        self.state[0].tolist(),  # TODO Joel
-                        self.last_action,
-                        score,
-                        done,
-                        [],
-                        next_state,
-                    ]
-                )
+        # TODO
+        # if save_path is not None:
+        #    with open(save_path, "a+") as f:
+        #        csv_writer = csv.writer(f)
+        #        csv_writer.writerow(
+        #            [
+        #                self.state,
+        #                self.last_action,
+        #                score,
+        #                done,
+        #                [],
+        #                next_state,
+        #            ]
+        #        )
 
         self.trainer.update_memory(
             self.id, self.state, self.last_action, score, done, next_state

@@ -148,11 +148,11 @@ class GridworldZooBaseEnv:
                             low=0,  # this is a boolean bitmap
                             high=1,  # this is a boolean bitmap
                             shape=(
-                                parent_observation_spaces[agent].shape[1],
-                                parent_observation_spaces[agent].shape[2],
                                 len(
                                     infos[agent][INFO_AGENT_OBSERVATION_LAYERS_ORDER]
                                 ),  # this already includes all_agents layer,
+                                parent_observation_spaces[agent].shape[1],
+                                parent_observation_spaces[agent].shape[2],
                             ),
                         ),
                         Box(
@@ -205,14 +205,16 @@ class GridworldZooBaseEnv:
                 observation = info[INFO_AGENT_OBSERVATION_LAYERS_CUBE]
 
                 all_agents_layer = np.zeros(
-                    [observation.shape[0], observation.shape[1]], bool
+                    [observation.shape[1], observation.shape[2]], bool
                 )
                 for agent_name, agent_chr in self.agent_name_mapping.items():
                     all_agents_layer |= info[INFO_AGENT_OBSERVATION_LAYERS_DICT][
                         agent_chr
                     ]
 
-                observation = np.dstack([observation, all_agents_layer])
+                observation = np.vstack(
+                    [observation, np.expand_dims(all_agents_layer, axis=0)]
+                )  # feature vector is the first dimension
 
                 return (
                     observation.astype(np.float32),
