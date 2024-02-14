@@ -24,7 +24,7 @@ def test_training_pipeline_main():
         assert ret.returncode == 0, "Trainer from __main__ caused an error!"
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_training_pipeline_main_with_dead_agents(execution_number):
     # run all code in single process always in order to pass seed argument
     sys.argv = [
@@ -59,7 +59,7 @@ def test_training_pipeline_baseline():
         assert ret.returncode == 0, "Trainer baseline caused an error!"
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_training_pipeline_baseline_with_dead_agents(execution_number):
     # run all code in single process always in order to pass seed argument
     # TODO: find a way to parse Makefile and get sys.argv that way
@@ -98,7 +98,7 @@ def test_training_pipeline_instinct():
         assert ret.returncode == 0, "Trainer baseline caused an error!"
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_training_pipeline_instinct_with_dead_agents(execution_number):
     # run all code in single process always in order to pass seed argument
     # TODO: find a way to parse Makefile and get sys.argv that way

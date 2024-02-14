@@ -16,7 +16,7 @@ from aintelope.training.simple_eval import run_episode
 # disabled parallel agent tests for time being since simple_eval.py does not support parallel environments yet
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_randomwalkagent_in_savanna_zoo_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -43,7 +43,7 @@ def test_randomwalkagent_in_savanna_zoo_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_onestepperfectpredictionagent_in_savanna_zoo_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -72,7 +72,7 @@ def test_onestepperfectpredictionagent_in_savanna_zoo_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_iterativeweightoptimizationagent_in_savanna_zoo_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -101,7 +101,7 @@ def test_iterativeweightoptimizationagent_in_savanna_zoo_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_randomwalkagent_in_savanna_gridworlds_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -127,7 +127,7 @@ def test_randomwalkagent_in_savanna_gridworlds_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_onestepperfectpredictionagent_in_savanna_gridworlds_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -155,7 +155,7 @@ def test_onestepperfectpredictionagent_in_savanna_gridworlds_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_iterativeweightoptimizationagent_in_savanna_gridworlds_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:

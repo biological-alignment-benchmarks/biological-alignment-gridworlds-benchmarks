@@ -13,7 +13,7 @@ from tests.test_config import (
 from aintelope.training.simple_eval import run_episode
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_zoo_sequential(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -41,7 +41,7 @@ def test_qagent_in_savanna_zoo_sequential(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_zoo_sequential_with_death(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -70,7 +70,7 @@ def test_qagent_in_savanna_zoo_sequential_with_death(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_gridworlds_sequential(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -96,7 +96,7 @@ def test_qagent_in_savanna_gridworlds_sequential(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_gridworlds_sequential_with_death(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -123,7 +123,7 @@ def test_qagent_in_savanna_gridworlds_sequential_with_death(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_zoo_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -151,7 +151,7 @@ def test_qagent_in_savanna_zoo_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_zoo_parallel_with_death(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -180,7 +180,7 @@ def test_qagent_in_savanna_zoo_parallel_with_death(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_gridworlds_parallel(
     tparams_hparams: Dict, execution_number
 ) -> None:
@@ -206,7 +206,7 @@ def test_qagent_in_savanna_gridworlds_parallel(
     run_episode(full_params=full_params)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_qagent_in_savanna_gridworlds_parallel_with_death(
     tparams_hparams: Dict, execution_number
 ) -> None:

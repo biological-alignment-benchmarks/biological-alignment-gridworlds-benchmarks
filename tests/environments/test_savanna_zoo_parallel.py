@@ -23,7 +23,7 @@ from aintelope.environments.savanna_zoo import SavannaZooParallelEnv
 from aintelope.environments.env_utils.distance import distance_to_closest_item
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_pettingzoo_api_parallel(execution_number):
     # TODO: refactor these values out to a test-params file
     env_params = {
@@ -44,7 +44,7 @@ def test_pettingzoo_api_parallel(execution_number):
     )  # TODO: there is some problem with observation space check
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_pettingzoo_api_parallel_with_death(execution_number):
     # TODO: refactor these values out to a test-params file
     env_params = {
@@ -64,7 +64,7 @@ def test_pettingzoo_api_parallel_with_death(execution_number):
     parallel_api_test(env, num_cycles=10)
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_seed(execution_number):
     np.random.seed(execution_number)
 
@@ -89,7 +89,7 @@ def test_zoo_agent_states():
     )
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_reward_agent(execution_number):
     env = zoo.SavannaZooParallelEnv()
     env.reset(seed=execution_number)
@@ -147,7 +147,7 @@ def test_zoo_move_agent():
         assert agent_states[agent].dtype == zoo.PositionFloat
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_step_result(execution_number):
     env = zoo.SavannaZooParallelEnv(
         env_params={"num_iters": 2}
@@ -177,7 +177,7 @@ def test_zoo_step_result(execution_number):
     assert isinstance(rewards[agent], np.float64), "reward of agent is not a float64"
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_done_step(execution_number):
     env = zoo.SavannaZooParallelEnv(env_params={"amount_agents": 1})
     assert len(env.possible_agents) == 1

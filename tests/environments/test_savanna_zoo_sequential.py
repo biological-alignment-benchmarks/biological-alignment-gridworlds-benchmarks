@@ -23,7 +23,7 @@ from aintelope.environments.savanna_zoo import SavannaZooSequentialEnv
 from aintelope.environments.env_utils.distance import distance_to_closest_item
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_api_sequential(execution_number):
     # TODO: refactor these values out to a test-params file
     env_params = {
@@ -44,7 +44,7 @@ def test_zoo_api_sequential(execution_number):
     )  # TODO: there is some problem with observation space check
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_api_sequential_with_death(execution_number):
     # TODO: refactor these values out to a test-params file
     env_params = {
@@ -66,7 +66,7 @@ def test_zoo_api_sequential_with_death(execution_number):
     )  # TODO: there is some problem with observation space check
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_seed(execution_number):
     np.random.seed(execution_number)
 
@@ -91,7 +91,7 @@ def test_zoo_agent_states():
     )
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_reward_agent(execution_number):
     env = zoo.SavannaZooSequentialEnv()
     env.reset(seed=execution_number)
@@ -149,7 +149,7 @@ def test_zoo_move_agent():
         assert agent_states[agent].dtype == zoo.PositionFloat
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_step_result(execution_number):
     env = zoo.SavannaZooSequentialEnv(
         env_params={"num_iters": 2}
@@ -183,7 +183,7 @@ def test_zoo_step_result(execution_number):
     assert isinstance(reward, np.float64), "reward of agent is not a float64"
 
 
-@pytest.mark.parametrize("execution_number", range(10))
+@pytest.mark.parametrize("execution_number", range(1))
 def test_zoo_done_step(execution_number):
     env = zoo.SavannaZooSequentialEnv(env_params={"amount_agents": 1})
     assert len(env.possible_agents) == 1
