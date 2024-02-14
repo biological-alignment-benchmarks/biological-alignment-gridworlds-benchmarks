@@ -35,12 +35,12 @@ def plot_performance(all_events, save_path: Optional[str]):
     keys = ["Run_id", "Agent_id", "Reward", "Score"]
     data = pd.DataFrame(columns=keys)
     for events in all_events:
-        pd.concat([data,events[keys]])
+        pd.concat([data, events[keys]])
     data.groupby(["Agent_id"])["Reward", "Score"].mean()
 
     plot = plt.figure()
-    plt.plot(data)#boxplot(data)
-    
+    plt.plot(data)  # boxplot(data)
+
     if save_path:
         save_plot(plot, save_path)
     return plot

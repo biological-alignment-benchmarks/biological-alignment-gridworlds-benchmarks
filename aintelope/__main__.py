@@ -23,7 +23,7 @@ def aintelope_main(cfg: DictConfig) -> None:
 
 
 def analytics(cfg):
-    savepath = cfg.log_dir+"plot.png"
+    savepath = cfg.log_dir + "plot.png"
     events = recording.read_events(cfg.log_dir, cfg.events_dir)
     plotting.plot_performance(events, savepath)
 
