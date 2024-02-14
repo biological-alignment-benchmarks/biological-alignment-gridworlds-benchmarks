@@ -45,7 +45,13 @@ class DQN(nn.Module):
             + 1
         )
 
-    def __init__(self, obs_size: tuple, n_actions: int, hidden_size: int = 128):
+    def __init__(
+        self,
+        obs_size: tuple,
+        n_actions: int,
+        hidden_size: int = 128,
+        hidden_size2: int = 512,
+    ):
         """
         Args:
             obs_size (tuple): tuple of [observation/state size of the environment (numpy shape), interoception size (numpy shape)]
@@ -59,9 +65,7 @@ class DQN(nn.Module):
             self.cnn = False
 
             # 1D vision network
-            self.fc4 = nn.Linear(
-                vision_size[0], hidden_size
-            )  # TODO: what is this magic number 7?
+            self.fc4 = nn.Linear(vision_size[0], hidden_size)
 
             # interoception network
             self.fc5 = nn.Linear(interoception_size[0], hidden_size)
@@ -75,13 +79,13 @@ class DQN(nn.Module):
             num_vision_features = vision_size[
                 0
             ]  # feature vector is the first dimension
-            vision_size = vision_size[1:]  # vision xy shape starts from index 1
+            vision_xy = vision_size[1:]  # vision xy shape starts from index 1
 
             # 3D vision network
             self.conv1 = nn.Conv2d(
                 num_vision_features, hidden_size, kernel_size=1, stride=1
             )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
-            output_size = self.conv2d_shape(vision_size, self.conv1)
+            output_size = self.conv2d_shape(vision_xy, self.conv1)
 
             self.conv2 = nn.Conv2d(hidden_size, hidden_size, kernel_size=3, stride=1)
             output_size = self.conv2d_shape(output_size, self.conv2)
@@ -90,17 +94,17 @@ class DQN(nn.Module):
             output_size = self.conv2d_shape(output_size, self.conv3)
 
             self.fc4 = nn.Linear(
-                np.prod(output_size) * hidden_size, 512
+                np.prod(output_size) * hidden_size, hidden_size2
             )  # flattens convolutional layers output
 
             # interoception network
             self.fc5 = nn.Linear(interoception_size[0], hidden_size)
 
             # combined network
-            self.fc6 = nn.Linear(512 + hidden_size, n_actions)
+            self.fc6 = nn.Linear(hidden_size2 + hidden_size, n_actions)
 
-    def forward(self, x):
-        (vision_batch, interoception_batch) = x
+    def forward(self, observation):
+        (vision_batch, interoception_batch) = observation
 
         x = vision_batch.float()
         y = interoception_batch.float()

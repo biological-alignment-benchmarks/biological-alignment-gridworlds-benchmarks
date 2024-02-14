@@ -92,7 +92,10 @@ class InstinctAgent(QAgent):
             instinct_events = []
             if next_state is not None:  # temporary, until we solve final states
                 for instinct_name, instinct_object in self.instincts.items():
-                    instinct_reward, instinct_event = instinct_object.calc_reward(
+                    (
+                        instinct_reward,
+                        instinct_event,
+                    ) = instinct_object.calc_reward(  # TODO: [3D observation, interoception] handling
                         next_state
                     )
                     reward += instinct_reward
@@ -105,16 +108,12 @@ class InstinctAgent(QAgent):
         # interruption done
 
         if next_state is not None:
-            next_s_hist = env.state_to_namedtuple(
-                next_state[0].tolist()
-            )  # TODO: state has no longer namedtuple representation in new 3D observation
+            next_s_hist = next_state
         else:
             next_s_hist = None
         self.history.append(
             HistoryStep(
-                state=env.state_to_namedtuple(
-                    self.state[0].tolist()
-                ),  # TODO: state has no longer namedtuple representation in new 3D observation
+                state=self.state,
                 action=self.last_action,
                 reward=reward,
                 done=done,
@@ -123,19 +122,20 @@ class InstinctAgent(QAgent):
             )
         )
 
-        if save_path is not None:
-            with open(save_path, "a+") as f:
-                csv_writer = csv.writer(f)
-                csv_writer.writerow(
-                    [
-                        self.state.tolist(),
-                        self.last_action,
-                        score,
-                        done,
-                        instinct_events,
-                        next_state,
-                    ]
-                )
+        # TODO
+        # if save_path is not None:
+        #    with open(save_path, "a+") as f:
+        #        csv_writer = csv.writer(f)
+        #        csv_writer.writerow(
+        #            [
+        #                self.state.tolist(),
+        #                self.last_action,
+        #                score,
+        #                done,
+        #                instinct_events,
+        #                next_state,
+        #            ]
+        #        )
 
         self.trainer.update_memory(
             self.id, self.state, self.last_action, score, done, next_state
