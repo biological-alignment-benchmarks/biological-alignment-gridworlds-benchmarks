@@ -7,7 +7,7 @@ import pytest
 from omegaconf import DictConfig, OmegaConf
 
 from aintelope.training.simple_eval import run_episode
-from tests.test_config import root_dir, tparams_hparams
+from tests.conftest import root_dir, tparams_hparams
 
 
 @pytest.mark.parametrize("execution_number", range(1))

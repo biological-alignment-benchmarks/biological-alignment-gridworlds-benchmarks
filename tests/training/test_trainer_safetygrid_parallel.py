@@ -6,7 +6,7 @@ import pytest
 
 from aintelope.__main__ import aintelope_main
 from aintelope.config.config_utils import register_resolvers
-from tests.test_config import constants
+from tests.conftest import constants
 
 
 def test_training_pipeline_main():
