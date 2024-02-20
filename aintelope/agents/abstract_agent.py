@@ -6,6 +6,7 @@ from pettingzoo import AECEnv, ParallelEnv
 
 Environment = Union[AECEnv, ParallelEnv]
 
+
 class Agent(ABC):
     @abstractmethod
     def reset(self) -> None:
