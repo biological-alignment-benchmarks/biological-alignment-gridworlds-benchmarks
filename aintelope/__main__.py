@@ -15,7 +15,7 @@ def aintelope_main(cfg: DictConfig) -> None:
     pipeline_config = OmegaConf.load("aintelope/config/config_pipeline.yaml")
     for env_conf in pipeline_config:
         OmegaConf.update(cfg, "experiment_name", env_conf)
-        OmegaConf.update(cfg, "hparams", pipeline_config[env_conf])
+        OmegaConf.update(cfg, "hparams", pipeline_config[env_conf], force_add=True)
         logger.info("Running training with the following configuration")
         logger.info(OmegaConf.to_yaml(cfg))
         run_experiment(cfg)
