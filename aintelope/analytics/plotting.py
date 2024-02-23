@@ -26,20 +26,20 @@ def plot_history(events):
     return plot
 
 
-def plot_performance(all_events, save_path: Optional[str]):
+def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
     """
     Plot performance between rewards and scores.
     Accepts a list of event records from which a boxplot is done.
     TODO: further consideration should be had on *what* to average over.
     """
-    keys = ["Run_id", "Episode", "Agent_id", "Reward", "Score"]
+    keys = ["Run_id", "Episode", "Agent_id", "Reward"] + score_dimensions
     data = pd.DataFrame(columns=keys)
     for events in all_events:
         data = pd.concat([data, events[keys]])
     plots = data.groupby(["Episode", "Agent_id"]).mean()
 
     fig = plt.figure()
-    plt.plot(plots[["Reward", "Score"]].to_numpy())
+    plt.plot(plots[["Reward"] + score_dimensions].to_numpy())
     plt.xlabel("Episode")
     plt.ylabel("Mean Reward")
     plt.legend("RS")
