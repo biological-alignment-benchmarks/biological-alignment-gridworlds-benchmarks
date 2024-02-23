@@ -154,9 +154,9 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
                         env,
                         observation,
                         info,
-                        sum(
-                            score.values()
-                        ),  # TODO: make a function to handle obs->rew in Q-agent too, remove this
+                        sum(score.values())
+                        if isinstance(score, dict)
+                        else score,  # TODO: make a function to handle obs->rew in Q-agent too, remove this
                         done,  # TODO: should it be "terminated" in place of "done" here?
                         done,  # TODO: should it be "terminated" in place of "done" here?
                     )
@@ -220,7 +220,7 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
                             env,
                             observation,
                             info,
-                            sum(score.values()),
+                            sum(score.values()) if isinstance(score, dict) else score,
                             done,  # TODO: should it be "terminated" in place of "done" here?
                         )  # note that score is used ONLY by baseline
 
