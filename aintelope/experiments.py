@@ -97,7 +97,8 @@ def run_experiment(cfg: DictConfig) -> None:
             "Done",
             "Next_state",
         ]
-        + ["Score"]
+        + ["MOVEMENT"]  # TODO, temp for 1x1 test10, use below once that is ready
+        # cfg.hparams.env_params.scores TODO, when this is ready
     )  # TODO: replace this with env.score_titles    # TODO: multidimensional and multi-agent score handling
 
     for i_episode in range(cfg.hparams.num_episodes):
@@ -156,14 +157,10 @@ def run_experiment(cfg: DictConfig) -> None:
                         done,  # TODO: should it be "terminated" in place of "done" here?
                     )
 
-                    # Record what just happened
-                    env_step_info = [
-                        score
-                    ]  # TODO package the score info into a list    # TODO: multidimensional and multi-agent score handling
                     events.loc[len(events)] = (
                         [cfg.experiment_name, i_episode, step]
                         + agent_step_info
-                        + env_step_info
+                        + score.values()
                     )
 
             elif isinstance(env, AECEnv):
@@ -220,13 +217,10 @@ def run_experiment(cfg: DictConfig) -> None:
                         )  # note that score is used ONLY by baseline
 
                         # Record what just happened
-                        env_step_info = [
-                            score  # TODO: multidimensional and multi-agent score handling
-                        ]  # TODO package the score info into a list
                         events.loc[len(events)] = (
                             [cfg.experiment_name, i_episode, step]
                             + agent_step_info
-                            + env_step_info
+                            + score.values()
                         )
 
                         # NB! any agent could die at any other agent's step

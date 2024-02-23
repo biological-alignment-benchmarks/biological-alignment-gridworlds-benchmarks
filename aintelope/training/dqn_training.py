@@ -11,7 +11,7 @@ from torch import nn
 
 from aintelope.models.dqn import DQN
 from aintelope.training.memory import ReplayMemory
-from aintelope.typing import ObservationFloat
+from aintelope.aintelope_typing import ObservationFloat
 
 logger = logging.getLogger("aintelope.training.dqn_training")
 Transition = namedtuple(
