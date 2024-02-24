@@ -42,8 +42,8 @@ hparams:
     env_experiment: aintelope.aintelope_savanna
     level: 0
     map_max: 13     # used for old AIntelope environment
-    map_width: ${map_max}   # used for Gridworld environments
-    map_height: ${map_max}   # used for Gridworld environments
+    map_width: ${hparams.env_params.map_max}   # used for Gridworld environments
+    map_height: ${hparams.env_params.map_max}   # used for Gridworld environments
     #
     # to make whole map visible while still agent-centric, set the value to 
     # "max(map_width, map_height) - 3" in case of using Gridworld environments
