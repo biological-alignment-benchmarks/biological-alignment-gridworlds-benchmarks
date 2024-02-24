@@ -272,7 +272,7 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
     experiment_dir = os.path.normpath(cfg.experiment_dir)
     events_fname = os.path.normpath(cfg.events_fname)
 
-    record_path = Path(os.path.join(experiment_dir, events_dir))
+    record_path = Path(os.path.join(experiment_dir, events_fname))
     os.makedirs(experiment_dir, exist_ok=True)
     rec.record_events(
         record_path, events
