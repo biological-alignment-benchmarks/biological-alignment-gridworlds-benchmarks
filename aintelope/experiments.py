@@ -273,7 +273,8 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
     events_dir = os.path.normpath(cfg.events_dir)
 
     record_path = Path(os.path.join(experiment_dir, events_dir))
-    rec.record_events(  # the experiment_dir path is automatically created
+    os.makedirs(experiment_dir, exist_ok=True)
+    rec.record_events(
         record_path, events
     )  # TODO: flush the events log every once a while and later append new rows
 
