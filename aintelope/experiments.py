@@ -10,11 +10,12 @@ from aintelope.agents import get_agent_class
 from aintelope.analytics import recording as rec
 from aintelope.environments import get_env_class
 from aintelope.training.dqn_training import Trainer
+from aintelope.config.config_utils import get_score_dimensions
 
 from pettingzoo import AECEnv, ParallelEnv
 
 
-def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
+def run_experiment(cfg: DictConfig) -> None:
     logger = logging.getLogger("aintelope.experiment")
 
     # Environment
@@ -87,6 +88,7 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
     #    agents.play_step(self.net, epsilon=1.0)
 
     # Main loop
+    score_dimensions = get_score_dimensions(cfg)
     events = pd.DataFrame(
         columns=[
             "Run_id",
@@ -163,7 +165,7 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
                         done,  # TODO: should it be "terminated" in place of "done" here?
                         done,  # TODO: should it be "terminated" in place of "done" here?
                     )
-
+                    
                     # Record what just happened
                     env_step_info = [
                         score.get(dimension, 0) for dimension in score_dimensions
@@ -226,7 +228,6 @@ def run_experiment(cfg: DictConfig, score_dimensions: list) -> None:
                             sum(score.values()) if isinstance(score, dict) else score,
                             done,  # TODO: should it be "terminated" in place of "done" here?
                         )  # note that score is used ONLY by baseline
-
                         # Record what just happened
                         env_step_info = [
                             score.get(dimension, 0) for dimension in score_dimensions

@@ -39,10 +39,11 @@ def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
     plots = data.groupby(["Episode", "Agent_id"]).mean()
 
     fig = plt.figure()
-    plt.plot(plots[["Reward"] + score_dimensions].to_numpy())
+    labels = ["Reward"] + score_dimensions
+    plt.plot(plots[labels].to_numpy())
     plt.xlabel("Episode")
     plt.ylabel("Mean Reward")
-    plt.legend("RS")
+    plt.legend(labels)
 
     if save_path:
         save_plot(fig, save_path)

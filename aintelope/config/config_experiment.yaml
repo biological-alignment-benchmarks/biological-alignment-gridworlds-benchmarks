@@ -25,26 +25,26 @@ hparams:
   agent_id: q_agent
   num_episodes: 5   # TEMP for tests only atm
   traintest_mode: train
-  train_episodes: 10 
+  train_episodes: 10
   test_episodes: 3
   warm_start_steps: 100
-  save_frequency: 1 # how often save a model
+  save_frequency: 1000 # how often save a model TEMP offline
   agent_params:
     target_instincts: []
   model_params:
-    hidden_sizes: [16,16]
+    hidden_sizes: [8,8]
     batch_size: 16
     lr: 0.001
     gamma: 0.99
     tau: 0.05
-    eps_last_frame: 50
+    eps_last_frame: 80
     eps_start: 1.0
     eps_end: 0.01
     replay_size: 99
   env_params:
     env_experiment: aintelope.aintelope_savanna
     level: 0
-    map_max: 13     # used for old AIntelope environment
+    map_max: 5     # used for old AIntelope environment
     map_width: ${hparams.env_params.map_max}   # NB! here it is exclusive max, used for Gridworld environments
     map_height: ${hparams.env_params.map_max}   # NB! here it is exclusive max, used for Gridworld environments
     #
@@ -61,9 +61,9 @@ hparams:
     # render_map_max: 5     # this field is currently not used anywhere in code
     #
     amount_agents: 1  
-    amount_grass_patches: 2
+    amount_grass_patches: 1
     amount_water_holes: 0
-    amount_danger_tiles: 5
+    amount_danger_tiles: 0
     amount_predators: 0
     enable_homeostasis: False
     sustainability_challenge: False
