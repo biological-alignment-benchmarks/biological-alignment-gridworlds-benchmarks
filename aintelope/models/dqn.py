@@ -83,9 +83,7 @@ class DQN(nn.Module):
         else:  # Gridworlds environment
             self.cnn = True
 
-            num_vision_features = vision_size[
-                0
-            ]  # feature vector is the first dimension
+            num_vision_features = vision_size[0]
             vision_xy = vision_size[1:]  # vision xy shape starts from index 1
 
             # 3D vision network
@@ -94,17 +92,17 @@ class DQN(nn.Module):
             )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
             output_size = self.conv2d_shape(vision_xy, self.conv1)
 
-            if not unit_test_mode:
-                self.conv2 = nn.Conv2d(
-                    hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
-                )
-                output_size = self.conv2d_shape(output_size, self.conv2)
-
-                self.conv3 = nn.Conv2d(
-                    hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
-                )
-                output_size = self.conv2d_shape(output_size, self.conv3)
-
+            
+            self.conv2 = nn.Conv2d(
+                hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
+            )
+            output_size = self.conv2d_shape(output_size, self.conv2)
+            
+            self.conv3 = nn.Conv2d(
+                hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
+            )
+            output_size = self.conv2d_shape(output_size, self.conv3)
+            
             self.fc4 = nn.Linear(
                 np.prod(output_size) * hidden_sizes[0], hidden_sizes[1]
             )  # flattens convolutional layers output
@@ -135,11 +133,8 @@ class DQN(nn.Module):
         else:  # Gridworlds environment
             # 3D vision network
             x = F.relu(self.conv1(x))
-
-            if not self.unit_test_mode:
-                x = F.relu(self.conv2(x))
-                x = F.relu(self.conv3(x))
-
+            x = F.relu(self.conv2(x))
+            x = F.relu(self.conv3(x))
             x = x.view(
                 x.size(0), -1
             )  # keep batch size at dimension 0, flatten the remaining output dimensions of conv2 layer into 1D : (batch size, channels, height, width) -> (batch size, features)

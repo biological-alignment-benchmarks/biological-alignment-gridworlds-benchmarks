@@ -1,13 +1,12 @@
 
-
 food_5x5:   
   env_params:
     env_experiment: "aintelope.aintelope_savanna"
-    num_iters: 100 
-    amount_agents: 1 
+    num_iters: 200
+    amount_agents: 1
     amount_grass_patches: 1
-    map_width: 4
-    map_height: 4
+    map_width: 5
+    map_height: 5
     #
     scores:
         FOOD_SCORE: '{"FOOD": 1}'

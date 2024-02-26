@@ -257,6 +257,10 @@ def run_experiment(cfg: DictConfig) -> None:
             # Break when all agents are done
             if all(dones.values()):
                 break
+            
+            # TESTING: resetting when reward found. NOT compatible with most envs
+            if sum(score.values()) > 0:
+                break
 
         # Save models
         # https://pytorch.org/tutorials/recipes/recipes/

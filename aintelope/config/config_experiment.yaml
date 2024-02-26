@@ -25,22 +25,22 @@ hparams:
   agent_id: q_agent
   num_episodes: 5   # TEMP for tests only atm
   traintest_mode: train
-  train_episodes: 1000
+  train_episodes: 200
   test_episodes: 3
-  warm_start_steps: 100
+  #warm_start_steps: 100
   save_frequency: 1000 # how often save a model TEMP offline
   agent_params:
     target_instincts: []
   model_params:
     hidden_sizes: [4,4]
-    batch_size: 32 # 16 ws better than 32? a bit.
-    lr: 0.005 # 0.015 was better than 0.005
+    batch_size: 16 # 16 ws better than 32? a bit.
+    lr: 0.015 # 0.015 was better than 0.005
     gamma: 0.99
-    tau: 0.05
-    eps_last_frame: 100
+    tau: 0.05 # was 0.05
+    eps_last_frame: 195
     eps_start: 1.0
-    eps_end: 0.01
-    replay_size: 50 #99
+    eps_end: 0.1
+    replay_size: 20 #99
   env_params:
     env_experiment: aintelope.aintelope_savanna
     level: 0
@@ -56,7 +56,7 @@ hparams:
     # (a trial is a sequence of training episodes separated by env.reset call,
     # but using a same model instance), 3 - once per training episode.
     map_randomization_frequency: 1 
-    num_iters: 20 # duration of a single episode. NB! warm_start_steps will be subtracted from this value
+    num_iters: 20 
     render_mode: null
     # render_map_max: 5     # this field is currently not used anywhere in code
     #
