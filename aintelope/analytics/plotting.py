@@ -35,7 +35,12 @@ def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
     keys = ["Run_id", "Episode", "Agent_id", "Reward"] + score_dimensions
     data = pd.DataFrame(columns=keys)
     for events in all_events:
-        data = pd.concat([data, events[keys]])
+        if len(data) == 0:
+            data = events[
+                keys
+            ].copy()  # needed to avoid Pandas complaining about empty dataframe
+        else:
+            data = pd.concat([data, events[keys]])
 
     data["Reward"] = data["Reward"].astype(float)
     data[score_dimensions] = data[score_dimensions].astype(float)
