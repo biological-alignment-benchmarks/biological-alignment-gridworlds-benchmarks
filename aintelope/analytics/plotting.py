@@ -44,12 +44,14 @@ def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
 
     data["Reward"] = data["Reward"].astype(float)
     data[score_dimensions] = data[score_dimensions].astype(float)
+    data["Score"] = data[score_dimensions].sum(axis=1)
 
     plots = data.groupby(["Run_id", "Episode", "Agent_id"]).mean()
 
     fig = plt.figure()
 
     plt.plot(plots["Reward"].to_numpy(), label="Reward")
+    plt.plot(plots["Score"].to_numpy(), label="Score")
     for score_dimension in score_dimensions:
         plt.plot(plots[score_dimension].to_numpy(), label=score_dimension)
 
@@ -59,6 +61,14 @@ def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
 
     if save_path:
         save_plot(fig, save_path)
+
+    # enable this code if you want the plot to open automatically
+    # plt.ion()
+    # fig.show()
+    # plt.draw()
+    # plt.pause(0.1)
+    # input("Press [enter] to continue.")
+
     return fig
 
 
