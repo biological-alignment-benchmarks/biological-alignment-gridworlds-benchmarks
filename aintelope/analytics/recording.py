@@ -35,6 +35,12 @@ def record_events(record_path, events):
     """
     Record events of the training to given path.
     """
+
+    # speed up CSV generation by not saving arrays
+    # TODO: save arrays to separate pickle files
+    del events["State"]
+    del events["Next_state"]
+
     logger.info(f"Saving training records to disk at {record_path}")
     record_path.parent.mkdir(exist_ok=True, parents=True)
     events.to_csv(record_path, index=False)
