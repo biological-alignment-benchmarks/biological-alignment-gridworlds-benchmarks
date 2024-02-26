@@ -36,7 +36,11 @@ def plot_performance(all_events, score_dimensions, save_path: Optional[str]):
     data = pd.DataFrame(columns=keys)
     for events in all_events:
         data = pd.concat([data, events[keys]])
-    plots = data.groupby(["Episode", "Agent_id"]).mean()
+
+    data["Reward"] = data["Reward"].astype(float)
+    data[score_dimensions] = data[score_dimensions].astype(float)
+
+    plots = data.groupby(["Run_id", "Episode", "Agent_id"]).mean()
 
     fig = plt.figure()
     plt.plot(plots[["Reward"] + score_dimensions].to_numpy())
