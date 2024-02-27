@@ -1,3 +1,4 @@
+import sys
 import logging
 from collections import OrderedDict, namedtuple
 from typing import Dict, List, NamedTuple, Optional, Tuple, Union
@@ -124,6 +125,14 @@ class GridworldZooBaseEnv:
                 scores
             )  # move scores to same metadata level with other parameters
         logger.info(f"initializing savanna env with params: {self.metadata}")
+
+        # TODO: get rid of this override and just ignore truncation flag from the environment?
+        if self.metadata["num_iters"] > 1:  # some unit tests use num_iters = 1
+            self.metadata[
+                "num_iters"
+            ] = (
+                sys.maxsize
+            )  # allow learning from last step when the agent does not die on its own
 
         metadata_to_super_initargs_dict = {
             "level": "level",
