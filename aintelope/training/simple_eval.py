@@ -162,7 +162,9 @@ def run_episode(full_params: Dict) -> None:
                         continue
                     observation = observations[agent.id]
                     info = infos[agent.id]
-                    actions[agent.id] = agent.get_action(observation, info, step)
+                    actions[agent.id] = agent.get_action(
+                        observation, info, step, episode=0
+                    )
 
                 logger.debug("debug actions", actions)
                 logger.debug("debug step")
@@ -204,6 +206,7 @@ def run_episode(full_params: Dict) -> None:
                             observation,
                             info,
                             step,
+                            episode=0,
                         )
 
                     logger.debug("debug action", action)
@@ -265,7 +268,10 @@ def run_episode(full_params: Dict) -> None:
                     if dones[agent.id]:
                         continue
                     observation = observations[agent.id]
-                    actions[agent.id] = agent.get_action(observation, step)
+                    info = infos[agent.id]
+                    actions[agent.id] = agent.get_action(
+                        observation, step, info, episode=0
+                    )
 
                 logger.debug("debug actions", actions)
                 logger.debug("debug step")
@@ -293,6 +299,8 @@ def run_episode(full_params: Dict) -> None:
                     max_iter=env.num_agents
                 ):  # num_agents returns number of alive (non-done) agents
                     agent = agents_dict[agent_id]
+                    observation = env.observe(agent.id)
+                    info = env.observe_info(agent.id)
                     # agent doesn't get to play_step, only env can,
                     # for multi-agent env compatibility
                     # reward, score, done = agent.play_step(nets[i], epsilon=1.0)
@@ -305,7 +313,9 @@ def run_episode(full_params: Dict) -> None:
                         # action = action_space(agent.id).sample()
                         action = agent.get_action(
                             observation,
+                            info,
                             step,
+                            episode=0,
                         )
 
                     logger.debug("debug action", action)
