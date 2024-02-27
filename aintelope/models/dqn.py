@@ -62,7 +62,11 @@ class DQN(nn.Module):
         """
         super().__init__()
         self.unit_test_mode = unit_test_mode
-        self.num_convolution_layers = num_convolution_layers
+        self.num_convolution_layers = (
+            num_convolution_layers
+            if not unit_test_mode
+            else min(1, num_convolution_layers)
+        )
 
         if (
             unit_test_mode
@@ -90,30 +94,32 @@ class DQN(nn.Module):
                 output_size = vision_size
                 conv_output_hidden_size = 1
             else:
-	            num_vision_features = vision_size[
-	                0
-	            ]  # feature vector is the first dimension
-	            vision_xy = vision_size[1:]  # vision xy shape starts from index 1
+                num_vision_features = vision_size[
+                    0
+                ]  # feature vector is the first dimension
+                output_size = vision_size[1:]  # vision xy shape starts from index 1
 
-	            # 3D vision network
-	            self.conv1 = nn.Conv2d(
-	                num_vision_features, hidden_sizes[0], kernel_size=1, stride=1
-	            )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
-	            output_size = self.conv2d_shape(vision_xy, self.conv1)
+                # 3D vision network
+                self.conv = nn.ModuleList(
+                    []
+                )  # without ModuleList, the layers would not be transferred to GPU
 
-	            if not unit_test_mode:
-	                self.conv2 = nn.Conv2d(
-	                    hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
-	                )
-	                output_size = self.conv2d_shape(output_size, self.conv2)
+                self.conv.append(
+                    nn.Conv2d(
+                        num_vision_features, hidden_sizes[0], kernel_size=1, stride=1
+                    )
+                )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
+                output_size = self.conv2d_shape(output_size, self.conv[0])
 
-	                self.conv3 = nn.Conv2d(
-	                    hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
-	                )
-	                output_size = self.conv2d_shape(output_size, self.conv3)
-					
+                for i in range(1, self.num_convolution_layers):
+                    self.conv.append(
+                        nn.Conv2d(
+                            hidden_sizes[0], hidden_sizes[0], kernel_size=3, stride=1
+                        )
+                    )
+                    output_size = self.conv2d_shape(output_size, self.conv[1])
+
                 conv_output_hidden_size = hidden_sizes[0]
-
 
             self.fc4 = nn.Linear(
                 np.prod(output_size) * conv_output_hidden_size, hidden_sizes[1]
@@ -144,12 +150,8 @@ class DQN(nn.Module):
 
         else:  # Gridworlds environment
             # 3D vision network
-            if self.num_convolution_layers > 0:
-                x = F.relu(self.conv1(x))
-
-	            if not self.unit_test_mode:
-	                x = F.relu(self.conv2(x))
-	                x = F.relu(self.conv3(x))
+            for i in range(0, self.num_convolution_layers):
+                x = F.relu(self.conv[i](x))
 
             x = x.view(
                 x.size(0), -1

@@ -33,6 +33,7 @@ hparams:
     target_instincts: []
   model_params:
     hidden_sizes: [16,16]
+    num_conv_layers: 1
     batch_size: 16
     lr: 0.001
     gamma: 0.99
