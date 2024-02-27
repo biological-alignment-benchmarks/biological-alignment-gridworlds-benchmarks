@@ -163,7 +163,7 @@ def run_episode(full_params: Dict) -> None:
                     observation = observations[agent.id]
                     info = infos[agent.id]
                     actions[agent.id] = agent.get_action(
-                        agent.id, observation, info, step, episode=0
+                        observation, info, step, episode=0
                     )
 
                 logger.debug("debug actions", actions)
@@ -203,7 +203,6 @@ def run_episode(full_params: Dict) -> None:
                     else:
                         # action = action_space(agent.id).sample()
                         action = agent.get_action(
-                            agent.id,
                             observation,
                             info,
                             step,
@@ -271,7 +270,7 @@ def run_episode(full_params: Dict) -> None:
                     observation = observations[agent.id]
                     info = infos[agent.id]
                     actions[agent.id] = agent.get_action(
-                        agent.id, observation, step, info, episode=0
+                        observation, info, step, episode=0
                     )
 
                 logger.debug("debug actions", actions)
@@ -313,7 +312,6 @@ def run_episode(full_params: Dict) -> None:
                     else:
                         # action = action_space(agent.id).sample()
                         action = agent.get_action(
-                            agent.id,
                             observation,
                             info,
                             step,
