@@ -9,6 +9,7 @@ from omegaconf import DictConfig
 from aintelope.agents import get_agent_class
 from aintelope.analytics import recording as rec
 from aintelope.environments import get_env_class
+from aintelope.environments.savanna import SavannaEnv
 from aintelope.training.dqn_training import Trainer
 
 from pettingzoo import AECEnv, ParallelEnv
