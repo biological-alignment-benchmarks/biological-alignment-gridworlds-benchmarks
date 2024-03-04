@@ -126,10 +126,10 @@ class DQN(nn.Module):
             )  # flattens convolutional layers output
 
             # interoception network
-            self.fc5 = nn.Linear(interoception_size[0], hidden_sizes[0])
+            self.fc5 = nn.Linear(interoception_size[0], hidden_sizes[2])
 
             # combined network
-            self.fc6 = nn.Linear(hidden_sizes[0] + hidden_sizes[1], n_actions)
+            self.fc6 = nn.Linear(hidden_sizes[1] + hidden_sizes[2], n_actions)
 
     def forward(self, observation):
         (vision_batch, interoception_batch) = observation
