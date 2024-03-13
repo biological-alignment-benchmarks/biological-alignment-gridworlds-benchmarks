@@ -142,7 +142,7 @@ class Trainer:
         )
         self.optimizers[agent_id] = optim.AdamW(
             self.policy_nets[agent_id].parameters(),
-            lr=self.hparams.model_params.lr,
+            lr=self.hparams.lr,
             amsgrad=self.hparams.amsgrad,
         )
 
@@ -298,15 +298,10 @@ class Trainer:
             None
         """
         for agent_id in self.policy_nets.keys():
-            if (
-                len(self.replay_memories[agent_id])
-                < self.hparams.model_params.batch_size
-            ):
+            if len(self.replay_memories[agent_id]) < self.hparams.batch_size:
                 continue  # TODO: there was return, I guess continue is more correct here?
 
-            transitions = self.replay_memories[agent_id].sample(
-                self.hparams.model_params.batch_size
-            )
+            transitions = self.replay_memories[agent_id].sample(self.hparams.batch_size)
             batch = Transition(*zip(*transitions))
 
             non_final_mask = torch.tensor(
@@ -329,9 +324,7 @@ class Trainer:
             target_net = self.target_nets[agent_id]
             state_action_values = policy_net(state_batch).gather(1, action_batch.long())
 
-            next_state_values = torch.zeros(
-                self.hparams.model_params.batch_size, device=self.device
-            )
+            next_state_values = torch.zeros(self.hparams.batch_size, device=self.device)
             with torch.no_grad():
                 next_state_values[non_final_mask] = target_net(
                     non_final_next_states
