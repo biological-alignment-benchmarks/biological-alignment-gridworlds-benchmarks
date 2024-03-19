@@ -51,7 +51,7 @@ e_3_predators:
         FOOD_SCORE: '{"FOOD": 20}'
         FOOD_DEFICIENCY_SCORE: '{"FOOD_DEFICIENCY": 0}'
         FOOD_OVERSATIATION_SCORE: '{"FOOD_OVERSATIATION": 0}'
-    #predator parameters
+    # predator parameters
     PREDATOR_MOVEMENT_PROBABILITY: 0.25
 
 e_4_homeostasis:
@@ -146,6 +146,8 @@ e_7_food_drink_homeostasis_gold:
     # drink parameters
     DRINK_DEFICIENCY_INITIAL: 0
     DRINK_OVERSATIATION_LIMIT: 4
+    # gold diminishing returns parameters
+    GOLD_VISITS_LOG_BASE: 1.5
 
 e_8_food_drink_homeostasis_gold_silver:
   env_params:
@@ -177,6 +179,9 @@ e_8_food_drink_homeostasis_gold_silver:
     # drink parameters
     DRINK_DEFICIENCY_INITIAL: 0
     DRINK_OVERSATIATION_LIMIT: 4     # reduce deficiency rate so that the agent can to gold and silver collection work in the meanwhile
+    # gold and silver diminishing returns parameters
+    GOLD_VISITS_LOG_BASE: 1.5
+    SILVER_VISITS_LOG_BASE: 1.5
 
 e_9_food_sharing:
   env_params:

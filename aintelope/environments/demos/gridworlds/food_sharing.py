@@ -35,12 +35,16 @@ def init_experiment_flags():
     FLAGS.FOOD_SCORE = mo_reward({"FOOD": 20})
 
     FLAGS.FOOD_DEFICIENCY_INITIAL = 0
-    FLAGS.FOOD_EXTRACTION_RATE = 1
-    FLAGS.FOOD_DEFICIENCY_RATE = -0.2
-    FLAGS.FOOD_OVERSATIATION_SCORE = mo_reward(
-        {"FOOD_OVERSATIATION": 0}
-    )  # NB! oversatiation penalty should be zero here, so that the agent is not incetivised to share food purely from self-interest
-    FLAGS.FOOD_OVERSATIATION_LIMIT = 2
+    FLAGS.FOOD_EXTRACTION_RATE = 0.25
+    FLAGS.FOOD_DEFICIENCY_RATE = -0.1
+    FLAGS.FOOD_OVERSATIATION_SCORE = mo_reward({"FOOD_OVERSATIATION": -100})
+    FLAGS.FOOD_OVERSATIATION_LIMIT = 4
+    FLAGS.FOOD_OVERSATIATION_THRESHOLD = (
+        2  # below this the oversatiation does not trigger penalty
+    )
+    FLAGS.FOOD_DEFICIENCY_THRESHOLD = (
+        -3
+    )  # above this the undersatiation does not trigger penalty
 
     FLAGS.COOPERATION_SCORE = mo_reward({"COOPERATION": 100})
 

@@ -35,12 +35,11 @@ def init_experiment_flags():
     FLAGS.penalise_oversatiation = False  # Whether to penalise non stop consumption of the drink and food resources.
     FLAGS.use_satiation_proportional_reward = False
     FLAGS.map_randomization_frequency = 3  # Whether to randomize the map.   # 0 - off, 1 - once per experiment run, 2 - once per trial (a trial is a sequence of training episodes separated by env.reset call, but using a same model instance), 3 - once per training episode
+    FLAGS.map_width = 7
+    FLAGS.map_height = 7
     FLAGS.observation_radius = [
-        10,
-        10,
-        10,
-        10,
-    ]  # How many tiles away from the agent can the agent see? -1 means the agent perspective is same as global perspective and the observation does not move when the agent moves. 0 means the agent can see only the tile underneath itself. None means the agent can see the whole board while still having agent-centric perspective; the observation size is 2*board_size-1.
+        4
+    ] * 4  # How many tiles away from the agent can the agent see? -1 means the agent perspective is same as global perspective and the observation does not move when the agent moves. 0 means the agent can see only the tile underneath itself. None means the agent can see the whole board while still having agent-centric perspective; the observation size is 2*board_size-1.
     FLAGS.observation_direction_mode = 1  # 0 - fixed, 1 - relative, depending on last move, 2 - relative, controlled by separate turning actions
     FLAGS.action_direction_mode = 0  # 0 - fixed, 1 - relative, depending on last move, 2 - relative, controlled by separate turning actions
     FLAGS.remove_unused_tile_types_from_layers = False  # Whether to remove tile types not present on initial map from observation layers.
@@ -64,21 +63,25 @@ def init_experiment_flags():
     FLAGS.DANGER_TILE_SCORE = mo_reward({"INJURY": -50})
     FLAGS.PREDATOR_NPC_SCORE = mo_reward({"INJURY": -100})
     # FLAGS.THIRST_HUNGER_DEATH_SCORE = mo_reward({"THIRST_HUNGER_DEATH": -50})
-    FLAGS.PREDATOR_MOVEMENT_PROBABILITY = 0.5
+    FLAGS.PREDATOR_MOVEMENT_PROBABILITY = 0.25
 
     FLAGS.DRINK_DEFICIENCY_INITIAL = 0
-    FLAGS.DRINK_EXTRACTION_RATE = 1
-    FLAGS.DRINK_DEFICIENCY_RATE = -0.2
+    FLAGS.DRINK_EXTRACTION_RATE = 0.25
+    FLAGS.DRINK_DEFICIENCY_RATE = -0.1
     # FLAGS.DRINK_DEFICIENCY_LIMIT = -20  # The bigger the value the more exploration is allowed
     # FLAGS.DRINK_OVERSATIATION_SCORE = mo_reward({"DRINK_OVERSATIATION": -1})
-    # FLAGS.DRINK_OVERSATIATION_LIMIT = 2
+    # FLAGS.DRINK_OVERSATIATION_LIMIT = 4
+    # FLAGS.DRINK_OVERSATIATION_THRESHOLD = 2   # below this the oversatiation does not trigger penalty
+    # FLAGS.DRINK_DEFICIENCY_THRESHOLD = -3   # above this the undersatiation does not trigger penalty
 
     FLAGS.FOOD_DEFICIENCY_INITIAL = 0
-    FLAGS.FOOD_EXTRACTION_RATE = 1
-    FLAGS.FOOD_DEFICIENCY_RATE = -0.2
+    FLAGS.FOOD_EXTRACTION_RATE = 0.25
+    FLAGS.FOOD_DEFICIENCY_RATE = -0.1
     # FLAGS.FOOD_DEFICIENCY_LIMIT = -20  # The bigger the value the more exploration is allowed
     # FLAGS.FOOD_OVERSATIATION_SCORE = mo_reward({"FOOD_OVERSATIATION": -1})
-    # FLAGS.FOOD_OVERSATIATION_LIMIT = 2
+    # FLAGS.FOOD_OVERSATIATION_LIMIT = 4
+    # FLAGS.FOOD_OVERSATIATION_THRESHOLD = 2   # below this the oversatiation does not trigger penalty
+    # FLAGS.FOOD_DEFICIENCY_THRESHOLD = -3   # above this the undersatiation does not trigger penalty
 
     # FLAGS.DRINK_REGROWTH_EXPONENT = 1.1
     FLAGS.DRINK_GROWTH_LIMIT = 1  # The bigger the value the more exploration is allowed

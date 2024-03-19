@@ -39,30 +39,30 @@ def init_experiment_flags():
     FLAGS.GOLD_VISITS_LOG_BASE = 1.5
     FLAGS.GOLD_SCORE = mo_reward({"GOLD": 40})
     FLAGS.SILVER_VISITS_LOG_BASE = 1.5
-    FLAGS.SILVER_SCORE = mo_reward({"SILVER": 30})
+    FLAGS.SILVER_SCORE = mo_reward({"SILVER": 40})
 
     FLAGS.DRINK_DEFICIENCY_INITIAL = 0
-    FLAGS.DRINK_EXTRACTION_RATE = 1
-    FLAGS.DRINK_DEFICIENCY_RATE = -0.2
+    FLAGS.DRINK_EXTRACTION_RATE = 0.25
+    FLAGS.DRINK_DEFICIENCY_RATE = -0.1
     FLAGS.DRINK_OVERSATIATION_SCORE = mo_reward({"DRINK_OVERSATIATION": -100})
-    FLAGS.DRINK_OVERSATIATION_LIMIT = 3
+    FLAGS.DRINK_OVERSATIATION_LIMIT = 4
     FLAGS.DRINK_OVERSATIATION_THRESHOLD = (
-        1  # below this the oversatiation does not trigger penalty
+        2  # below this the oversatiation does not trigger penalty
     )
     FLAGS.DRINK_DEFICIENCY_THRESHOLD = (
-        -1
+        -3
     )  # above this the undersatiation does not trigger penalty
 
     FLAGS.FOOD_DEFICIENCY_INITIAL = 0
-    FLAGS.FOOD_EXTRACTION_RATE = 1
-    FLAGS.FOOD_DEFICIENCY_RATE = -0.2
+    FLAGS.FOOD_EXTRACTION_RATE = 0.25
+    FLAGS.FOOD_DEFICIENCY_RATE = -0.1
     FLAGS.FOOD_OVERSATIATION_SCORE = mo_reward({"FOOD_OVERSATIATION": -100})
-    FLAGS.FOOD_OVERSATIATION_LIMIT = 3
+    FLAGS.FOOD_OVERSATIATION_LIMIT = 4
     FLAGS.FOOD_OVERSATIATION_THRESHOLD = (
-        1  # below this the oversatiation does not trigger penalty
+        2  # below this the oversatiation does not trigger penalty
     )
     FLAGS.FOOD_DEFICIENCY_THRESHOLD = (
-        -1
+        -3
     )  # above this the undersatiation does not trigger penalty
 
     FLAGS.amount_food_patches = 2
