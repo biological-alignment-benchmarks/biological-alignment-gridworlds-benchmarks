@@ -167,14 +167,14 @@ def select_gpu():
 
     gpu_count = torch.cuda.device_count()
     if gpu_count == 0:
-        print(f"No CUDA GPU available")
+        print("No CUDA GPU available")
         return
 
     elif gpu_count == 1:
         # Even if only one device is enabled for CUDA, it might be not the first one by number
         # if it is set by CUDA_VISIBLE_DEVICES environment variable. Therefore, lets log it.
         gpu_counter = torch.cuda.current_device()
-        print(f"Using the only available CUDA GPU")
+        print("Using the only available CUDA GPU")
 
     else:
         import sqlite3

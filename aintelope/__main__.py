@@ -284,7 +284,7 @@ async def run_gridsearch_experiment_multiprocess(
                 print("\n" + stdout.decode("utf-8", "ignore"))
             stdout, stderr = await proc.communicate()
             print("\n" + stdout.decode("utf-8", "ignore"))
-        except Exception:
+        except Exception as ex:
             print(
                 f"\nExperiment worker process seems to have choked. Exception: {ex}. Params:"
             )
@@ -299,7 +299,7 @@ def run_gridsearch_experiment_subprocess(gridsearch_params_json: str) -> None:
     gridsearch_params_dict = json.loads(gridsearch_params_json)
     gridsearch_params = OmegaConf.create(gridsearch_params_dict)
 
-    print(f"Running subprocess with params:")
+    print("Running subprocess with params:")
     plotting.prettyprint(gridsearch_params_dict)
 
     return run_gridsearch_experiment(gridsearch_params=gridsearch_params)

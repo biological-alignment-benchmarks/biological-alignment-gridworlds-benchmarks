@@ -44,7 +44,7 @@ def aintelope_main(cfg: DictConfig) -> None:
         input("Press [enter] to continue.")
 
 
-def analytics(cfg, score_dimensions, title):
+def analytics(cfg, score_dimensions, title, experiment_name):
     # normalise slashes in paths. This is not mandatory, but will be cleaner to debug
     log_dir = os.path.normpath(cfg.log_dir)
     events_fname = cfg.events_fname
