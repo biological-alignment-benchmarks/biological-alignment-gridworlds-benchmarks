@@ -47,7 +47,7 @@ def recalculate_gridsearch_sfella_scores(cfg: DictConfig) -> None:
             # reducer = make_reducer(delimiter='.')
 
             lines = data.split("\n")
-            with ProgressBar(
+            with RobustProgressBar(
                 max_value=len(lines), granularity=10
             ) as bar:  # this takes a few moments of time
                 for line_index, line in enumerate(lines):
