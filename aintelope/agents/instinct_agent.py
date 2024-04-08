@@ -1,11 +1,23 @@
 import csv
 import logging
 from typing import List, Optional, Tuple
+from collections import defaultdict
 from gymnasium.spaces import Discrete
 
+import numpy as np
 import numpy.typing as npt
 
-from aintelope.agents.instincts.savanna_instincts_old import available_instincts_dict
+from aintelope.environments.savanna import SavannaEnv
+from aintelope.environments.savanna_safetygrid import ACTION_RELATIVE_COORDINATE_MAP
+
+from aintelope.agents.instincts.savanna_instincts_old import (
+    available_instincts_dict as available_instincts_dict_old,
+)
+from aintelope.agents.instincts.safetygrid_instincts import (
+    available_instincts_dict,
+    format_float,
+)
+
 from aintelope.agents.q_agent import HistoryStep, QAgent
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
@@ -69,9 +81,152 @@ class InstinctAgent(QAgent):
             min_action = action_space.min_action
             max_action = action_space.max_action
 
-        return super().get_action(
-            observation, info, step, trial, episode, pipeline_cycle
+        if (
+            self.trainer.hparams.model_params.instinct_bias_epsilon_start > 0
+            and not issubclass(self.env_class, SavannaEnv)
+        ):
+            # calculate action reward predictions using instincts
+            action_rewards = defaultdict(float)
+
+            for instinct_name, instinct_object in self.instincts.items():
+                instinct_action_rewards = {}
+                # predict reward for all available actions
+                for action in range(
+                    min_action, max_action + 1
+                ):  # NB! max_action is inclusive max
+                    agent_coordinate = info[ACTION_RELATIVE_COORDINATE_MAP][action]
+
+                    (
+                        instinct_reward,
+                        instinct_event,
+                    ) = instinct_object.calc_reward(
+                        self,
+                        observation,
+                        info,
+                        agent_coordinate=agent_coordinate,
+                        predicting=True,
+                    )
+
+                    instinct_action_rewards[action] = instinct_reward
+                    action_rewards[
+                        action
+                    ] += instinct_reward  # TODO: nonlinear aggregation
+
+                # debug helper  # TODO: refactor into a separate method
+                # if instinct_name == "gold":
+                #    q_values = np.zeros([max_action - min_action + 1], np.float32)
+                #    for action, bias in instinct_action_rewards.items():
+                #        q_values[action - min_action] = bias
+                #    print(f"gold q_values: {format_float(q_values)}")
+
+            instinct_q_values = action_rewards  # instincts see only one step ahead
+
+        else:
+            instinct_q_values = None
+
+        # action = super().get_action(observation, info, step, trial, episode, pipeline_cycle, instinct_q_values)
+
+        # TODO: warn if last_frame=0/1 or last_trial=0/1 or last_episode=0/1 in any of the below values: for disabling the epsilon counting for corresponding variable one should use -1
+        epsilon = (
+            self.hparams.model_params.eps_start - self.hparams.model_params.eps_end
         )
+        if self.hparams.model_params.eps_last_frame > 1:
+            epsilon *= max(0, 1 - step / self.hparams.model_params.eps_last_frame)
+        if self.hparams.model_params.eps_last_trial > 1:
+            epsilon *= max(0, 1 - trial / self.hparams.model_params.eps_last_trial)
+        if self.hparams.model_params.eps_last_episode > 1:
+            epsilon *= max(0, 1 - episode / self.hparams.model_params.eps_last_episode)
+        if self.hparams.model_params.eps_last_pipeline_cycle > 1:
+            epsilon *= max(
+                0,
+                1 - pipeline_cycle / self.hparams.model_params.eps_last_pipeline_cycle,
+            )
+        epsilon += self.hparams.model_params.eps_end
+
+        instinct_epsilon = (
+            self.hparams.model_params.instinct_bias_epsilon_start
+            - self.hparams.model_params.instinct_bias_epsilon_end
+        )
+        if self.hparams.model_params.eps_last_frame > 1:
+            instinct_epsilon *= max(
+                0, 1 - step / self.hparams.model_params.eps_last_frame
+            )
+        if self.hparams.model_params.eps_last_trial > 1:
+            instinct_epsilon *= max(
+                0, 1 - trial / self.hparams.model_params.eps_last_trial
+            )
+        if self.hparams.model_params.eps_last_episode > 1:
+            instinct_epsilon *= max(
+                0, 1 - episode / self.hparams.model_params.eps_last_episode
+            )
+        if self.hparams.model_params.eps_last_pipeline_cycle > 1:
+            instinct_epsilon *= max(
+                0,
+                1 - pipeline_cycle / self.hparams.model_params.eps_last_pipeline_cycle,
+            )
+        instinct_epsilon += self.hparams.model_params.instinct_bias_epsilon_end
+
+        # print(f"Epsilon: {epsilon}")
+        # print(f"Instinct bias epsilon: {instinct_epsilon}")
+
+        apply_instinct_eps_before_random_eps = (
+            self.hparams.model_params.apply_instinct_eps_before_random_eps
+        )
+
+        action_space = self.trainer.action_spaces[self.id]
+        if isinstance(action_space, Discrete):
+            min_action = action_space.start
+            max_action = (
+                action_space.start + action_space.n - 1
+            )  # NB! this is inclusive max as is used in MultiDiscrete action space
+        else:
+            min_action = action_space.min_action
+            max_action = action_space.max_action
+
+        if (
+            not apply_instinct_eps_before_random_eps
+            and epsilon > 0
+            and np.random.random() < epsilon
+        ):
+            action = action_space.sample()
+
+        elif (
+            instinct_q_values is not None
+            and instinct_epsilon > 0
+            and np.random.random() < instinct_epsilon
+        ):  # TODO: find a better way to combine epsilon and instinct_epsilon
+            q_values = np.zeros([max_action - min_action + 1], np.float32)
+            for action, bias in instinct_q_values.items():
+                q_values[action - min_action] = bias
+            action = (
+                self.trainer.tiebreaking_argmax(q_values) + min_action
+            )  # take best action predicted by instincts
+
+        elif (
+            apply_instinct_eps_before_random_eps
+            and epsilon > 0
+            and np.random.random() < epsilon
+        ):
+            action = action_space.sample()
+
+        else:
+            q_values = self.trainer.get_action(
+                self.id, observation, self.info, step, trial, episode, pipeline_cycle
+            )
+
+            action = (
+                self.trainer.tiebreaking_argmax(q_values) + min_action
+            )  # when no axis is provided, argmax returns index into flattened array
+
+            # q_values = self.policy_nets[agent_id](observation)
+            # _, action = torch.max(q_values, dim=1)
+            # action = int(action.item()) + min_action
+
+        # NB! not calling q_agent.get_action code here at all
+
+        # print(f"Action: {action}")
+        self.last_action = action
+        return action
 
     # TODO hack, figure out if state_to_namedtuple can be static somewhere
     def update(
@@ -133,6 +288,8 @@ class InstinctAgent(QAgent):
                     )
                     if instinct_event != 0:
                         instinct_events.append((instinct_name, instinct_event))
+
+            # print(f"reward: {reward}")
         # interruption done
 
         if next_state is not None:
@@ -158,9 +315,14 @@ class InstinctAgent(QAgent):
         return event
 
     def init_instincts(self) -> None:
+        if issubclass(self.env_class, SavannaEnv):
+            available_instincts_dict_local = available_instincts_dict_old
+        else:
+            available_instincts_dict_local = available_instincts_dict
+
         logger.debug(f"target_instincts: {self.target_instincts}")
         for instinct_name in self.target_instincts:
-            if instinct_name not in available_instincts_dict:
+            if instinct_name not in available_instincts_dict_local:
                 logger.warning(
                     f"Warning: could not find {instinct_name} "
                     "in available_instincts_dict"
@@ -168,9 +330,9 @@ class InstinctAgent(QAgent):
                 continue
 
         self.instincts = {
-            instinct: available_instincts_dict.get(instinct)()
+            instinct: available_instincts_dict_local.get(instinct)()
             for instinct in self.target_instincts
-            if instinct in available_instincts_dict
+            if instinct in available_instincts_dict_local
         }
         for instinct in self.instincts.values():
             instinct.reset()
