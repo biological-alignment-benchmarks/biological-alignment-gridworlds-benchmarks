@@ -3,7 +3,9 @@ timestamp_pid_uuid: ${append_pid_and_uuid:${timestamp}}
 experiment_name: experiment
 events_fname: events.csv          
 checkpoint_dir: checkpoints/
-log_dir: outputs/${timestamp_pid_uuid}/
+hydra_logs_root: hydra_logs
+log_dir_root: outputs
+log_dir: ${log_dir_root}/${timestamp_pid_uuid}/
 experiment_dir: ${log_dir}/${experiment_name}/
 
 trainer_params:
@@ -136,4 +138,4 @@ hparams:
 
 hydra:
   run:
-    dir: ${log_dir}/hydra_logs/
+    dir: ${log_dir}/${hydra_logs_root}/
