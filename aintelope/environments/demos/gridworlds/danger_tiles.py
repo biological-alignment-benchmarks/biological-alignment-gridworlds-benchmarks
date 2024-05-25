@@ -17,7 +17,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from ai_safety_gridworlds.environments.aintelope.aintelope_savanna import *
+from aintelope.environments.ai_safety_gridworlds.aintelope_savanna import *
 from ai_safety_gridworlds.environments.shared.safety_game_moma import override_flags
 
 

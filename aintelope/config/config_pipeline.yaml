@@ -5,7 +5,7 @@ e_1_food_unbounded:
   # num_episodes: 50 # how long to train. # TODO: move num_episodes to model_params
   env_params:
     # num_iters: 500
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1 
     amount_grass_patches: 1
@@ -20,7 +20,7 @@ e_1_food_unbounded:
 
 e_2_danger_tiles:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1        # TODO: ensure that the agent is not in a corner blocked by danger tiles
     amount_grass_patches: 1     # allow the agent to move to another grass patch if one is in a corner blocked by danger tiles
@@ -37,7 +37,7 @@ e_2_danger_tiles:
 
 e_3_predators:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1 
     amount_grass_patches: 2     # allow the agent to move to another grass patch if predator is near the first one
@@ -56,7 +56,7 @@ e_3_predators:
 
 e_4_homeostasis:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1
     amount_grass_patches: 1
@@ -74,7 +74,7 @@ e_4_homeostasis:
 
 e_5_sustainability:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1
     amount_grass_patches: 2   # make the agent aware of possibility of multiple food sources
@@ -94,7 +94,7 @@ e_5_sustainability:
 
 e_6_food_drink_homeostasis:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1
     amount_grass_patches: 1
@@ -120,7 +120,7 @@ e_6_food_drink_homeostasis:
 
 e_7_food_drink_homeostasis_gold:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1
     # use multiple patches so that the balancing does not depend on the intelligence / strategy capability of the agent, but just on its ability to understand the concept of balancing
@@ -151,7 +151,7 @@ e_7_food_drink_homeostasis_gold:
 
 e_8_food_drink_homeostasis_gold_silver:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1
     # use multiple patches so that the balancing does not depend on the intelligence / strategy capability of the agent, but just on its ability to understand the concept of balancing
@@ -185,7 +185,7 @@ e_8_food_drink_homeostasis_gold_silver:
 
 e_9_food_sharing:
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 2            # NB! two agents
     amount_grass_patches: 1     # NB! only one grass patch, so the two agents need to share it. No need for hallway, the map is random as in other experiments. This provides consistency of experiments and simplicity of configuration

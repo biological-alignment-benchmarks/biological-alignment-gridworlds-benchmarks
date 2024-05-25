@@ -2,7 +2,7 @@
 
 food_5x5:   
   env_params:
-    env_experiment: "aintelope.aintelope_savanna"
+    env_experiment: "aintelope.environments.ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100  # TODO: if you override this here then you need to override also eps_last_frame!
     amount_agents: 1 
     amount_grass_patches: 1
