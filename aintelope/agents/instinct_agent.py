@@ -7,7 +7,10 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import numpy.typing as npt
 
-from aintelope.environments.savanna_safetygrid import GridworldZooBaseEnv, ACTION_RELATIVE_COORDINATE_MAP
+from aintelope.environments.savanna_safetygrid import (
+    GridworldZooBaseEnv,
+    ACTION_RELATIVE_COORDINATE_MAP,
+)
 
 from aintelope.agents.instincts.safetygrid_instincts import (
     available_instincts_dict,
@@ -77,9 +80,7 @@ class InstinctAgent(QAgent):
             min_action = action_space.min_action
             max_action = action_space.max_action
 
-        if (
-            self.trainer.hparams.model_params.instinct_bias_epsilon_start > 0
-        ):
+        if self.trainer.hparams.model_params.instinct_bias_epsilon_start > 0:
             # calculate action reward predictions using instincts
             action_rewards = defaultdict(float)
 
@@ -310,7 +311,9 @@ class InstinctAgent(QAgent):
         return event
 
     def init_instincts(self) -> None:
-        if issubclass(self.env_class, GridworldZooBaseEnv):     # radically different types of environments may need different instincts
+        if issubclass(
+            self.env_class, GridworldZooBaseEnv
+        ):  # radically different types of environments may need different instincts
             available_instincts_dict_local = available_instincts_dict
 
         logger.debug(f"target_instincts: {self.target_instincts}")

@@ -39,7 +39,7 @@ from ai_safety_gridworlds.helpers.gridworld_zoo_parallel_env import (
 )
 
 from aintelope.aintelope_typing import Reward  # TODO: use np.ndarray or mo_reward
-from aintelope.aintelope_typing import (  
+from aintelope.aintelope_typing import (
     AgentId,
     Info,
     Observation,
@@ -119,7 +119,7 @@ class GridworldZooBaseEnv:
         "override_infos": False,
         "test_death": False,
         "test_death_probability": 0.33,
-        "scalarize_rewards": False,   # needed for Zoo sequential API unit tests
+        "scalarize_rewards": False,  # needed for Zoo sequential API unit tests
         "flatten_observations": False,  # this will not work with current code
     }
 
@@ -695,7 +695,9 @@ class SavannaGridworldParallelEnv(GridworldZooBaseEnv, GridworldZooParallelEnv):
         for agent in list(infos.keys()):
             rewards2[agent] = infos[agent][INFO_REWARD_DICT]
             if self._scalarize_rewards:
-                rewards2[agent] = sum(rewards2[agent].values())  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
+                rewards2[agent] = sum(
+                    rewards2[agent].values()
+                )  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
 
         for agent in list(
             self.observations2.keys()
@@ -929,7 +931,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
 
         reward2 = info[INFO_REWARD_DICT]
         if self._scalarize_rewards:
-            reward2 = sum(reward2.values())  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
+            reward2 = sum(
+                reward2.values()
+            )  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
         self._last_rewards2[agent] = reward2
 
         # NB! cumulative reward should be calculated for all agents
@@ -938,7 +942,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
             info = self.format_info(agent2, info)
             self._cumulative_rewards2[agent2] = info[INFO_CUMULATIVE_REWARD_DICT]
             if self._scalarize_rewards:
-                self._cumulative_rewards2[agent2] = sum(self._cumulative_rewards2[agent2].values())  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
+                self._cumulative_rewards2[agent2] = sum(
+                    self._cumulative_rewards2[agent2].values()
+                )  # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
 
         terminated = self.terminations[agent]
         truncated = self.truncations[agent]
@@ -1017,7 +1023,7 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                     # observe observations, transform observations and rewards
                     info = GridworldZooAecEnv.observe_info(self, agent)
                     info = self.format_info(agent, info)
-                    
+
                     infos[agent] = info
                     self._last_infos[agent] = info
                     self.observations2[agent] = self.transform_observation(agent, info)
@@ -1026,9 +1032,7 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                     # NB! if the action of current agent somehow affects the rewards
                     # of other agents then the cumulative reward of the other agents
                     # needs to be updated here as well.
-                    self._cumulative_rewards2[agent] = info[
-                        INFO_CUMULATIVE_REWARD_DICT
-                    ]
+                    self._cumulative_rewards2[agent] = info[INFO_CUMULATIVE_REWARD_DICT]
                 else:
                     info = GridworldZooAecEnv.observe_info(self, agent)
                     info = self.format_info(agent, info)
@@ -1037,14 +1041,16 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                     # NB! if the action of current agent somehow affects the rewards
                     # of other agents then the cumulative reward of the other agents
                     # needs to be updated here as well.
-                    self._cumulative_rewards2[agent] = info[
-                        INFO_CUMULATIVE_REWARD_DICT
-                    ]
-                    
+                    self._cumulative_rewards2[agent] = info[INFO_CUMULATIVE_REWARD_DICT]
+
                 if self._scalarize_rewards:
                     # this is currently used only for unit tests so no need for nonlinear utility transformations before summation
-                    self._last_rewards2[agent] = sum(self._last_rewards2[agent].values())
-                    self._cumulative_rewards2[agent] = sum(self._cumulative_rewards2[agent].values())  
+                    self._last_rewards2[agent] = sum(
+                        self._last_rewards2[agent].values()
+                    )
+                    self._cumulative_rewards2[agent] = sum(
+                        self._cumulative_rewards2[agent].values()
+                    )
 
         # / for index in range(0, self.num_agents)
 

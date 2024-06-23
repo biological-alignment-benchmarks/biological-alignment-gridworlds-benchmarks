@@ -21,7 +21,7 @@ class RandomWalkAgent(QAgent):
         return self.action_space.sample()
 
 
-class OneStepPerfectPredictionAgent(QAgent): 
+class OneStepPerfectPredictionAgent(QAgent):
     def get_action(self, epsilon: float, device: str) -> int:
         """Using the given network, decide what action to carry out using an
         epsilon-greedy policy.
