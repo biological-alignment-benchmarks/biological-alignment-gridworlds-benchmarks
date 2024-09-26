@@ -72,56 +72,6 @@ class InstinctAgent(QAgent):
         if self.done:
             return None
 
-        action_space = self.trainer.action_spaces[self.id]
-        if isinstance(action_space, Discrete):
-            min_action = action_space.start
-            max_action = action_space.start + action_space.n - 1
-        else:
-            min_action = action_space.min_action
-            max_action = action_space.max_action
-
-        if self.trainer.hparams.model_params.instinct_bias_epsilon_start > 0:
-            # calculate action reward predictions using instincts
-            action_rewards = defaultdict(float)
-
-            for instinct_name, instinct_object in self.instincts.items():
-                instinct_action_rewards = {}
-                # predict reward for all available actions
-                for action in range(
-                    min_action, max_action + 1
-                ):  # NB! max_action is inclusive max
-                    agent_coordinate = info[ACTION_RELATIVE_COORDINATE_MAP][action]
-
-                    (
-                        instinct_reward,
-                        instinct_event,
-                    ) = instinct_object.calc_reward(
-                        self,
-                        observation,
-                        info,
-                        agent_coordinate=agent_coordinate,
-                        predicting=True,
-                    )
-
-                    instinct_action_rewards[action] = instinct_reward
-                    action_rewards[
-                        action
-                    ] += instinct_reward  # TODO: nonlinear aggregation
-
-                # debug helper  # TODO: refactor into a separate method
-                # if instinct_name == "gold":
-                #    q_values = np.zeros([max_action - min_action + 1], np.float32)
-                #    for action, bias in instinct_action_rewards.items():
-                #        q_values[action - min_action] = bias
-                #    print(f"gold q_values: {format_float(q_values)}")
-
-            instinct_q_values = action_rewards  # instincts see only one step ahead
-
-        else:
-            instinct_q_values = None
-
-        # action = super().get_action(observation, info, step, trial, episode, pipeline_cycle, instinct_q_values)
-
         # TODO: warn if last_frame=0/1 or last_trial=0/1 or last_episode=0/1 in any of the below values: for disabling the epsilon counting for corresponding variable one should use -1
         epsilon = (
             self.hparams.model_params.eps_start - self.hparams.model_params.eps_end
@@ -164,6 +114,56 @@ class InstinctAgent(QAgent):
 
         # print(f"Epsilon: {epsilon}")
         # print(f"Instinct bias epsilon: {instinct_epsilon}")
+
+        action_space = self.trainer.action_spaces[self.id]
+        if isinstance(action_space, Discrete):
+            min_action = action_space.start
+            max_action = action_space.start + action_space.n - 1
+        else:
+            min_action = action_space.min_action
+            max_action = action_space.max_action
+
+        if instinct_epsilon != 0:
+            # calculate action reward predictions using instincts
+            action_rewards = defaultdict(float)
+
+            for instinct_name, instinct_object in self.instincts.items():
+                instinct_action_rewards = {}
+                # predict reward for all available actions
+                for action in range(
+                    min_action, max_action + 1
+                ):  # NB! max_action is inclusive max
+                    agent_coordinate = info[ACTION_RELATIVE_COORDINATE_MAP][action]
+
+                    (
+                        instinct_reward,
+                        instinct_event,
+                    ) = instinct_object.calc_reward(
+                        self,
+                        observation,
+                        info,
+                        agent_coordinate=agent_coordinate,
+                        predicting=True,
+                    )
+
+                    instinct_action_rewards[action] = instinct_reward
+                    action_rewards[
+                        action
+                    ] += instinct_reward  # TODO: nonlinear aggregation
+
+                # debug helper  # TODO: refactor into a separate method
+                # if instinct_name == "gold":
+                #    q_values = np.zeros([max_action - min_action + 1], np.float32)
+                #    for action, bias in instinct_action_rewards.items():
+                #        q_values[action - min_action] = bias
+                #    print(f"gold q_values: {format_float(q_values)}")
+
+            instinct_q_values = action_rewards  # instincts see only one step ahead
+
+        else:
+            instinct_q_values = None
+
+        # action = super().get_action(observation, info, step, trial, episode, pipeline_cycle, instinct_q_values)
 
         apply_instinct_eps_before_random_eps = (
             self.hparams.model_params.apply_instinct_eps_before_random_eps
