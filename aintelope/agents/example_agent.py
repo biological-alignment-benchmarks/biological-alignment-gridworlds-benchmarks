@@ -121,4 +121,3 @@ class ExampleAgent(QAgent):
         self.state = next_state
         self.info = info
         return event
-

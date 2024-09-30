@@ -148,7 +148,7 @@ class Trainer:
                 observation[1].cuda(self.device),
             )
 
-        # TODO
+        q_values = [1]  # TODO
 
         return q_values
 
