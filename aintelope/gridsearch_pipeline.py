@@ -234,7 +234,11 @@ def run_pipeline(cfg: DictConfig) -> None:
                                         )
                                         logger.info(
                                             os.linesep
-                                            + str(OmegaConf.to_yaml(experiment_cfg, resolve=True))
+                                            + str(
+                                                OmegaConf.to_yaml(
+                                                    experiment_cfg, resolve=True
+                                                )
+                                            )
                                         )
                                         continue
 

@@ -33,16 +33,16 @@ def boxplot() -> None:
     df = pd.concat(dfs, ignore_index=True)
 
     # e_5_sustainability was the buggy experiment I had to re-run, the re-run results are represented in data under name e_5_sustainability2
-    df = df[df["experiment_name"] != "e_5_sustainability"]  # lets hide the buggy results
+    df = df[
+        df["experiment_name"] != "e_5_sustainability"
+    ]  # lets hide the buggy results
     df["experiment_name"] = df["experiment_name"].str.replace(
-        "e_5_sustainability2", "e_5_sustainability"   # lets remove the number 2 sufix from plot title, so that the re-run data will look as if it is was a normal run
+        "e_5_sustainability2",
+        "e_5_sustainability",  # lets remove the number 2 sufix from plot title, so that the re-run data will look as if it is was a normal run
     )
 
     agent_type_labels_mapping = OrderedDict(
-        {
-            "random": "random",
-            "score": "industry standard (dqn)"
-        }
+        {"random": "random", "score": "industry standard (dqn)"}
     )
     df["params_set_title"] = df["params_set_title"].map(agent_type_labels_mapping)
     hue_order = list(agent_type_labels_mapping.values())
@@ -55,7 +55,9 @@ def boxplot() -> None:
     ]
 
     df["experiment_name"] = df["experiment_name"].str.replace("_", " ")
-    df["experiment_name"] = df["experiment_name"].str[3:]  # drop experiment number from the label
+    df["experiment_name"] = df["experiment_name"].str[
+        3:
+    ]  # drop experiment number from the label
 
     # Seaborn does not have a good way for specifying the hue labels legend title, and the hacky ways need to change every couple of years, so lets just change the source column name
     hue_legend_title = "agent type"

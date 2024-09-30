@@ -59,7 +59,7 @@ class QAgent(Agent):
         if self.done:
             return None
 
-        epsilon = 1.0   # TODO
+        epsilon = 1.0  # TODO
 
         # print(f"Epsilon: {epsilon}")
 

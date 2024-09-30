@@ -109,7 +109,7 @@ class ExampleAgent(QAgent):
         next_info = info
         # For future: add state (interoception) handling here when needed
 
-        reward = 0    # TODO
+        reward = 0  # TODO
         # print(f"reward: {reward}")
 
         if next_state is not None:

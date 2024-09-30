@@ -41,7 +41,7 @@ def load_checkpoint(
         model: torch.nn.Module
     """
 
-    model = None    # TODO
+    model = None  # TODO
 
     if not unit_test_mode:
         checkpoint = torch.load(path)
@@ -206,10 +206,9 @@ class Trainer:
             None
         """
 
-        agent_ids = []   # TODO
+        agent_ids = []  # TODO
 
         for agent_id in agent_ids:
-
             # TODO
 
             checkpoint_filename = agent_id

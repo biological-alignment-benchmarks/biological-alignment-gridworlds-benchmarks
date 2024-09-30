@@ -15,7 +15,7 @@ logger = logging.getLogger("aintelope.training.simple_eval")
 
 MODEL_LOOKUP = {
     # TODO
-  }
+}
 
 
 def run_episode(full_params: Dict) -> None:
