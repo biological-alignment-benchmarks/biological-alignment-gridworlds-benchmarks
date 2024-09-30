@@ -6,10 +6,7 @@ CODEBASE = ${PROJECT} ${TESTS} ${SITE}
 VENV = venv_$(PROJECT)
 
 run-training-baseline: ## run baseline experiment
-	python -m ${PROJECT} hparams.agent_id=q_agent hparams.agent_params.target_instincts=[]
-
-run-training-instinct: ## run instinct agent experiment
-	python -m ${PROJECT} hparams.agent_id=instinct_agent hparams.agent_params.target_instincts=[smell]
+	python -m ${PROJECT} hparams.agent_id=example_agent
 
 run-pipeline: ## run pipeline
 	python -m ${PROJECT}
