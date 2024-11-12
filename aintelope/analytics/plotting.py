@@ -48,9 +48,6 @@ def filter_train_and_test_events(
 ):
     events = pd.concat(all_events)
 
-    if all_events[0].columns[-1] == "Score":  # old AIntelope environment
-        score_dimensions = ["Score"]
-
     if score_dimensions != ["Score"]:
         events["Score"] = events[score_dimensions].sum(axis=1)
         score_dimensions = ["Score"] + score_dimensions
@@ -163,19 +160,14 @@ def aggregate_scores(
     )  # this is aggregated before sfella tranformation, so cannot be used for sfella score
     score_subdimensions.remove("Reward")
 
-    if len(score_subdimensions) > 0:  # new multi-objective Gridworlds environments
-        # sum over score dimensions AFTER SFELLA transformation
-        sfella_scores = sfellas[score_subdimensions].sum(axis=1)  # sum over cols
+    # sum over score dimensions AFTER SFELLA transformation
+    sfella_scores = sfellas[score_subdimensions].sum(axis=1)  # sum over cols
 
-        # aggregate over iterations
-        sfella_score_total = sfella_scores.sum(axis=0).item()  # sum over rows
-        sfella_score_average = sfella_scores.mean(axis=0).item()
-        # If, however, ddof is specified, the divisor N - ddof is used instead. In standard statistical practice, ddof=1 provides an unbiased estimator of the variance of a hypothetical infinite population. ddof=0 provides a maximum likelihood estimate of the variance for normally distributed variables.
-        sfella_score_variance = sfella_scores.var(axis=0, ddof=0).item()
-    else:  # compatibility with old AIntelope environments
-        sfella_score_total = sfella_totals["Score"]
-        sfella_score_average = sfella_averages["Score"]
-        sfella_score_variance = sfella_variances["Score"]
+    # aggregate over iterations
+    sfella_score_total = sfella_scores.sum(axis=0).item()  # sum over rows
+    sfella_score_average = sfella_scores.mean(axis=0).item()
+    # If, however, ddof is specified, the divisor N - ddof is used instead. In standard statistical practice, ddof=1 provides an unbiased estimator of the variance of a hypothetical infinite population. ddof=0 provides a maximum likelihood estimate of the variance for normally distributed variables.
+    sfella_score_variance = sfella_scores.var(axis=0, ddof=0).item()
 
     return (
         totals,
