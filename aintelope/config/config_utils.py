@@ -10,6 +10,7 @@ from pathlib import Path
 import zipfile
 import os
 import uuid
+import time
 import torch
 
 from omegaconf import DictConfig, OmegaConf
@@ -18,6 +19,10 @@ from omegaconf import DictConfig, OmegaConf
 def get_project_path(path_from_root: str) -> Path:
     project_root = Path(__file__).parents[2]
     return project_root / path_from_root
+
+
+def custom_now(format: str = "%Y%m%d%H%M%S") -> str:
+    return time.strftime(format)
 
 
 def append_pid_and_uuid(timestamp: str) -> str:
@@ -43,6 +48,7 @@ def minus_3(entry):
 
 
 def register_resolvers() -> None:
+    OmegaConf.register_new_resolver("custom_now", custom_now)
     OmegaConf.register_new_resolver("abs_path", get_project_path)
     OmegaConf.register_new_resolver(
         "append_pid_and_uuid", append_pid_and_uuid, use_cache=True
