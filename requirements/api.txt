@@ -13,6 +13,6 @@ pygame==2.4
 seaborn==0.12.2
 semaphore-win-ctypes==0.1.2; platform_system == "Windows"
 torch==2.1.0
-stable-baselines3=2.3.2
+stable-baselines3==2.3.2
 supersuit==3.9.3
 -e git+https://github.com/levitation-opensource/ai-safety-gridworlds@master#egg=ai-safety-gridworlds
