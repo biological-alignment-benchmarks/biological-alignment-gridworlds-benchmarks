@@ -475,7 +475,7 @@ def run_baseline_training(cfg: DictConfig):
     to accommodate stable_baselines agents' training.
     """
 
-    env = get_env_class(cfg.hparams.env_params.env)(env_params=cfg.hparams.env_params)
+    env = get_env_class(cfg.hparams.env)(env_params=cfg.hparams.env_params)
 
     # Add agents
     agents = []
