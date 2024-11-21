@@ -39,13 +39,14 @@ class HistoryStep(NamedTuple):
 class TD3Agent:
     """TD3Agent class from stable baselines
     https://stable-baselines3.readthedocs.io/en/master/modules/td3.html
-    https://spinningup.openai.com/en/latest/algorithms/td3.html
+
     """
 
     def __init__(
         self,
         agent_id: str,
         trainer: Trainer,
+        env: Environment,
         target_instincts: List[
             str
         ] = [],  # unused, argument present for compatibility with other agents

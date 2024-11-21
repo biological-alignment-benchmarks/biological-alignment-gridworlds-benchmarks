@@ -67,6 +67,7 @@ def run_experiment(
             get_agent_class(cfg.hparams.agent_class)(
                 agent_id,
                 trainer,
+                env,
                 **cfg.hparams.agent_params,
             )
         )
@@ -475,8 +476,8 @@ def run_baseline_training(cfg: DictConfig):
     to accommodate stable_baselines agents' training.
     """
 
-    env = get_env_class(cfg.hparams.env_params.env)(env_params=cfg.hparams.env_params)
-
+    env = get_env_class(cfg.hparams.env)(env_params=cfg.hparams.env_params)
+    trainer = Trainer(cfg)  # unused
     # Add agents
     agents = []
     dones = {}
@@ -485,8 +486,7 @@ def run_baseline_training(cfg: DictConfig):
         agents.append(
             get_agent_class(cfg.hparams.agent_class)(
                 agent_id=agent_id,
-                trainer=None,
-                cfg=cfg,
+                trainer=trainer,
                 env=env,
             )
         )

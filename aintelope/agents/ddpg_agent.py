@@ -38,13 +38,14 @@ class HistoryStep(NamedTuple):
 class DDPGAgent:
     """DDPGAgent class from stable baselines
     https://stable-baselines3.readthedocs.io/en/master/modules/ddpg.html
-    https://spinningup.openai.com/en/latest/algorithms/ddpg.html
+
     """
 
     def __init__(
         self,
         agent_id: str,
         trainer: Trainer,
+        env: Environment,
         target_instincts: List[
             str
         ] = [],  # unused, argument present for compatibility with other agents

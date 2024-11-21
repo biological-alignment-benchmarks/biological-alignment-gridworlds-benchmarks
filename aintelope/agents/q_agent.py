@@ -9,6 +9,13 @@ from aintelope.agents import Agent
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
 
+from typing import Union
+import gymnasium as gym
+from pettingzoo import AECEnv, ParallelEnv
+
+PettingZooEnv = Union[AECEnv, ParallelEnv]
+Environment = Union[gym.Env, PettingZooEnv]
+
 logger = logging.getLogger("aintelope.agents.q_agent")
 
 
@@ -28,6 +35,7 @@ class QAgent(Agent):
         self,
         agent_id: str,
         trainer: Trainer,
+        env: Environment,
         target_instincts: List[
             str
         ] = [],  # unused, argument present for compatibility with other agents

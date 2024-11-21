@@ -44,6 +44,7 @@ class PPOAgent:
         self,
         agent_id: str,
         trainer: Trainer,
+        env: Environment,
         target_instincts: List[
             str
         ] = [],  # unused, argument present for compatibility with other agents
