@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# Repository: https://github.com/aintelope/biological-compatibility-benchmarks
+
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -80,72 +86,53 @@ class DQN(nn.Module):
             vision_size = obs_size
             # interoception_size = 0
 
-        if len(vision_size) == 1:  # old AIntelope environment
-            self.cnn = False
+        self.cnn = True
 
-            # 1D vision network
-            self.fc4 = nn.Linear(vision_size[0], hidden_sizes[0])
+        if self.num_conv_layers == 0:
+            output_size = vision_size
+            conv_output_hidden_size = 1
+        else:
+            num_vision_features = vision_size[
+                0
+            ]  # feature vector is the first dimension
+            output_size = vision_size[1:]  # vision xy shape starts from index 1
 
-            if not self.combine_interoception_and_vision:
-                # interoception network
-                self.fc5 = nn.Linear(interoception_size[0], hidden_sizes[0])
+            # 3D vision network
+            self.conv = nn.ModuleList(
+                []
+            )  # without ModuleList, the layers would not be transferred to GPU
 
-                # combined network
-                self.fc6 = nn.Linear(hidden_sizes[0] + hidden_sizes[0], n_actions)
+            # NB! the first conv layer has different kernel size
+            self.conv.append(
+                nn.Conv2d(num_vision_features, hidden_sizes[0], kernel_size=1, stride=1)
+            )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
+            output_size = self.conv2d_shape(output_size, self.conv[0])
 
-            else:
-                self.fc6 = nn.Linear(hidden_sizes[0], n_actions)
-
-        else:  # Gridworlds environment
-            self.cnn = True
-
-            if self.num_conv_layers == 0:
-                output_size = vision_size
-                conv_output_hidden_size = 1
-            else:
-                num_vision_features = vision_size[
-                    0
-                ]  # feature vector is the first dimension
-                output_size = vision_size[1:]  # vision xy shape starts from index 1
-
-                # 3D vision network
-                self.conv = nn.ModuleList(
-                    []
-                )  # without ModuleList, the layers would not be transferred to GPU
-
-                # NB! the first conv layer has different kernel size
+            for i in range(1, self.num_conv_layers):
                 self.conv.append(
                     nn.Conv2d(
-                        num_vision_features, hidden_sizes[0], kernel_size=1, stride=1
+                        hidden_sizes[0],
+                        hidden_sizes[0],
+                        kernel_size=conv_size,
+                        stride=1,
                     )
-                )  # this layer with kernel_size=1 enables mixing of information across feature vector channels
-                output_size = self.conv2d_shape(output_size, self.conv[0])
+                )
+                output_size = self.conv2d_shape(output_size, self.conv[1])
 
-                for i in range(1, self.num_conv_layers):
-                    self.conv.append(
-                        nn.Conv2d(
-                            hidden_sizes[0],
-                            hidden_sizes[0],
-                            kernel_size=conv_size,
-                            stride=1,
-                        )
-                    )
-                    output_size = self.conv2d_shape(output_size, self.conv[1])
+            conv_output_hidden_size = hidden_sizes[0]
 
-                conv_output_hidden_size = hidden_sizes[0]
+        self.fc4 = nn.Linear(
+            np.prod(output_size) * conv_output_hidden_size, hidden_sizes[1]
+        )  # flattens convolutional layers output
 
-            self.fc4 = nn.Linear(
-                np.prod(output_size) * conv_output_hidden_size, hidden_sizes[1]
-            )  # flattens convolutional layers output
+        if not self.combine_interoception_and_vision:
+            # interoception network
+            self.fc5 = nn.Linear(interoception_size[0], hidden_sizes[2])
 
-            if not self.combine_interoception_and_vision:
-                # interoception network
-                self.fc5 = nn.Linear(interoception_size[0], hidden_sizes[2])
-
-                # combined network
-                self.fc6 = nn.Linear(hidden_sizes[1] + hidden_sizes[2], n_actions)
-            else:
-                self.fc6 = nn.Linear(hidden_sizes[1], n_actions)
+            # combined network
+            self.fc6 = nn.Linear(hidden_sizes[1] + hidden_sizes[2], n_actions)
+        else:
+            self.fc6 = nn.Linear(hidden_sizes[1], n_actions)
 
     def forward(self, observation):
         if not self.combine_interoception_and_vision:
@@ -157,36 +144,21 @@ class DQN(nn.Module):
         if not self.combine_interoception_and_vision:
             y = interoception_batch.float()
 
-        if not self.cnn:  # old AIntelope environment
-            # 1D vision network
-            x = F.relu(self.fc4(x))
+        # 3D vision network
+        for i in range(0, self.num_conv_layers):
+            x = F.relu(self.conv[i](x))
 
-            if not self.combine_interoception_and_vision:
-                # interoception network
-                y = F.relu(self.fc5(y))
+        x = x.view(
+            x.size(0), -1
+        )  # keep batch size at dimension 0, flatten the remaining output dimensions of conv2 layer into 1D : (batch size, channels, height, width) -> (batch size, features)
+        x = F.relu(self.fc4(x))
 
-                # combined network
-                z = torch.cat([x, y], axis=1)
-                return self.fc6(z)
-            else:
-                return self.fc6(x)
+        if not self.combine_interoception_and_vision:
+            # interoception network
+            y = F.relu(self.fc5(y))
 
-        else:  # Gridworlds environment
-            # 3D vision network
-            for i in range(0, self.num_conv_layers):
-                x = F.relu(self.conv[i](x))
-
-            x = x.view(
-                x.size(0), -1
-            )  # keep batch size at dimension 0, flatten the remaining output dimensions of conv2 layer into 1D : (batch size, channels, height, width) -> (batch size, features)
-            x = F.relu(self.fc4(x))
-
-            if not self.combine_interoception_and_vision:
-                # interoception network
-                y = F.relu(self.fc5(y))
-
-                # combined network
-                z = torch.cat([x, y], axis=1)
-                return self.fc6(z)
-            else:
-                return self.fc6(x)
+            # combined network
+            z = torch.cat([x, y], axis=1)
+            return self.fc6(z)
+        else:
+            return self.fc6(x)

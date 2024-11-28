@@ -1,3 +1,10 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# Repository: https://github.com/aintelope/biological-compatibility-benchmarks
+
+import os
 import pathlib
 from typing import Dict, Tuple, Union
 
@@ -14,14 +21,18 @@ def constants() -> DictConfig:
     return OmegaConf.create(constants_dict)
 
 
-@pytest.fixture
-def root_dir() -> pathlib.Path:
-    return pathlib.Path(__file__).parents[1]
+# @pytest.fixture
+# def root_dir() -> pathlib.Path:
+#    return pathlib.Path(__file__).parents[1]
 
 
 @pytest.fixture
-def tparams_hparams(root_dir: pathlib.Path) -> Union[DictConfig, ListConfig]:
-    full_params = OmegaConf.load(root_dir / "aintelope/config/config_experiment.yaml")
+# def tparams_hparams(root_dir: pathlib.Path) -> Union[DictConfig, ListConfig]:
+def tparams_hparams() -> Union[DictConfig, ListConfig]:
+    # full_params = OmegaConf.load(os.path.join(root_dir, "aintelope", "config", "config_experiment.yaml"))
+    full_params = OmegaConf.load(
+        os.path.join("aintelope", "config", "config_experiment.yaml")
+    )
 
     # override some parameters during tests in order to speed up computations
     # TODO: move these overrides to a separate config?

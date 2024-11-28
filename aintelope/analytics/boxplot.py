@@ -1,3 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# Repository: https://github.com/aintelope/biological-compatibility-benchmarks
+
 import os
 import glob
 
@@ -24,9 +30,9 @@ def boxplot() -> None:
     for filepath in datafiles:
         print(f"Reading {filepath}")
         with FileLock(
-            str(filepath)
-            + ".lock"  # filepath may be PosixPath, so need to convert to str
-        ):  # NB! take the lock inside the loop, not outside, so that when we are waiting for user confirmation for retry, we do not block other processes during that wait
+            str(filepath)  # filepath may be PosixPath, so need to convert to str
+            + ".lock"
+        ):
             df = pd.read_csv(filepath)
             dfs.append(df)
 
