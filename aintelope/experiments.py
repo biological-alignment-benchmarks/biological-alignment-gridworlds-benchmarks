@@ -499,12 +499,8 @@ def run_baseline_training(cfg: DictConfig):
 
     # Train
     for i_episode in range(cfg.hparams.num_episodes):
-        seed = i_episode
-        # env = get_env_class(cfg.hparams.env)(env_params=cfg.hparams.env_params)
-        # env.reset(trial_no=seed)
-
+        env.reset()
         for agent in agents:
-            # agent.set_env(env)
             # WORKS ONLY FOR ONE AGENT ATM! Cutoff here to synchronize the run
             agent.train(cfg.hparams.env_params.num_iters)
 
