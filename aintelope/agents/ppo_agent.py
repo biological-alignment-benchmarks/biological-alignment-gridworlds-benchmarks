@@ -36,6 +36,7 @@ class HistoryStep(NamedTuple):
 
 class PPOAgent:
     """PPOAgent class from stable baselines
+    https://pettingzoo.farama.org/tutorials/sb3/waterworld/
     https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html
     https://spinningup.openai.com/en/latest/algorithms/ppo.html
     """
@@ -55,7 +56,7 @@ class PPOAgent:
         self.done = False
         self.last_action = None
         env = ss.pettingzoo_env_to_vec_env_v1(env)
-        # env = ss.concat_vec_envs_v1(env, 8, num_cpus=1, base_class="stable_baselines3")
+        env = ss.concat_vec_envs_v1(env, 8, num_cpus=1, base_class="stable_baselines3")
         self.model = PPO("MlpPolicy", env, verbose=1)
 
     def reset(self, state, info, env_class) -> None:
