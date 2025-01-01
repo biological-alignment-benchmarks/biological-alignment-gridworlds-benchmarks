@@ -574,6 +574,7 @@ class SB3BaseAgent(Agent):
         use_cuda = torch.cuda.is_available() and torch.cuda.device_count() > 0
         device = torch.device("cuda" if use_cuda else "cpu")
 
-        self.model.load(
+        # Warning: load() re-creates the model from scratch, it does not update it in-place! For an in-place load use set_parameters instead.
+        self.model.set_parameters(
             checkpoint, device=device
         )  # device argument in needed in case the model is loaded to CPU. SB3 seems to be buggy in that regard that it will crash during model load if CPU device is not explicitly specified.

@@ -73,7 +73,9 @@ def td3_model_constructor(env, cfg):
                 "num_conv_layers": cfg.hparams.model_params.num_conv_layers,
             },
         },
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        device=torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        ),  # Note, CUDA-based CPU performance is much better than Torch-CPU mode.
     )
 
 
