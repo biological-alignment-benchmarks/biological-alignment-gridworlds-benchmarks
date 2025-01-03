@@ -15,47 +15,35 @@ log_dir: ${log_dir_root}/${timestamp_pid_uuid}/
 experiment_dir: ${log_dir}/${experiment_name}/
 
 trainer_params:
-  resume_from_checkpoint: False
   num_workers: 4        # unused        # TODO
-  # max_epochs: 10        # unused
   checkpoint: ${log_dir}/checkpoints/
-  device: gpu
+  device: gpu        # unused        # TODO
   verbose: false
 
 hparams:
   gridsearch_trial_no: 0
   params_set_title: "score_td3"
   aggregated_results_file: outputs/${hparams.params_set_title}.jsonl
-  batch_size: 16
-  lr: 0.015
-  amsgrad: True
   env: savanna-safetygrid-parallel-v1
   env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldParallelEnv"
   env_type: zoo  
   #env: savanna-safetygrid-sequential-v1
   #env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldSequentialEnv"
   #env_type: zoo
-  model: dqn   #this is unused at the moment?
   unit_test_mode: False      # is set during tests in order to speed up DQN computations
   agent_class: sb3_td3_agent 
-  warm_start_steps: 5       # not used at the moment, except for the unit tests
-  save_frequency: 10 # how often to save a model
+  save_frequency: 0 # TODO  # how often to save a model. 0 means that the model is saved only at the end, improving training performance
   use_separate_models_for_each_experiment: True
   agent_params:
     target_instincts: [food,drink,gold,silver,danger,predator,collision,antimovement]    
   model_params:  # TODO
     use_weight_sharing: False
-    hidden_sizes: [8,16,8]
-    num_conv_layers: 3
-    conv_size: 2
-    gamma: 0.7
-    tau: 0.05
+    num_conv_layers: 2
     eps_start: 0.0
     eps_end: 0.0
     instinct_bias_epsilon_start: 0.0
     instinct_bias_epsilon_end: 0.0          # this disables instinct based q-value predictions
     apply_instinct_eps_before_random_eps: False
-    replay_size: 99
     eps_last_pipeline_cycle: -1
     eps_last_episode: ${hparams.num_episodes}       # use -1 when episode counting for eps is disabled
     eps_last_trial: -1  # 10       # use -1 when trials counting for eps is disabled
@@ -67,7 +55,6 @@ hparams:
   env_params:
     combine_interoception_and_vision: True  # needs to be set to True for OpenAI baselines learning algorithms
     scalarize_rewards: False     # needs to be set to True for OpenAI baselines learning algorithms
-    # TODO: move num_iters to model_params
     num_iters: 400 # duration of a single episode. NB! warm_start_steps will be subtracted from this value
     env_experiment: ai_safety_gridworlds.aintelope_savanna
     level: 0
@@ -84,7 +71,6 @@ hparams:
     # but using a same model instance), 3 - once per training episode.
     map_randomization_frequency: 3 
     render_mode: null
-    # render_map_max: 5     # this field is currently not used anywhere in code
     #
     amount_agents: 1  
     amount_grass_patches: 1
