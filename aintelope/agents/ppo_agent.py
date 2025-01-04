@@ -18,7 +18,7 @@ import numpy.typing as npt
 import os
 import datetime
 
-from aintelope.agents.sb3_base_agent import SB3BaseAgent, CustomCNN
+from aintelope.agents.sb3_base_agent import SB3BaseAgent, CustomCNN, vec_env_args
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
 from aintelope.environments.singleagent_zoo_to_gym_wrapper import (
@@ -85,12 +85,16 @@ class PPOAgent(SB3BaseAgent):
         self.model_constructor = ppo_model_constructor
 
         if (
-            self.env.num_agents == 1
-            or cfg.hparams.model_params.use_weight_sharing
-            or self.test_mode
+            self.test_mode
         ):  # during test, each agent has a separate in-process instance with its own model and not using threads/subprocesses
+            env = SingleAgentZooToGymWrapper(env, self.id)
+            self.model = self.model_constructor(env, cfg)
+        elif self.env.num_agents == 1 or cfg.hparams.model_params.use_weight_sharing:
             # PPO supports weight sharing for multi-agent scenarios
             # TODO: Environment duplication support for parallel compute purposes. Abseil package needs to be replaced for that end.
+
+            ss.vector.vector_constructors.vec_env_args = vec_env_args  # The original function tries to do environment cloning, but absl flags currently do not support it. Since we need only one environment, there is no reason for cloning, so lets replace the cloning function with identity function.
+
             env = ss.pettingzoo_env_to_vec_env_v1(env)
             env = ss.concat_vec_envs_v1(
                 env, num_vec_envs=1, num_cpus=1, base_class="stable_baselines3"

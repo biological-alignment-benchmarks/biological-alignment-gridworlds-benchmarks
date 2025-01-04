@@ -212,7 +212,6 @@ class SB3BaseAgent(Agent):
         self.exceptions = None  # for multi-model scenario
         self.model_constructor = None  # for multi-model scenario
 
-        ss.vector.vector_constructors.vec_env_args = vec_env_args  # The original function tries to do environment cloning, but absl flags currently do not support it. Since we need only one environment, there is no reason for cloning, so lets replace the cloning function with identity function.
         stable_baselines3.common.save_util.is_json_serializable = is_json_serializable  # The original function throws many "Pythonic" exceptions which make debugging in Visual Studio too noisy since VS does not have capacity to filter out handled exceptions
 
     # this method is currently called only in test mode
