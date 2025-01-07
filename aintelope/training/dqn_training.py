@@ -405,31 +405,30 @@ class Trainer:
         Returns:
             None
         """
-        for agent_id in self.policy_nets.keys():
-            model = self.policy_nets[agent_id]
-            optimizer = self.optimizers[agent_id]
-            loss = 1.0
-            if agent_id in self.losses:
-                loss = self.losses[agent_id]
+        model = self.policy_nets[agent_id]
+        optimizer = self.optimizers[agent_id]
+        loss = 1.0
+        if agent_id in self.losses:
+            loss = self.losses[agent_id]
 
-            checkpoint_filename = agent_id
-            if use_separate_models_for_each_experiment:
-                checkpoint_filename += "-" + experiment_name
+        checkpoint_filename = agent_id
+        if use_separate_models_for_each_experiment:
+            checkpoint_filename += "-" + experiment_name
 
-            filename = os.path.join(
-                path,
-                checkpoint_filename
-                + "-"
-                + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f"),
-            )
+        filename = os.path.join(
+            path,
+            checkpoint_filename
+            + "-"
+            + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f"),
+        )
 
-            logger.info(f"Saving agent {agent_id} models to disk at {filename}")
-            torch.save(
-                {
-                    "epoch": episode,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "loss": loss,
-                },
-                filename,
-            )
+        logger.info(f"Saving agent {agent_id} models to disk at {filename}")
+        torch.save(
+            {
+                "epoch": episode,
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "loss": loss,
+            },
+            filename,
+        )

@@ -78,7 +78,7 @@ class ExampleAgent(Agent):
         if self.done:
             return None
 
-        action_space = self.trainer.action_spaces[self.id]
+        action_space = self.env.action_spaces[self.id]
         if isinstance(action_space, Discrete):
             min_action = action_space.start
             max_action = action_space.start + action_space.n - 1
@@ -141,16 +141,34 @@ class ExampleAgent(Agent):
         action_space,
         unit_test_mode: bool,
         checkpoint: Optional[str] = None,
+        *args,
+        **kwargs,
     ):
-        pass
-        # TODO
+        self.trainer.add_agent(
+            self.id,
+            observation_shape,
+            action_space,
+            unit_test_mode,
+            checkpoint,
+            *args,
+            **kwargs,
+        )
 
     def save_model(
         self,
         i_episode,
-        dir_cp,
+        path,
         experiment_name,
         use_separate_models_for_each_experiment,
+        *args,
+        **kwargs,
     ):
-        pass
-        # TODO
+        self.trainer.save_model(
+            self.id,
+            i_episode,
+            path,
+            experiment_name,
+            use_separate_models_for_each_experiment,
+            *args,
+            **kwargs,
+        )
