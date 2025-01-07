@@ -387,8 +387,13 @@ class Trainer:
                 )
             target_net.load_state_dict(target_net_state_dict)
 
-    def save_models(
-        self, episode, path, experiment_name, use_separate_models_for_each_experiment
+    def save_model(
+        self,
+        agent_id,
+        episode,
+        path,
+        experiment_name,
+        use_separate_models_for_each_experiment,
     ):
         """
         Save model artifacts to 'path'.

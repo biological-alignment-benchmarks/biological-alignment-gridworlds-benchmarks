@@ -134,3 +134,23 @@ class ExampleAgent(Agent):
         self.state = next_state
         self.info = info
         return event
+
+    def init_model(
+        self,
+        observation_shape,
+        action_space,
+        unit_test_mode: bool,
+        checkpoint: Optional[str] = None,
+    ):
+        pass
+        # TODO
+
+    def save_model(
+        self,
+        i_episode,
+        dir_cp,
+        experiment_name,
+        use_separate_models_for_each_experiment,
+    ):
+        pass
+        # TODO

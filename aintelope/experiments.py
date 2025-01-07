@@ -102,19 +102,17 @@ def run_experiment(
     prev_agent_checkpoint = None
     for i in range(env.max_num_agents):
         agent_id = f"agent_{i}"
-        agents.append(
-            get_agent_class(cfg.hparams.agent_class)(
-                agent_id=agent_id,
-                trainer=trainer,
-                env=env,
-                cfg=cfg,
-                test_mode=test_mode,
-                **cfg.hparams.agent_params,
-            )
+        agent = get_agent_class(cfg.hparams.agent_class)(
+            agent_id=agent_id,
+            trainer=trainer,
+            env=env,
+            cfg=cfg,
+            test_mode=test_mode,
+            **cfg.hparams.agent_params,
         )
+        agents.append(agent)
 
         if is_sb3:
-            agent = agents[-1]
             agent.i_pipeline_cycle = i_pipeline_cycle
             agent.events = events
             agent.score_dimensions = score_dimensions
@@ -138,7 +136,7 @@ def run_experiment(
 
         # TODO: is this reset necessary here? In main loop below,
         # there is also a reset call
-        agents[-1].reset(observation, info, type(env))
+        agent.reset(observation, info, type(env))
         # Get latest checkpoint if existing
 
         checkpoint = None
@@ -167,22 +165,15 @@ def run_experiment(
                 raise Exception("No trained model found, cannot run test!")
 
         # Add agent, with potential checkpoint
-        if is_sb3:
-            if checkpoint:
-                agents[-1].load_model(checkpoint)
-            else:
-                pass
-        elif not cfg.hparams.env_params.combine_interoception_and_vision:
-            trainer.add_agent(
-                agent_id,
+        if not cfg.hparams.env_params.combine_interoception_and_vision:
+            agent.init_model(
                 (observation[0].shape, observation[1].shape),
                 env.action_space,
                 unit_test_mode=unit_test_mode,
                 checkpoint=checkpoint,
             )
         else:
-            trainer.add_agent(
-                agent_id,
+            agent.init_model(
                 observation.shape,
                 env.action_space,
                 unit_test_mode=unit_test_mode,
@@ -254,11 +245,8 @@ def run_experiment(
                         model_needs_saving = True
                         if i_episode % cfg.hparams.save_frequency == 0:
                             os.makedirs(dir_cp, exist_ok=True)
-                            if is_sb3:
-                                for agent in agents:
-                                    agent.save_model()
-                            else:
-                                trainer.save_models(
+                            for agent in agents:
+                                agent.save_model(
                                     i_episode,
                                     dir_cp,
                                     experiment_name,
@@ -510,12 +498,13 @@ def run_experiment(
             model_needs_saving
         ):  # happens when num_episodes is not divisible by save frequency
             os.makedirs(dir_cp, exist_ok=True)
-            trainer.save_models(
-                i_episode,
-                dir_cp,
-                experiment_name,
-                use_separate_models_for_each_experiment,
-            )
+            for agent in agents:
+                agent.save_model(
+                    i_episode,
+                    dir_cp,
+                    experiment_name,
+                    use_separate_models_for_each_experiment,
+                )
 
     # / if is_sb3 and not test_mode:
 
