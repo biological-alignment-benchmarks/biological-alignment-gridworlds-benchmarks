@@ -89,6 +89,8 @@ class A2CAgent(SB3BaseAgent):
             self.env.num_agents == 1 or self.test_mode
         ):  # during test, each agent has a separate in-process instance with its own model and not using threads/subprocesses
             env = SingleAgentZooToGymWrapper(env, self.id)
+            # TODO: turn off GPU for A2C and use parallel computation which is supported by A2C:
+            # env = make_vec_env(env, n_envs=8, vec_env_cls=SubprocVecEnv)
             self.model = self.model_constructor(env, cfg)
         else:
             pass  # multi-model training will be automatically set up by the base class when self.model is None. These models will be saved to self.models and there will be only one agent instance in the main process. Actual agents will run in threads/subprocesses because SB3 requires Gym interface.
