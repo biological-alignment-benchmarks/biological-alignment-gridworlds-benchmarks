@@ -3,818 +3,889 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Python: Current File",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run single environment with X agent and default params
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run single environment with random agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_random" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with pure instinct agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_instinct" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with instinct + Q agent with rewards from environment and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with instinct + Q agent with rewards from instincts and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_reward" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with Q agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with example agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run single environment with OpenAI Baseline 3 agent
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run single environment with PPO agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ppo" ],
-      "env": {
-        "PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with DQN agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_dqn" ],
-      "env": {
-        "PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with TD3 agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_td3" ],
-      "env": {
-        "PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with DDPG agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ddpg" ],
-      "env": {
-        "PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run single environment with SAC agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/nonpipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_sac" ],
-      "env": {
-        "PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run pipeline with X agent and default params
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run pipeline with random agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_random" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with pure instinct agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_instinct" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with instinct + Q agent with rewards from environment and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    /* TODO
+    "configurations": [
         {
-            "name": "Python: Run pipeline with instinct + Q agent with rewards from instincts and default params",
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run single environment with X agent and default params
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run single environment with random agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_random" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with pure instinct agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_instinct" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with instinct + Q agent with rewards from environment and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with instinct + Q agent with rewards from instincts and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_reward" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with Q agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with LLM agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_llm_agent" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with example agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run single environment with OpenAI Baseline 3 agent
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run single environment with PPO agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ppo" ],
+            "env": {
+                "PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with DQN agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_dqn" ],
+            "env": {
+                "PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with TD3 agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_td3" ],
+            "env": {
+                "PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with DDPG agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ddpg" ],
+            "env": {
+                "PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run single environment with SAC agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/nonpipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_sac" ],
+            "env": {
+                "PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run pipeline with X agent and default params
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run pipeline with random agent and default params",
             "type": "debugpy",
             "request": "launch",
             "program": "aintelope/pipeline.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "showUncaughtExceptions": true,
-            "args": ["--config-name=config_experiment_reward"],
+            "args": [ "--config-name=config_experiment_random" ],
             "env": {
-                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
                 //"PYTHONPATH": "your_path_here"
             }
         },
-        */
-    {
-      "name": "Python: Run pipeline with Q agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with example agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run pipeline with OpenAI Baseline 3 agent
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run pipeline with PPO agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ppo" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with DQN agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_dqn" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with TD3 agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_td3" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with DDPG agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ddpg" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with SAC agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_sac" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run pipeline with X agent and per environment optimised params
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run pipeline with instinct + Q agent with rewards from environment and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_mixed10.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    /* TODO
         {
-            "name": "Python: Run pipeline with instinct + Q agent with rewards from instincts and per environment optimised params",
+            "name": "Python: Run pipeline with pure instinct agent and default params",
             "type": "debugpy",
             "request": "launch",
             "program": "aintelope/pipeline.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "showUncaughtExceptions": true,
-            "args": ["--config-name=config_experiment_reward"],
+            "args": [ "--config-name=config_experiment_instinct" ],
             "env": {
-                "PIPELINE_CONFIG": "config_pipeline_reward10.yaml",
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
                 //"PYTHONPATH": "your_path_here"
             }
         },
-        */
-    {
-      "name": "Python: Run pipeline with Q agent and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_score10.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run pipeline with example agent and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/pipeline.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_exampleagent10.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run multiple trials pipeline with X agent and default params
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run multiple trials with random agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_random" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_random.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials with pure instinct agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_instinct" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_instinct.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from environment and default params (use only for debugging)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_mixed.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from instincts and default params (use only for debugging)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_reward" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_reward.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with Q agent and default param (use only for debugging)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with example agent and default param (use only for debugging)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_exampleagent.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run multiple trials pipeline with OpenAI Baseline 3 agent
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run multiple trials pipeline with PPO agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ppo" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score_ppo.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with DQN agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_dqn" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score_dqn.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with TD3 agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_td3" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score_td3.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with DDPG agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_ddpg" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score_ddpg.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with SAC agent and default params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score_sac" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score_sac.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run multiple trials pipeline with X agent and per environment optimised params
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from environment and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_mixed10.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_mixed.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    /* TODO
         {
-            "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from instincts and per environment optimised params",
+            "name": "Python: Run pipeline with instinct + Q agent with rewards from environment and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        /* TODO
+                {
+                        "name": "Python: Run pipeline with instinct + Q agent with rewards from instincts and default params",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "aintelope/pipeline.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                        "showUncaughtExceptions": true,
+                        "args": ["--config-name=config_experiment_reward"],
+                        "env": {
+                                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                                //"PYTHONPATH": "your_path_here"
+                        }
+                },
+                */
+        {
+            "name": "Python: Run pipeline with Q agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with LLM agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_llm_agent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run BioBlue pipeline with LLM agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_llm_agent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_bioblue.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with example agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run pipeline with OpenAI Baseline 3 agent
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run pipeline with PPO agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ppo" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with DQN agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_dqn" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with TD3 agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_td3" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with DDPG agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ddpg" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with SAC agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_sac" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run pipeline with X agent and per environment optimised params
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run pipeline with instinct + Q agent with rewards from environment and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_mixed10.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        /* TODO
+                {
+                        "name": "Python: Run pipeline with instinct + Q agent with rewards from instincts and per environment optimised params",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "aintelope/pipeline.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                        "showUncaughtExceptions": true,
+                        "args": ["--config-name=config_experiment_reward"],
+                        "env": {
+                                "PIPELINE_CONFIG": "config_pipeline_reward10.yaml",
+                                //"PYTHONPATH": "your_path_here"
+                        }
+                },
+                */
+        {
+            "name": "Python: Run pipeline with Q agent and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_score10.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run pipeline with example agent and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/pipeline.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_exampleagent10.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run multiple trials pipeline with X agent and default params
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run multiple trials with random agent and default params",
             "type": "debugpy",
             "request": "launch",
             "program": "aintelope/gridsearch.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "showUncaughtExceptions": true,
-            "args": ["--config-name=config_experiment_reward"],
+            "args": [ "--config-name=config_experiment_random" ],
             "env": {
-                "PIPELINE_CONFIG": "config_pipeline_reward10.yaml",
-                "GRIDSEARCH_CONFIG": "config_trials_reward.yaml",
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_random.yaml"
                 //"PYTHONPATH": "your_path_here"
             }
         },
-        */
-    {
-      "name": "Python: Run multiple trials pipeline with Q agent and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_score10.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_score.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run multiple trials pipeline with example agent and per environment optimised params",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline_exampleagent10.yaml",
-        "GRIDSEARCH_CONFIG": "config_trials_exampleagent.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Configurations to run gridsearch pipeline with X agent
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Run gridsearch pipeline with instinct + Q agent with rewards from environment",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_mixed" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_gridsearch_mixed.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run gridsearch pipeline with instinct + Q agent with rewards from instincts",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_reward" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_gridsearch_reward.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run gridsearch pipeline with Q agent",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_score" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_gridsearch_score.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Run gridsearch pipeline with example agent",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/gridsearch.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [ "--config-name=config_experiment_exampleagent" ],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml",
-        "GRIDSEARCH_CONFIG": "config_gridsearch_exampleagent.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    //-----------------------------------------------------------------------------------
-    // Demo environments
-    //-----------------------------------------------------------------------------------
-    {
-      "name": "Python: Human-playable demo: 1. Food Unbounded",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/food_unbounded.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 2. Danger Tiles",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/danger_tiles.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 3. Predators",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/predators.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 4. Homeostasis",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/homeostasis.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 5. Sustainability",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/sustainability.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 6. Food Unbounded",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/food_unbounded.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 7. Food-Drink Homeostasis",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 8. Food-Drink Homeostasis Gold",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis_gold.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    },
-    {
-      "name": "Python: Human-playable demo: 9. Food-Frink Homeostasis Gold-Silver",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis_gold_silver.py",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "showUncaughtExceptions": true,
-      "args": [],
-      "env": {
-        "PIPELINE_CONFIG": "config_pipeline.yaml"
-        //"PYTHONPATH": "your_path_here"
-      }
-    }
-  ]
+        {
+            "name": "Python: Run multiple trials with pure instinct agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_instinct" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_instinct.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from environment and default params (use only for debugging)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_mixed.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from instincts and default params (use only for debugging)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_reward" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_reward.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with Q agent and default params (use only for debugging)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with LLM agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_llm_agent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_llm_agent.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials BioBlue pipeline with LLM agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_llm_agent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_bioblue.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_llm_agent.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with example agent and default params (use only for debugging)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_exampleagent.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run multiple trials pipeline with OpenAI Baseline 3 agent
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run multiple trials pipeline with PPO agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ppo" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score_ppo.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with DQN agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_dqn" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score_dqn.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with TD3 agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_td3" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score_td3.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with DDPG agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_ddpg" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score_ddpg.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with SAC agent and default params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score_sac" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score_sac.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run multiple trials pipeline with X agent and per environment optimised params
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from environment and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_mixed10.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_mixed.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        /* TODO
+                {
+                        "name": "Python: Run multiple trials pipeline with instinct + Q agent with rewards from instincts and per environment optimised params",
+                        "type": "debugpy",
+                        "request": "launch",
+                        "program": "aintelope/gridsearch.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": false,
+                        "showUncaughtExceptions": true,
+                        "args": ["--config-name=config_experiment_reward"],
+                        "env": {
+                                "PIPELINE_CONFIG": "config_pipeline_reward10.yaml",
+                                "GRIDSEARCH_CONFIG": "config_trials_reward.yaml",
+                                //"PYTHONPATH": "your_path_here"
+                        }
+                },
+                */
+        {
+            "name": "Python: Run multiple trials pipeline with Q agent and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_score10.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_score.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run multiple trials pipeline with example agent and per environment optimised params",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline_exampleagent10.yaml",
+                "GRIDSEARCH_CONFIG": "config_trials_exampleagent.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Configurations to run gridsearch pipeline with X agent
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Run gridsearch pipeline with instinct + Q agent with rewards from environment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_mixed" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_gridsearch_mixed.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run gridsearch pipeline with instinct + Q agent with rewards from instincts",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_reward" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_gridsearch_reward.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run gridsearch pipeline with Q agent",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_score" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_gridsearch_score.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Run gridsearch pipeline with example agent",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/gridsearch.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [ "--config-name=config_experiment_exampleagent" ],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml",
+                "GRIDSEARCH_CONFIG": "config_gridsearch_exampleagent.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        //-----------------------------------------------------------------------------------
+        // Demo environments
+        //-----------------------------------------------------------------------------------
+        {
+            "name": "Python: Human-playable demo: 1. Food Unbounded",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/food_unbounded.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 2. Danger Tiles",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/danger_tiles.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 3. Predators",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/predators.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 4. Homeostasis",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/homeostasis.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 5. Sustainability",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/sustainability.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 6. Food Unbounded",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/food_unbounded.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 7. Food-Drink Homeostasis",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 8. Food-Drink Homeostasis Gold",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis_gold.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        },
+        {
+            "name": "Python: Human-playable demo: 9. Food-Frink Homeostasis Gold-Silver",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "aintelope/environments/demos/gridworlds/food_drink_homeostasis_gold_silver.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "showUncaughtExceptions": true,
+            "args": [],
+            "env": {
+                "PIPELINE_CONFIG": "config_pipeline.yaml"
+                //"PYTHONPATH": "your_path_here"
+            }
+        }
+    ]
 }

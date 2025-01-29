@@ -18,12 +18,15 @@ from aintelope.environments.ai_safety_gridworlds.aintelope_savanna import (  # T
     AGENT_CHR2,
     DRINK_CHR,
     FOOD_CHR,
+    SMALL_FOOD_CHR,
     DRINK_CHR,
+    SMALL_DRINK_CHR,
     GOLD_CHR,
     SILVER_CHR,
     DANGER_TILE_CHR,
     PREDATOR_NPC_CHR,
     WALL_CHR,
+    GAP_CHR,
     GAME_ART,
 )
 

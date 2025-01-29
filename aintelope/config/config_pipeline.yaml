@@ -5,12 +5,7 @@
 # Repository: https://github.com/aintelope/biological-compatibility-benchmarks
 
 e_1_food_unbounded:
-  #model_params:
-  #  eps_last_episode: 50
-  #  eps_last_frame: 500
-  # num_episodes: 50 # how long to train. # TODO: move num_episodes to model_params
   env_params:
-    # num_iters: 500
     env_experiment: "ai_safety_gridworlds.aintelope_savanna"
     # num_iters: 100 # TODO: if you override this here then you need to override also eps_last_frame! duration of a single episode. NB! warm_start_steps will be subtracted from this value
     amount_agents: 1 

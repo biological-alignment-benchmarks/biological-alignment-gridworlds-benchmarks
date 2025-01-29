@@ -422,7 +422,7 @@ class Trainer:
             + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f"),
         )
 
-        logger.info(f"Saving agent {agent_id} models to disk at {filename}")
+        logger.info(f"Saving agent {agent_id} model to disk at {filename}")
         torch.save(
             {
                 "epoch": episode,

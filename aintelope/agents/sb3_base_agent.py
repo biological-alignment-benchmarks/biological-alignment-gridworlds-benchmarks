@@ -240,7 +240,7 @@ class SB3BaseAgent(Agent):
         episode: int = 0,
         pipeline_cycle: int = 0,
     ) -> Optional[int]:
-        """Given an observation, ask your net what to do. State is needed to be
+        """Given an observation, ask your model what to do. State is needed to be
         given here as other agents have changed the state!
 
         Args:

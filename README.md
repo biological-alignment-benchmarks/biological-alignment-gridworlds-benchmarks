@@ -82,7 +82,7 @@ You can download the latest installer from https://www.python.org/downloads/rele
 * Run `git clone https://github.com/GunnarZarncke/aintelope.git`
 * Run `cd aintelope`
 
-3. Create a virtual python environment by running: 
+3. Create a virtual python environment: 
 <br>3.1. To activate VirtualEnv with Python 3.10:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`virtualenv -p python3.10 venv_aintelope` 
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(or if you want to use your default Python version: 
@@ -129,13 +129,22 @@ make format
 make flake8
 ```
 
+
 ## Executing `aintelope`
 
-Try `make run-training`. Then look in `aintelope/outputs/memory_records`. (WIP)
-There should be two new files named `Record_{current timestamp}.csv` and
-`Record_{current timestamp}_plot.png`. The plot will be an image of the path the
-agent took during the test episode, using the best agent that the training
-produced. Green dots are food in the environment, blue dots are water.
+In the folder `.vscode` there is a file named `launch.json.template`. Copy that file to `launch.json`. This is a VSCode launch configurations file, containing many launch configurations. (The original file named `launch.json.template` is necessary so that your local changes to launch configurations do not end up in the Git repository.)
+
+Alternatively, try executing `make run-training-baseline`. You do not need VSCode for running this command. Then look in `aintelope/outputs`. This command will execute only one of many available launch configurations present in `launch.json`.
+
+### Executing LLM agent
+
+For LLM agent, there are the following launch configurations in `launch.json`:
+- Run single environment with LLM agent and default params
+- Run pipeline with LLM agent and default params
+- Run BioBlue pipeline with LLM agent and default params
+- Run multiple trials pipeline with LLM agent and default params
+- Run multiple trials BioBlue pipeline with LLM agent and default params
+
 
 ## Experiment Analysis
 
@@ -143,8 +152,6 @@ To see the results, do the following:
 Run the following:
   `make run-training-baseline`
   `make run-training-instinct`
-
-TODO: Description of VSCode launch configurations
 
 ## Logging
 

@@ -21,6 +21,8 @@ from aintelope.agents.ddpg_agent import DDPGAgent
 from aintelope.agents.sac_agent import SACAgent
 from aintelope.agents.td3_agent import TD3Agent
 
+from aintelope.agents.llm_agent import LLMAgent
+
 from aintelope.agents.simple_agents import (
     # IterativeWeightOptimizationAgent,
     # OneStepPerfectPredictionAgent,
@@ -60,3 +62,5 @@ register_agent_class("sb3_a2c_agent", A2CAgent)
 register_agent_class("sb3_ddpg_agent", DDPGAgent)
 register_agent_class("sb3_sac_agent", SACAgent)
 register_agent_class("sb3_td3_agent", TD3Agent)
+
+register_agent_class("llm_agent", LLMAgent)
