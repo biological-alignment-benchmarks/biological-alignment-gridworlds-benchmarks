@@ -21,8 +21,8 @@ import datetime
 from aintelope.agents.sb3_base_agent import SB3BaseAgent, CustomCNN, vec_env_args
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
-from aintelope.environments.singleagent_zoo_to_gym_wrapper import (
-    SingleAgentZooToGymWrapper,
+from zoo_to_gym_multiagent_adapter.singleagent_zoo_to_gym_adapter import (
+    SingleAgentZooToGymAdapter,
 )
 
 import torch
@@ -91,7 +91,7 @@ class PPOAgent(SB3BaseAgent):
         if (
             self.test_mode
         ):  # during test, each agent has a separate in-process instance with its own model and not using threads/subprocesses
-            env = SingleAgentZooToGymWrapper(env, self.id)
+            env = SingleAgentZooToGymAdapter(env, self.id)
             self.model = self.model_constructor(env, cfg)
         elif self.env.num_agents == 1 or cfg.hparams.model_params.use_weight_sharing:
             # PPO supports weight sharing for multi-agent scenarios

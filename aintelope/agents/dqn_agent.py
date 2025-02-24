@@ -24,8 +24,8 @@ from aintelope.agents.sb3_base_agent import (
 )
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
-from aintelope.environments.singleagent_zoo_to_gym_wrapper import (
-    SingleAgentZooToGymWrapper,
+from zoo_to_gym_multiagent_adapter.singleagent_zoo_to_gym_adapter import (
+    SingleAgentZooToGymAdapter,
 )
 
 import torch
@@ -92,7 +92,7 @@ class DQNAgent(SB3BaseAgent):
         if (
             self.env.num_agents == 1 or self.test_mode
         ):  # during test, each agent has a separate in-process instance with its own model and not using threads/subprocesses
-            env = SingleAgentZooToGymWrapper(env, self.id)
+            env = SingleAgentZooToGymAdapter(env, self.id)
             self.model = self.model_constructor(env, cfg)
         else:
             pass  # multi-model training will be automatically set up by the base class when self.model is None. These models will be saved to self.models and there will be only one agent instance in the main process. Actual agents will run in threads/subprocesses because SB3 requires Gym interface.

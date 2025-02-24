@@ -21,3 +21,4 @@ supersuit==3.9.3
 tenacity==8.2.2
 tiktoken==0.7.0
 -e git+https://github.com/levitation-opensource/ai-safety-gridworlds@master#egg=ai-safety-gridworlds
+-e git+https://github.com/levitation-opensource/zoo_to_gym_multiagent_adapter@main#egg=zoo_to_gym_multiagent_adapter

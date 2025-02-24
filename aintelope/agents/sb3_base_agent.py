@@ -29,9 +29,9 @@ from aintelope.training.dqn_training import Trainer
 from aintelope.environments.savanna_safetygrid import (
     INFO_REWARD_DICT,
 )
-from aintelope.environments.multiagent_zoo_to_gym_wrapper import (
-    MultiAgentZooToGymWrapperGymSide,
-    MultiAgentZooToGymWrapperZooSide,
+from zoo_to_gym_multiagent_adapter.multiagent_zoo_to_gym_adapter import (
+    MultiAgentZooToGymAdapterGymSide,
+    MultiAgentZooToGymAdapterZooSide,
 )
 
 import stable_baselines3
@@ -153,7 +153,7 @@ def sb3_agent_train_thread_entry_point(
     # activate selected GPU
     select_gpu(gpu_index)
 
-    env_wrapper = MultiAgentZooToGymWrapperGymSide(
+    env_wrapper = MultiAgentZooToGymAdapterGymSide(
         pipe, agent_id, checkpoint_filename, observation_space, action_space
     )
     try:
@@ -515,7 +515,7 @@ class SB3BaseAgent(Agent):
             checkpoint_filenames = self.get_checkpoint_filenames(
                 include_timestamp=False
             )
-            env_wrapper = MultiAgentZooToGymWrapperZooSide(self.env, self.cfg)
+            env_wrapper = MultiAgentZooToGymAdapterZooSide(self.env, self.cfg)
             self.models, self.exceptions = env_wrapper.train(
                 num_total_steps=num_total_steps,
                 agent_thread_entry_point=sb3_agent_train_thread_entry_point,

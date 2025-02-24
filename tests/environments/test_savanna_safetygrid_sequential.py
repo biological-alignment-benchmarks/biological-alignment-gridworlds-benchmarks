@@ -14,12 +14,12 @@ import pytest
 from aintelope.environments import savanna_safetygrid as safetygrid
 from aintelope.environments.savanna_safetygrid import SavannaGridworldSequentialEnv
 
-from aintelope.environments.singleagent_zoo_to_gym_wrapper import (
-    SingleAgentZooToGymWrapper,
+from zoo_to_gym_multiagent_adapter.singleagent_zoo_to_gym_adapter import (
+    SingleAgentZooToGymAdapter,
 )
-from aintelope.environments.multiagent_zoo_to_gym_wrapper import (
-    MultiAgentZooToGymWrapperGymSide,
-    MultiAgentZooToGymWrapperZooSide,
+from zoo_to_gym_multiagent_adapter.multiagent_zoo_to_gym_adapter import (
+    MultiAgentZooToGymAdapterGymSide,
+    MultiAgentZooToGymAdapterZooSide,
 )
 
 from gymnasium.spaces import Discrete, MultiDiscrete
@@ -220,7 +220,7 @@ def test_singleagent_zoo_to_gym_wrapper_scalarized_rewards(execution_number):
     env = safetygrid.SavannaGridworldSequentialEnv(env_params=env_params)
     env.seed(execution_number)
 
-    env = SingleAgentZooToGymWrapper(env, "agent_0")
+    env = SingleAgentZooToGymAdapter(env, "agent_0")
     # OpenAI Stable Baselines 3 Gym env checker
     # warn=False : disable additional warnings since they are handled in the agent side by:
     # * disabling normalization
@@ -239,7 +239,7 @@ def sb3_gym_test_thread_entry_point(
     observation_space,
     action_space,
 ):
-    env_wrapper = MultiAgentZooToGymWrapperGymSide(
+    env_wrapper = MultiAgentZooToGymAdapterGymSide(
         pipe, agent_id, checkpoint_filename, observation_space, action_space
     )
     try:
@@ -279,7 +279,7 @@ def sb3_gym_test_thread_entry_point(
 #    env = safetygrid.SavannaGridworldSequentialEnv(env_params=env_params)
 #    env.seed(execution_number)
 
-#    env_wrapper = MultiAgentZooToGymWrapperZooSide(
+#    env_wrapper = MultiAgentZooToGymAdapterZooSide(
 #        env, cfg=None
 #    )  # cfg is unused at sb3_gym_test_thread_entry_point() function
 #    _, exceptions = env_wrapper.train(

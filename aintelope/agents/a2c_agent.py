@@ -24,8 +24,8 @@ from aintelope.agents.sb3_base_agent import (
 )
 from aintelope.aintelope_typing import ObservationFloat, PettingZooEnv
 from aintelope.training.dqn_training import Trainer
-from aintelope.environments.singleagent_zoo_to_gym_wrapper import (
-    SingleAgentZooToGymWrapper,
+from zoo_to_gym_multiagent_adapter.singleagent_zoo_to_gym_adapter import (
+    SingleAgentZooToGymAdapter,
 )
 
 import torch
@@ -92,7 +92,7 @@ class A2CAgent(SB3BaseAgent):
         if (
             self.env.num_agents == 1 or self.test_mode
         ):  # during test, each agent has a separate in-process instance with its own model and not using threads/subprocesses
-            env = SingleAgentZooToGymWrapper(env, self.id)
+            env = SingleAgentZooToGymAdapter(env, self.id)
             # TODO: turn off GPU for A2C and use parallel computation which is supported by A2C:
             # env = make_vec_env(env, n_envs=8, vec_env_cls=SubprocVecEnv)
             self.model = self.model_constructor(env, cfg)
