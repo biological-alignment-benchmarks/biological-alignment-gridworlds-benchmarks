@@ -431,13 +431,11 @@ class GridworldZooBaseEnv:
     def transform_observation(
         self, agent: str, info: dict
     ) -> npt.NDArray[ObservationFloat]:
+        # np.float32 casts in below code are needed for SB3 env_checker unit tests
+
         if agent is None:
             return info[INFO_OBSERVATION_LAYERS_CUBE].astype(np.float32)
         else:  # the info is already agent-specific, so no need to find agent subkey here
-            # agent_interoception_vector = [
-            #    info["metrics_dict"]["FoodSatiation_" + self.agent_name_mapping[agent]],
-            #    info["metrics_dict"]["DrinkSatiation_" + self.agent_name_mapping[agent]],
-            # ]
             if self._observation_direction_mode == -1:
                 observation = info[INFO_OBSERVATION_LAYERS_CUBE].astype(np.float32)
             else:
@@ -598,7 +596,9 @@ class GridworldZooBaseEnv:
                 interoception_layers = np.expand_dims(
                     np.ones([observation.shape[1], observation.shape[2]], np.float32),
                     axis=0,
-                ) * np.expand_dims(interoception_vector, axis=[1, 2])
+                ) * np.expand_dims(
+                    np.array(interoception_vector).astype(np.float32), axis=[1, 2]
+                )
 
                 observation = np.vstack(
                     [
@@ -622,7 +622,9 @@ class GridworldZooBaseEnv:
                     np.array(interoception_vector).astype(np.float32),
                 )
 
-    def format_info(self, agent: str, info: dict):
+    def format_info(
+        self, agent: str, info: dict, create_interoception_transformed_entries=False
+    ):
         # keep only necessary fields of infos
 
         agent_interoception_vector = np.array(
@@ -645,7 +647,7 @@ class GridworldZooBaseEnv:
         coordinates_dict = dict(info[INFO_AGENT_OBSERVATION_COORDINATES])
         coordinates_dict[ALL_AGENTS_LAYER] = all_agents_coordinates
 
-        return {
+        info = {
             INFO_AGENT_OBSERVATION_COORDINATES: coordinates_dict,
             INFO_AGENT_OBSERVATION_LAYERS_ORDER: info[
                 INFO_AGENT_OBSERVATION_LAYERS_ORDER
@@ -673,10 +675,20 @@ class GridworldZooBaseEnv:
             },
         }
 
-    def format_infos(self, infos: dict):
+        # normally these entries are created by transform_observation call, but in some methods this call is not made
+        if create_interoception_transformed_entries:
+            self.transform_observation(agent, info)
+
+        return info
+
+    def format_infos(self, infos: dict, create_interoception_transformed_entries=False):
         # keep only necessary fields of infos
         return {
-            agent: self.format_info(agent, agent_info)
+            agent: self.format_info(
+                agent,
+                agent_info,
+                create_interoception_transformed_entries=create_interoception_transformed_entries,
+            )
             for agent, agent_info in infos.items()
         }
 
@@ -851,7 +863,7 @@ class SavannaGridworldParallelEnv(GridworldZooBaseEnv, GridworldZooParallelEnv):
         _, infos = GridworldZooParallelEnv.reset(
             self
         )  # need to reset in order to access infos
-        infos = self.format_infos(infos)
+        infos = self.format_infos(infos, create_interoception_transformed_entries=True)
         self.init_observation_spaces(parent_observation_spaces, infos)
 
         self._last_infos = {}
@@ -1011,7 +1023,7 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
         infos = GridworldZooAecEnv.infos.fget(
             self
         )  # property needs .fget() to become callable
-        infos = self.format_infos(infos)
+        infos = self.format_infos(infos, create_interoception_transformed_entries=True)
         self.init_observation_spaces(parent_observation_spaces, infos)
 
         self._last_infos = {}
@@ -1050,16 +1062,19 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
         infos = GridworldZooAecEnv.infos.fget(
             self
         )  # property needs .fget() to become callable
-        infos = self.format_infos(infos)
-
         if self._override_infos:
             return {agent: {} for agent in infos.keys()}
         else:
+            infos = self.format_infos(
+                infos, create_interoception_transformed_entries=True
+            )
             return self.filter_infos(infos)
 
     def observe_info(self, agent):
         info = GridworldZooAecEnv.observe_info(self, agent)
-        info = self.format_info(agent, info)
+        info = self.format_info(
+            agent, info, create_interoception_transformed_entries=True
+        )
         return self.filter_info(agent, info)
 
     # def observe_from_location(self, agents_coordinates: Dict):
@@ -1105,7 +1120,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
         infos = {}
         for agent in self.possible_agents:
             info = GridworldZooAecEnv.observe_info(self, agent)
-            info = self.format_info(agent, info)
+            info = self.format_info(
+                agent, info, create_interoception_transformed_entries=False
+            )
             infos[agent] = info
             self.observations2[agent] = self.transform_observation(agent, info)
 
@@ -1144,7 +1161,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
             self, observe=observe
         )
         agent = self.agent_selection
-        info = self.format_info(agent, info)
+        info = self.format_info(
+            agent, info, create_interoception_transformed_entries=not observe
+        )
 
         if observe:
             self._last_infos[
@@ -1212,14 +1231,16 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
             return
 
         # observe observations, transform observations and rewards
-        info = GridworldZooAecEnv.observe_info(self, agent)
-        info = self.format_info(agent, info)
+        step_agent_info = GridworldZooAecEnv.observe_info(self, agent)
+        step_agent_info = self.format_info(
+            agent, step_agent_info, create_interoception_transformed_entries=False
+        )
 
-        self._last_infos[agent] = info
-        observation2 = self.transform_observation(agent, info)
+        self._last_infos[agent] = step_agent_info
+        observation2 = self.transform_observation(agent, step_agent_info)
         self.observations2[agent] = observation2
 
-        reward2 = info[INFO_REWARD_DICT]
+        reward2 = step_agent_info[INFO_REWARD_DICT]
         if self._scalarize_rewards:
             reward2 = sum(
                 reward2.values()
@@ -1228,9 +1249,15 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
 
         # NB! cumulative reward should be calculated for all agents
         for agent2 in self.agents:
-            info = GridworldZooAecEnv.observe_info(self, agent2)
-            info = self.format_info(agent2, info)
-            self._cumulative_rewards2[agent2] = info[INFO_CUMULATIVE_REWARD_DICT]
+            if agent2 == agent:  # optimisation
+                agent2_info = step_agent_info
+            else:
+                agent2_info = GridworldZooAecEnv.observe_info(self, agent2)
+                agent2_info = self.format_info(
+                    agent2, agent2_info, create_interoception_transformed_entries=False
+                )
+
+            self._cumulative_rewards2[agent2] = agent2_info[INFO_CUMULATIVE_REWARD_DICT]
             if self._scalarize_rewards:
                 self._cumulative_rewards2[agent2] = sum(
                     self._cumulative_rewards2[agent2].values()
@@ -1240,9 +1267,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
         truncated = self.truncations[agent]
 
         if self._override_infos:
-            info = {}
+            step_agent_info = {}
 
-        filtered_info = self.filter_info(agent, info)
+        filtered_info = self.filter_info(agent, step_agent_info)
         logger.debug(
             "debug return",
             observation2,
@@ -1318,7 +1345,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                 ):  # observe BEFORE next agent takes its step?
                     # observe observations, transform observations and rewards
                     info = GridworldZooAecEnv.observe_info(self, agent)
-                    info = self.format_info(agent, info)
+                    info = self.format_info(
+                        agent, info, create_interoception_transformed_entries=False
+                    )
 
                     infos[agent] = info
                     self._last_infos[agent] = info
@@ -1331,7 +1360,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                     self._cumulative_rewards2[agent] = info[INFO_CUMULATIVE_REWARD_DICT]
                 else:
                     info = GridworldZooAecEnv.observe_info(self, agent)
-                    info = self.format_info(agent, info)
+                    info = self.format_info(
+                        agent, info, create_interoception_transformed_entries=False
+                    )
 
                     self._last_rewards2[agent] = info[INFO_REWARD_DICT]
                     # NB! if the action of current agent somehow affects the rewards
@@ -1358,7 +1389,9 @@ class SavannaGridworldSequentialEnv(GridworldZooBaseEnv, GridworldZooAecEnv):
                 if agent in self.agents:  # was not "dead step"
                     info = GridworldZooAecEnv.observe_info(self, agent)
                     # self.observe_from_location({agent: [1, 1]})    # for debugging
-                    info = self.format_info(agent, info)
+                    info = self.format_info(
+                        agent, info, create_interoception_transformed_entries=False
+                    )
                     infos[agent] = info
                     self._last_infos[agent] = info
                     self.observations2[agent] = self.transform_observation(agent, info)
