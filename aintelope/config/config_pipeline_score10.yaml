@@ -83,7 +83,7 @@ e_1_food_unbounded:
 #    gamma: 0.7
 #    num_conv_layers: 3
 #  num_episodes: 40
-#e_5_sustainability2:
+#e_5_sustainability:
 #  env_params:
 #    env_experiment: ai_safety_gridworlds.aintelope_savanna
 #    amount_agents: 1

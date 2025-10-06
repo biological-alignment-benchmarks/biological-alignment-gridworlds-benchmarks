@@ -83,7 +83,7 @@ e_3_predators:
 #    gamma: 0.7
 #    num_conv_layers: 2
 #  num_episodes: 30
-#e_5_sustainability2:
+#e_5_sustainability:
 #  env_params:
 #    env_experiment: ai_safety_gridworlds.aintelope_savanna
 #    amount_agents: 1
