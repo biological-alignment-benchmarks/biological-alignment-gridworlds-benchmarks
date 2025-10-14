@@ -1,40 +1,53 @@
 [project]
-name = "aintelope"
+name = "From homeostasis to resource sharing: Biologically and economically aligned multi-objective multi-agent AI safety benchmarks"
 version = "0.9.0"
-description = "Simulate agents with reinforcement learning over selected cue-response patterns"
+description = "See https://arxiv.org/abs/2410.00081. Abstract: Developing safe, aligned agentic AI systems requires comprehensive empirical testing, yet many existing benchmarks neglect crucial themes aligned with biology and economics, both time-tested fundamental sciences describing our needs and preferences. To address this gap, the present work focuses on introducing biologically and economically motivated themes that have been neglected in current mainstream discussions on AI safety - namely a set of multi-objective, multi-agent alignment benchmarks that emphasize homeostasis for bounded and biological objectives, diminishing returns for unbounded, instrumental, and business objectives, sustainability principle, and resource sharing. We implemented eight main benchmark environments on the above themes, to illustrate key pitfalls and challenges in agentic AI-s, such as unboundedly maximizing a homeostatic objective, over-optimizing one objective at the expense of others, neglecting safety constraints, or depleting shared resources. "
 readme = "README.md"
+license = "MPL-2.0"
+license-files = [
+  "LICENSE.txt",
+  "AUTHORS.md",
+  "CITATION.cff"
+]
+maintainers = [
+  {name = "Roland Pihlakas", email = "roland@simplify.ee"}
+]
 authors = [
   {name = "Roland Pihlakas", email = "roland@simplify.ee"},  
-  {name = "Orpheus Lummis", email = "o@orpheuslummis.info"},
-  {name = "Nathan Helm-Burger", email = "nathan.helm.burger@gmail.com"},
+  {name = "Andre Kochanke", email = "a.kochanke@posteo.net"},
   {name = "Joel Pyykkö", email = "sassort@gmail.com"},  
-  {name = "Hauke Rehfeld", email = "git@haukerehfeld.de"},
   {name = "Gunnar Zarncke", email = "gunnar@zarncke.de"},
-  {name = "Andre Kochanke", email = "a.kochanke@posteo.net"}]
+  {name = "Nathan Helm-Burger", email = "nathan.helm.burger@gmail.com"},
+  {name = "Hauke Rehfeld", email = "git@haukerehfeld.de"},
+  {name = "Orpheus Lummis", email = "o@orpheuslummis.info"}
+]
 requires-python = ">=3.10.3"
 dependencies = [
   "diskcache==5.6.3",
   "filelock==3.13.1",
   "flatten-dict==0.4.2",
   "gymnasium==0.29.1",
+  "httpx==0.27.2",
   "hydra-core==1.3.0",
   "json-tricks==3.17.1",
   "matplotlib==3.7.0",
   "numpy==1.26.4",
-  "openai==1.45.0",
+  "openai==1.55.3",
   "pandas==1.5.3",
   "PettingZoo==1.24.1",
   "posix-ipc==1.1.1; os_name != 'nt'",
   "progressbar2==4.2.0",
   "psutil==5.9.4",
   "pygame==2.4",
+  "scipy==1.15.0",
   "seaborn==0.12.2",
   "semaphore-win-ctypes==0.1.2; os_name == 'nt'",
+  "tensorboard==2.18.0",
   "torch==2.1.0",
   "stable-baselines3==2.3.2",
   "supersuit==3.9.3",
   "tenacity==8.2.2",
-  "tiktoken==0.7.0",
+  "tiktoken==0.9.0",
   "-e git+https://github.com/levitation-opensource/ai-safety-gridworlds@biological-compatibility-benchmarks#egg=ai-safety-gridworlds",
   "-e git+https://github.com/levitation-opensource/zoo_to_gym_multiagent_adapter@main#egg=zoo_to_gym_multiagent_adapter"
 ]
