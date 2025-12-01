@@ -222,7 +222,7 @@ Aintelope code base is compatible with Windows. No extra steps needed. GPU compu
 
 # Papers
 
-* A working paper related to this repo: Pihlakas, R & Pyykkö, J. **"From homeostasis to resource sharing: Biologically and economically compatible multi-objective multi-agent AI safety benchmarks"**. Arxiv (2024-2025). https://arxiv.org/abs/2410.00081 
+* A working paper related to this repo: Roland Pihlakas. "From homeostasis to resource sharing: Biologically and economically aligned multi-objective multi-agent gridworld-based AI safety benchmarks". September 2024. https://arxiv.org/abs/2410.00081 
 <br>Data files of the experiments performed for the current version of working paper are available here: https://drive.google.com/drive/folders/1KBRcPLbM2a8Li3HQ92lGTEfizOGtZ7OM?usp=sharing These data files contain logs of the steps agents took across training and test episodes, and multi-objective environment scores calculated during each step. Each RL training run is 100k steps. There is one trial per benchmark-networkconfiguration-model combination.
 * **New data files for an updated version of the paper are currently being generated here:** https://aintelope.simplify.ee/ These new experiments have longer RL training runs (1M steps) and more trials per benchmark-networkconfiguration-model combination (100 trials each).
 
