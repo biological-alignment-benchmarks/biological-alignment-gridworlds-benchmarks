@@ -129,8 +129,8 @@ class SB3HandWrittenRulesExpert(object):
         epsilon += self.hparams.model_params.eps_end
 
         handwritten_rule_epsilon = (
-            self.hparams.model_params.handwritten_rule_bias_epsilon_start
-            - self.hparams.model_params.handwritten_rule_bias_epsilon_end
+            self.hparams.model_params.instinct_bias_epsilon_start
+            - self.hparams.model_params.instinct_bias_epsilon_end
         )
         if self.hparams.model_params.eps_last_frame > 1:
             handwritten_rule_epsilon *= max(
@@ -151,16 +151,14 @@ class SB3HandWrittenRulesExpert(object):
                 0,
                 1 - pipeline_cycle / self.hparams.model_params.eps_last_pipeline_cycle,
             )
-        handwritten_rule_epsilon += (
-            self.hparams.model_params.handwritten_rule_bias_epsilon_end
-        )
+        handwritten_rule_epsilon += self.hparams.model_params.instinct_bias_epsilon_end
 
-        apply_handwritten_rule_eps_before_random_eps = (
-            self.hparams.model_params.apply_handwritten_rule_eps_before_random_eps
+        apply_instinct_eps_before_random_eps = (
+            self.hparams.model_params.apply_instinct_eps_before_random_eps
         )
 
         if (
-            not apply_handwritten_rule_eps_before_random_eps
+            not apply_instinct_eps_before_random_eps
             and epsilon > 0
             and _random.random() < epsilon
         ):
@@ -172,7 +170,7 @@ class SB3HandWrittenRulesExpert(object):
             return 1, _random  # handwritten rules mode
 
         elif (
-            apply_handwritten_rule_eps_before_random_eps
+            apply_instinct_eps_before_random_eps
             and epsilon > 0
             and _random.random() < epsilon
         ):

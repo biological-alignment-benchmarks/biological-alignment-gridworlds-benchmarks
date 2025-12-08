@@ -25,7 +25,7 @@ trainer_params:
 
 hparams:
   gridsearch_trial_no: 0
-  params_set_title: "score_dqn_cnn2"
+  params_set_title: "score_ppo_cnn2_weightshared"
   do_not_enforce_checkpoint_file_existence_during_test: False
   aggregated_results_file: outputs/${hparams.params_set_title}.jsonl
   env: savanna-safetygrid-parallel-v1
@@ -35,13 +35,13 @@ hparams:
   #env_entry_point: "aintelope.environments.savanna_safetygrid:SavannaGridworldSequentialEnv"
   #env_type: zoo
   unit_test_mode: False      # is set during tests in order to speed up DQN computations
-  agent_class: sb3_dqn_agent 
+  agent_class: sb3_ppo_agent 
   save_frequency: ${muldiv:${hparams.num_episodes},${hparams.env_params.num_iters},10}  # how often to save a model. 0 means that the model is saved only at the end, improving training performance
   use_separate_models_for_each_experiment: True
   agent_params:
     target_handwritten_rules: [food,drink,gold,silver,danger,predator,collision,antimovement]         
   model_params:  # TODO
-    use_weight_sharing: False
+    use_weight_sharing: True
     num_conv_layers: 2
     eps_start: 0.0
     eps_end: 0.0
