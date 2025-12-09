@@ -25,6 +25,7 @@ clean-venv: ## remove virtual environment
 install: ## Install packages
 	# cat supresses error that grep generates when it does not find a match
 	pip uninstall -y ai_safety_gridworlds 2>&1 | grep -v "not installed" | cat
+	pip uninstall -y zoo_to_gym_multiagent_adapter 2>&1 | grep -v "not installed" | cat
 	pip install -r requirements/api.txt
 
 install-dev: ## Install development packages
