@@ -44,7 +44,7 @@ import torch
 import torch.nn as nn
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
-from typing import Any, Union
+from typing import Any, Union, Optional, Type
 import gymnasium as gym
 from pettingzoo import AECEnv, ParallelEnv
 
@@ -84,6 +84,17 @@ def vec_env_args(env, num_envs):
         return env_copy
 
     return [env_fn] * num_envs, env.observation_space, env.action_space
+
+
+# this function is needed since policies do not accept string type for "optimizer_class"
+def get_optimizer_class(class_name: Optional[str]) -> Type:
+    if class_name is None:
+        return None
+    else:
+        return getattr(torch.optim, class_name)
+        # if you want to search all namespaces, then use the following lines
+        # from pydoc import locate
+        # return locate("torch.optim." + class_name)
 
 
 def is_json_serializable(item: Any) -> bool:

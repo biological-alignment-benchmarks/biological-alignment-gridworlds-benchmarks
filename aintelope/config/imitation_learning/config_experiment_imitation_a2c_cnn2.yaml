@@ -44,6 +44,7 @@ hparams:
     use_weight_sharing: False
     num_conv_layers: 2
     use_expln: False
+    optimizer_class: null   # use default
     eps_start: 0.0
     eps_end: 0.0
     instinct_bias_epsilon_start: 1.0

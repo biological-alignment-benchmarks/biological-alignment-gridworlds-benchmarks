@@ -23,6 +23,7 @@ from aintelope.agents.sb3_base_agent import (
     SB3BaseAgent,
     CustomCNN,
     vec_env_args,
+    get_optimizer_class,
     PolicyWithConfigFactory,
     INFO_PIPELINE_CYCLE,
     INFO_EPISODE,
@@ -243,10 +244,21 @@ def ppo_model_constructor(env, env_classname, agent_id, cfg):
                     "features_dim": 256,  # TODO: config parameter. Note this is not related to the number of features in the original observation (15 or 39), this parameter here is model's internal feature dimensionality
                     "num_conv_layers": cfg.hparams.model_params.num_conv_layers,
                 },
-                "use_expln": cfg.hparams.model_params.use_expln,  # avoid NaNs in SB3 tensors - see https://github.com/DLR-RM/rl-baselines3-zoo/issues/427#issuecomment-1829495239
+                # expln=True and optimiser=AdamW: avoid NaNs in SB3 tensors - see https://github.com/DLR-RM/rl-baselines3-zoo/issues/427#issuecomment-1829495239
+                "use_expln": cfg.hparams.model_params.use_expln,
+                "optimizer_class": get_optimizer_class(
+                    cfg.hparams.model_params.optimizer_class
+                ),
             }
             if cfg.hparams.model_params.num_conv_layers > 0
-            else {"normalize_images": False}
+            else {
+                "normalize_images": False,
+                # expln=True and optimiser=AdamW: avoid NaNs in SB3 tensors - see https://github.com/DLR-RM/rl-baselines3-zoo/issues/427#issuecomment-1829495239
+                "use_expln": cfg.hparams.model_params.use_expln,
+                "optimizer_class": get_optimizer_class(
+                    cfg.hparams.model_params.optimizer_class
+                ),
+            }
         ),
         device=torch.device(
             "cuda" if torch.cuda.is_available() else "cpu"

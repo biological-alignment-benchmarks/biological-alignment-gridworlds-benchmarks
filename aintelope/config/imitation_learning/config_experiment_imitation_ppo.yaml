@@ -44,6 +44,7 @@ hparams:
     use_weight_sharing: False
     num_conv_layers: 0
     use_expln: True     # NB! needed here to avoid NaNs in SB3 tensors
+    optimizer_class: AdamW     # NB! needed here to avoid NaNs in SB3 tensors
     eps_start: 0.0
     eps_end: 0.0
     instinct_bias_epsilon_start: 1.0
