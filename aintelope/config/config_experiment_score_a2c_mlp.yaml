@@ -40,7 +40,7 @@ hparams:
   use_separate_models_for_each_experiment: True
   agent_params:
     target_handwritten_rules: [food,drink,gold,silver,danger,predator,collision,antimovement]        
-  model_params:  # TODO
+  model_params:
     use_weight_sharing: False
     num_conv_layers: 0
     use_expln: False
