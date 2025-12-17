@@ -757,14 +757,31 @@ class SB3BaseAgent(Agent):
 
         if self.exceptions:
             exs = list(self.exceptions.values())
+            found_forced_termination = None
+            found_other_agents_exception = False
             for ex, trace in exs:
-                if check_for_nan_errors(ex, self.cfg):
-                    # NB! do not save model - once NaNs appear the model may be already corrupted
-                    # TODO: detect whether model parameters actually contain NaNs and decide based on that
-                    # wait_for_enter("Press enter to continue")
-                    result = False
+                if (
+                    str(ex) == "Forced termination"
+                ):  # there should be another exception by the other agent which indirectly caused current agent to be force-terminated, lets check that other exception intead
+                    found_forced_termination = ex
+                    continue
                 else:
-                    raise Exception(str(self.exceptions))
+                    found_other_agents_exception = True
+                    if check_for_nan_errors(ex, self.cfg):
+                        # NB! do not save model - once NaNs appear the model may be already corrupted
+                        # TODO: detect whether model parameters actually contain NaNs and decide based on that
+                        # wait_for_enter("Press enter to continue")
+                        result = False
+                    else:
+                        raise Exception(str(self.exceptions))
+            # / for ex, trace in exs:
+
+            if (
+                found_forced_termination is not None
+                and not found_other_agents_exception
+            ):  # this should not happen
+                raise Exception(str(self.exceptions))
+        # / if self.exceptions:
 
         return result
 
