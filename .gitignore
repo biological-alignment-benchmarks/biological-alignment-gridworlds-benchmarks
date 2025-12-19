@@ -156,7 +156,7 @@ tags
 /gymnasium
 
 # VScode
-.vscode/launch.json		
+.vscode/launch.json
 # NB! allow .vscode/launch.json.template
 
 # backup files
