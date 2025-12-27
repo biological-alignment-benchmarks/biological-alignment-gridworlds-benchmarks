@@ -151,19 +151,27 @@ tags
 
 # locally editable requirements
 /ai_safety_gridworlds
+/gym
+/gymnasium
 /pettingzoo
 /pycolab
-/gymnasium
+/stable_baselines3
+/supersuit
+/zoo_to_gym_multiagent_adapter
 
 # VScode
-.vscode/launch.json		
+.vscode/launch.json
 # NB! allow .vscode/launch.json.template
+
+# experiment outputs folder
+/outputs
 
 # backup files
 *.*~
 *~
 *.bak
 *.old
+.vshistory/
 
 # Gridworlds logfiles
 /logs

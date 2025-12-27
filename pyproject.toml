@@ -64,6 +64,7 @@ line-length = 88
 force-exclude = '''
 /(
 ai_safety_gridworlds
+| gym
 | gymnasium
 | outputs
 | pettingzoo
