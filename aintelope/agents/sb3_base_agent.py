@@ -199,6 +199,7 @@ def sb3_agent_train_thread_entry_point(
     env_wrapper = MultiAgentZooToGymAdapterGymSide(
         pipe, agent_id, checkpoint_filename, observation_space, action_space
     )
+    trace = None
     try:
         filename_timestamp_sufix_str = datetime.datetime.now().strftime(
             "%Y_%m_%d_%H_%M_%S_%f"
@@ -234,6 +235,9 @@ def sb3_agent_train_thread_entry_point(
             model.learn(total_timesteps=num_total_steps, callback=checkpoint_callback)
             # capture errors raised by NaN's in SB3 tensors, which occur with PPO imitation learning in 2-layout configuration
         except Exception as ex:
+            trace = (
+                traceback.format_exc()
+            )  # NB! need to obtain trace here since the outer except block would not get the full trace anymore
             if check_for_nan_errors(ex, cfg):
                 # NB! do not save model - once NaNs appear the model may be already corrupted, see https://stable-baselines3.readthedocs.io/en/master/guide/checking_nan.html
                 # TODO: detect whether model parameters actually contain NaNs and decide based on that
@@ -246,7 +250,10 @@ def sb3_agent_train_thread_entry_point(
     except (
         Exception
     ) as ex:  # NB! need to catch exception so that the env wrapper can signal the training ended
-        trace = traceback.format_exc()
+        if (
+            trace is None
+        ):  # NB! need to preserve inner trace here since this outer except block would not get the full trace anymore
+            trace = traceback.format_exc()
         exception_info = (
             ex,
             trace,
