@@ -103,7 +103,8 @@ class ExpertOverrideMixin:  # TODO: merge with code from PPO agent (the code is 
         values = self.value_net(latent_vf)
         distribution = self._get_action_dist_from_latent(latent_pi)
 
-        # inserted code
+        # inserted code begins
+
         step = self.info[INFO_STEP]
         env_layout_seed = self.info[INFO_ENV_LAYOUT_SEED]
         episode = self.info[INFO_EPISODE]
@@ -120,6 +121,7 @@ class ExpertOverrideMixin:  # TODO: merge with code from PPO agent (the code is 
             episode,
             pipeline_cycle,
             test_mode,
+            0,  # agent_i
             obs_np,
         )
         if override_type != 0:
@@ -131,15 +133,19 @@ class ExpertOverrideMixin:  # TODO: merge with code from PPO agent (the code is 
                 episode,
                 pipeline_cycle,
                 test_mode,
+                0,  # agent_i
                 override_type,
                 deterministic,
                 _random,
             )
             # TODO: handle multiple observations and actions (for that we need also multiple infos)
+            # TODO: option to softly change the actions distribution, not actions directly, so that actions less likely according to model's distribution get still chosen less often
             actions = [action]
             actions = torch.as_tensor(actions, device=obs.device, dtype=torch.long)
         else:
             actions = distribution.get_actions(deterministic=deterministic)
+
+        # inserted code ends
 
         log_prob = distribution.log_prob(actions)
         actions = actions.reshape((-1, *self.action_space.shape))  # type: ignore[misc]

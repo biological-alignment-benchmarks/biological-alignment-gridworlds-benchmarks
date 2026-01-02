@@ -49,7 +49,7 @@ class SB3HandWrittenRulesExpert(object):
     def __init__(
         self,
         env_classname: str,
-        agent_id: str,
+        agent_id: str,  # NB! in case of weight sharing, both agents have same agent_id, but agent_i argument for should_override and get_action methods will be different
         cfg: DictConfig,
         target_handwritten_rules: List[str],
         action_space: spaces.Space,
@@ -97,6 +97,7 @@ class SB3HandWrittenRulesExpert(object):
         episode: int = 0,
         pipeline_cycle: int = 0,
         test_mode: bool = False,
+        agent_i: int = 0,  # can be nonzero in case of weight sharing
         observation=None,
     ) -> int:
         _random = np.random
@@ -188,6 +189,7 @@ class SB3HandWrittenRulesExpert(object):
         episode: int = 0,
         pipeline_cycle: int = 0,
         test_mode: bool = False,
+        agent_i: int = 0,  # can be nonzero in case of weight sharing
         override_type: int = 0,
         deterministic: bool = False,  # This is set only during evaluation, not training and the meaning is that the agent is greedy - it takes the best action. It does NOT mean that the action is always same.
         _random=None,

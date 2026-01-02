@@ -82,7 +82,8 @@ class ExpertOverrideMixin:
     def _predict(self, obs: PyTorchObs, deterministic: bool = True) -> th.Tensor:
         actions = self.q_net._predict(obs, deterministic=deterministic)
 
-        # inserted code
+        # inserted code begins
+
         step = self.info[INFO_STEP]
         env_layout_seed = self.info[INFO_ENV_LAYOUT_SEED]
         episode = self.info[INFO_EPISODE]
@@ -99,6 +100,7 @@ class ExpertOverrideMixin:
             episode,
             pipeline_cycle,
             test_mode,
+            0,  # agent_i
             obs_np,
         )
         if override_type != 0:
@@ -110,13 +112,21 @@ class ExpertOverrideMixin:
                 episode,
                 pipeline_cycle,
                 test_mode,
+                0,  # agent_i
                 override_type,
                 deterministic,
                 _random,
             )
             # TODO: handle multiple observations and actions (for that we need also multiple infos)
+            # TODO: option to softly change the actions Q values, not actions directly, so that actions less prioritised according to model's Q values get still chosen less often
             actions = [action]
-            actions = torch.as_tensor(actions, device=obs.device, dtype=torch.long)
+            # actions = torch.as_tensor(actions, device=obs.device, dtype=torch.long)
+            # optimization: Use None device, as the action will be transferred to CPU in the call site anyway
+            # see https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/policies.py#L370
+            # device: If None and data is not a tensor then the result tensor is constructed on the current device.
+            actions = torch.as_tensor(actions, device=None, dtype=torch.long)
+
+        # inserted code ends
 
         return actions
 

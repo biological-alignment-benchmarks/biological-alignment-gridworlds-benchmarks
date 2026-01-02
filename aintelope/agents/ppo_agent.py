@@ -110,7 +110,8 @@ class ExpertOverrideMixin:  # TODO: merge with code from A2C agent (the code is 
         values = self.value_net(latent_vf)
         distribution = self._get_action_dist_from_latent(latent_pi)
 
-        # inserted code
+        # inserted code begins
+
         obs_nps = obs.detach().cpu().numpy()
         num_agents = obs_nps.shape[
             0
@@ -138,6 +139,7 @@ class ExpertOverrideMixin:  # TODO: merge with code from A2C agent (the code is 
                 episode,
                 pipeline_cycle,
                 test_mode,
+                agent_i,
                 obs_np,
             )
             overrides[agent_i] = override_type
@@ -150,6 +152,7 @@ class ExpertOverrideMixin:  # TODO: merge with code from A2C agent (the code is 
         # / for agent_i in range(0, num_agents):
 
         if need_to_call_get_actions:
+            # TODO: option to softly change the actions distribution, not actions directly, so that actions less likely according to model's distribution get still chosen less often
             actions = distribution.get_actions(deterministic=deterministic)
             if need_to_use_numpy_actions:
                 actions = actions.detach().cpu().tolist()
@@ -180,6 +183,7 @@ class ExpertOverrideMixin:  # TODO: merge with code from A2C agent (the code is 
                 episode,
                 pipeline_cycle,
                 test_mode,
+                agent_i,
                 override_type,
                 deterministic,
                 _random,
@@ -192,6 +196,8 @@ class ExpertOverrideMixin:  # TODO: merge with code from A2C agent (the code is 
 
         if need_to_use_numpy_actions:
             actions = torch.as_tensor(actions, device=obs.device, dtype=torch.long)
+
+        # inserted code ends
 
         log_prob = distribution.log_prob(actions)
         actions = actions.reshape((-1, *self.action_space.shape))  # type: ignore[misc]
