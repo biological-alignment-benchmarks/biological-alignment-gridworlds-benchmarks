@@ -219,7 +219,7 @@ def run_pipeline(cfg: DictConfig) -> None:
                                 force_add=True,
                             )
 
-                            # check whether this experiment has already been run during an earlier or aborted gridsearch pipeline run
+                            # check whether this experiment has already been run during an earlier or aborted gridsearch pipeline run   # TODO: implement this check in pipeline.py as well
                             if cfg.hparams.aggregated_results_file:
                                 aggregated_results_file = os.path.normpath(
                                     cfg.hparams.aggregated_results_file
@@ -360,9 +360,36 @@ def run_pipeline(cfg: DictConfig) -> None:
                                 test_summaries_to_return.append(test_summary)
                                 test_summaries_to_jsonl.append(test_summary)
 
+                                # NB! In contrast to pipeline.py, here we can write the test results to output file immediately since there is a check for existing test results above
+                                if cfg.hparams.aggregated_results_file:
+                                    aggregated_results_file = os.path.normpath(
+                                        cfg.hparams.aggregated_results_file
+                                    )
+                                    aggregated_results_file_lock = FileLock(
+                                        aggregated_results_file + ".lock"
+                                    )
+                                    with aggregated_results_file_lock:
+                                        with open(
+                                            aggregated_results_file,
+                                            mode="a",
+                                            encoding="utf-8",
+                                        ) as fh:
+                                            for test_summary in test_summaries_to_jsonl:
+                                                # Do not write directly to file. If JSON serialization error occurs during json.dump() then a broken line would be written into the file (I have verified this). Therefore using json.dumps() is safer.
+                                                json_text = json.dumps(test_summary)
+                                                fh.write(
+                                                    json_text + "\n"
+                                                )  # \n : Prepare the file for appending new lines upon subsequent append. The last character in the JSONL file is allowed to be a line separator, and it will be treated the same as if there was no line separator present.
+                                            fh.flush()
+
+                                    test_summaries_to_jsonl.clear()  # NB!
+
                             # / if training_run_was_terminated_early_due_to_nans and cfg.hparams.model_params.skip_test_on_training_stop_on_nan_errors:
 
                         # / if test_mode:
+
+                        torch.cuda.empty_cache()
+                        gc.collect()
 
                         pipeline_bar.update(env_conf_i + 1)
 
@@ -374,21 +401,6 @@ def run_pipeline(cfg: DictConfig) -> None:
             # / for i_pipeline_cycle in range(0, max_pipeline_cycle):
         # / with RobustProgressBar(max_value=max_pipeline_cycle) as pipeline_cycle_bar:
     # / with Semaphore('name', max_count=num_workers, disable=gridsearch_params_in is not None) as semaphore:
-
-    # Write the pipeline results to file only when entire pipeline has run. Else crashing the program during pipeline run will cause the aggregated results file to contain partial data which will be later duplicated by re-run.
-    # TODO: alternatively, cache the results of each experiment separately
-    if cfg.hparams.aggregated_results_file:
-        aggregated_results_file = os.path.normpath(cfg.hparams.aggregated_results_file)
-        aggregated_results_file_lock = FileLock(aggregated_results_file + ".lock")
-        with aggregated_results_file_lock:
-            with open(aggregated_results_file, mode="a", encoding="utf-8") as fh:
-                for test_summary in test_summaries_to_jsonl:
-                    # Do not write directly to file. If JSON serialization error occurs during json.dump() then a broken line would be written into the file (I have verified this). Therefore using json.dumps() is safer.
-                    json_text = json.dumps(test_summary)
-                    fh.write(
-                        json_text + "\n"
-                    )  # \n : Prepare the file for appending new lines upon subsequent append. The last character in the JSONL file is allowed to be a line separator, and it will be treated the same as if there was no line separator present.
-                fh.flush()
 
     torch.cuda.empty_cache()
     gc.collect()

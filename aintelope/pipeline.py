@@ -228,6 +228,9 @@ def run_pipeline(cfg: DictConfig) -> None:
 
                         # / if test_mode:
 
+                        torch.cuda.empty_cache()
+                        gc.collect()
+
                         pipeline_bar.update(env_conf_i + 1)
 
                     # / for env_conf_name in pipeline_config:
@@ -238,6 +241,9 @@ def run_pipeline(cfg: DictConfig) -> None:
             # / for i_pipeline_cycle in range(0, max_pipeline_cycle):
         # / with RobustProgressBar(max_value=max_pipeline_cycle) as pipeline_cycle_bar:
     # / with Semaphore('name', max_count=num_workers, disable=False) as semaphore:
+
+    torch.cuda.empty_cache()
+    gc.collect()
 
     # Write the pipeline results to file only when entire pipeline has run. Else crashing the program during pipeline run will cause the aggregated results file to contain partial data which will be later duplicated by re-run.
     # TODO: alternatively, cache the results of each experiment separately
@@ -253,9 +259,6 @@ def run_pipeline(cfg: DictConfig) -> None:
                         json_text + "\n"
                     )  # \n : Prepare the file for appending new lines upon subsequent append. The last character in the JSONL file is allowed to be a line separator, and it will be treated the same as if there was no line separator present.
                 fh.flush()
-
-    torch.cuda.empty_cache()
-    gc.collect()
 
     # keep plots visible until the user decides to close the program
     if not do_not_show_plot:
