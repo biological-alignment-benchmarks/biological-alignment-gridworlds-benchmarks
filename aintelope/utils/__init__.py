@@ -267,13 +267,13 @@ class LogTimestamper(object):
         else:
             message = message_in
 
-        if (
-            message.strip() == ""
-        ):  # or message[0] == "[":  # logger messages begin with [timestamp] so there is no need to add one more timestamp, but since the logger message does not contain pid then lets still add timestamp-pid pair here
+        now = self.get_now_str()
+        stripped_message = message.strip()
+        if stripped_message == "" or stripped_message.startswith(
+            now[:-3]
+        ):  # a message from subprocess contains a timestamp already, so do not add it again  # or message[0] == "[":  # logger messages begin with [timestamp] so there is no need to add one more timestamp, but since the logger message does not contain pid then lets still add timestamp-pid pair here
             message_with_timestamp = message
         else:
-            now = self.get_now_str()
-
             if len(message) >= 2 and message[-2:] == "\n\r":
                 message_end_linebreak = "\n\r"
             elif len(message) >= 2 and message[-2:] == "\r\n":
@@ -326,7 +326,8 @@ class LogTimestamper(object):
 
 
 def init_console_timestamps():
-    if not isinstance(sys.stdout, LogTimestamper):
-        sys.stdout = LogTimestamper(sys.stdout)
+    # NB! redirect stderr first, else stderr writes would get a duplicate timestamp
     if not isinstance(sys.stderr, LogTimestamper):
         sys.stderr = LogTimestamper(sys.stdout)
+    if not isinstance(sys.stdout, LogTimestamper):
+        sys.stdout = LogTimestamper(sys.stdout)

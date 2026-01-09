@@ -312,8 +312,12 @@ async def run_gridsearch_experiment_multiprocess(
             while proc.returncode is None:
                 stdout, stderr = await proc.communicate()
                 print("\n" + stdout.decode("utf-8", "ignore"))
+                if stderr:
+                    print("\n" + stderr.decode("utf-8", "ignore"))
             stdout, stderr = await proc.communicate()
             print("\n" + stdout.decode("utf-8", "ignore"))
+            if stderr:
+                print("\n" + stderr.decode("utf-8", "ignore"))
         except Exception as ex:
             print(f"\nError in experiment worker process. Exception: {ex}. Params:")
             plotting.prettyprint(gridsearch_combination_for_print)
