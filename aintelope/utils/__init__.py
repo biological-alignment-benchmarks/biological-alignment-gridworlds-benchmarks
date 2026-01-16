@@ -10,6 +10,7 @@ import sys
 import time
 import datetime
 import warnings
+import re
 
 from progressbar import ProgressBar
 
@@ -254,58 +255,73 @@ class LogTimestamper(object):
     def __init__(self, terminal):
         self.terminal = terminal
         pid = os.getpid()
-        self.pid_str = " : " + str(pid).rjust(7) + " : "
+        self.pid_str = " : " + str(pid).rjust(7) + " :"
+        self.first_message_printed = False
+
+        self.newline_re = re.compile(
+            r"(\r\n|\n\r|\n)"
+        )  # NB! () is needed to capture the separators as individual groups
+        self.timestamp_re = re.compile(
+            r"[0-9]{4}\.[01]?[0-9]\.[0-3]?[0-9] [012]?[0-9]:[0-5]?[0-9]:[0-5]?[0-9]"
+        )
 
     def get_now_str(self):
         return datetime.datetime.strftime(datetime.datetime.now(), "%Y.%m.%d %H:%M:%S")
 
     def write(self, message_in):
         if isinstance(message_in, bytes):
-            message = message_in.decode(
+            message_decoded = message_in.decode(
                 "utf-8", "ignore"
             )  # NB! message_in might be byte array not a string
         else:
-            message = message_in
+            message_decoded = message_in
 
         now = self.get_now_str()
-        stripped_message = message.strip()
-        if stripped_message == "" or stripped_message.startswith(
-            now[:-3]
-        ):  # a message from subprocess contains a timestamp already, so do not add it again  # or message[0] == "[":  # logger messages begin with [timestamp] so there is no need to add one more timestamp, but since the logger message does not contain pid then lets still add timestamp-pid pair here
-            message_with_timestamp = message
-        else:
-            if len(message) >= 2 and message[-2:] == "\n\r":
-                message_end_linebreak = "\n\r"
-            elif len(message) >= 2 and message[-2:] == "\r\n":
-                message_end_linebreak = "\r\n"
-            elif len(message) >= 1 and message[-1:] == "\n":
-                message_end_linebreak = "\n"
-            else:
-                message_end_linebreak = ""
+        newline_prefix = (
+            " " + now + self.pid_str
+        )  # NB! add space in front of the timestamp to mitigate the first character appearing at the end of last progressbar update line when print calls are interleaved with progress bar updates
 
-            newline_prefix = (
-                " " + now + self.pid_str
-            )  # NB! add space in front of the timestamp to mitigate the first character appearing at the end of last progressbar update line when print calls are interleaved with progress bar updates
-            newline = message_end_linebreak if message_end_linebreak else "\n"
-            message_without_end_linebreak = (
-                message[: -len(message_end_linebreak)]
-                if message_end_linebreak != ""
-                else message
-            )
-            message_with_timestamp = (
-                newline_prefix
-                + message_without_end_linebreak.replace(
-                    newline, newline + newline_prefix
-                )
-                + message_end_linebreak
-            )
+        lines = re.split(self.newline_re, message_decoded)
 
-            message_with_timestamp = message_with_timestamp.encode(
-                "utf-8", "ignore"
-            ).decode("utf-8", "ignore")
+        messages_with_timestamp = []
+
+        if not self.first_message_printed:
+            self.first_message_printed = True
+            messages_with_timestamp.append(newline_prefix)
+
+        found_subprocess_timestamps = False
+        for index, message in enumerate(lines):
+            if message in ["\r\n", "\n\r", "\n"]:
+                next_message = lines[index + 1] if index + 1 < len(lines) else ""
+                # handle subprocess messages - a message from subprocess contains a timestamp already, so do not add it again. Note also, Logger messages begin with [timestamp] so there is no need to add one more timestamp, but since the logger message does not contain pid then lets still add timestamp-pid pair here
+                if re.match(self.timestamp_re, next_message.strip()):
+                    found_subprocess_timestamps = True
+                elif (
+                    not found_subprocess_timestamps
+                ):  # NB! do not add current process PID to subprocess message even when subprocess message line has no timestamp (for example, progress bar lines are such)
+                    message = (
+                        message + newline_prefix
+                    )  # NB! newlines come before the timestamp
+            elif message != "":
+                if re.match(self.timestamp_re, message.strip()):
+                    found_subprocess_timestamps = True
+                else:
+                    message = (
+                        " " + message
+                    )  # NB! add space in front of each line to mitigate the first character appearing at the end of last progressbar update line
+
+            messages_with_timestamp.append(message)
+
+        # / for index, message in enumerate(lines):
+
+        messages_with_timestamp = "".join(messages_with_timestamp)
+        messages_with_timestamp = messages_with_timestamp.encode(
+            "utf-8", "ignore"
+        ).decode("utf-8", "ignore")
 
         try:
-            self.terminal.write(message_with_timestamp)
+            self.terminal.write(messages_with_timestamp)
+            qqq = True  # for debugging
         except Exception as ex:
             pass
 
