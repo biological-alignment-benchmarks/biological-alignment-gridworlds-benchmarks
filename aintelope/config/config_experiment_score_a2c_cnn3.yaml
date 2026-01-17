@@ -48,7 +48,7 @@ hparams:
     soft_stop_training_on_nan_errors: False
     early_detect_nans: False
     retry_training_on_nans_for_n_times: 0  # if that is set then soft_stop_training_on_nan_errors must also be set
-    skip_test_on_training_stop_on_nan_errors: True,
+    skip_test_on_training_stop_on_nan_errors: True
     eps_start: 0.0
     eps_end: 0.0
     instinct_bias_epsilon_start: 0.0
